@@ -1,0 +1,1514 @@
+\documentclass[aip,jcp,preprint]{revtex4-1}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{natbib}
+
+\usepackage[size=small]{caption}
+\usepackage{newfloat}
+\DeclareFloatingEnvironment[
+    fileext=loa,
+    listname=List of Algorithms,
+    name=ALGORITHM,
+    placement=tbhp,
+]{algorithm}
+
+\DeclareCaptionFormat{algorithms}{\vskip-15pt\hrulefill\par#1#2#3\vskip-6pt\hrulefill}
+\captionsetup[algorithm]{singlelinecheck=off,format=algorithms}
+
+\makeatletter
+\renewcommand\@make@capt@title[2]{%
+ \@ifx@empty\float@link{\@firstofone}{\expandafter\href\expandafter{\float@link}}%
+  {\textbf{#1}}\@caption@fignum@sep#2\quad
+}%
+\makeatother
+
+\begin{document}
+
+\title{Nonlinear Intrinsic Variables and State Reconstruction in Multiscale Simulations}
+
+\author{Carmeline J. Dsilva}
+\email{cdsilva@princeton.edu}
+\affiliation{Department of Chemical and Biological Engineering, Princeton University, Princeton, New Jersey, USA}
+
+\author{Ronen Talmon}
+\email{ronen.talmon@yale.edu}
+\affiliation{Department of Mathematics, Yale University, New Haven, Connecticut, USA}
+
+\author{Neta Rabin}
+\email{netar@afeka.ac.il}
+\affiliation{Department of Exact Sciences, Afeka Tel-Aviv Academic College of Engineering, Tel-Aviv, Israel}
+
+\author{Ronald R. Coifman}
+\email{coifman@math.yale.edu}
+\affiliation{Department of Mathematics, Yale University, New Haven, Connecticut, USA}
+
+\author{Ioannis G. Kevrekidis}
+\email{yannis@princeton.edu}
+\affiliation{Department of Chemical and Biological Engineering, Princeton University, Princeton, New Jersey, USA}
+\affiliation{Program in Applied and Computational Mathematics, Princeton University, Princeton, New Jersey, USA}
+
+\date{\today}
+
+\begin{abstract}
+Finding informative low-dimensional descriptions of high-dimensional simulation data
+(like the ones arising in molecular dynamics or kinetic Monte Carlo simulations of
+physical and chemical processes) is crucial to understanding physical phenomena, and can
+also dramatically assist in accelerating the simulations themselves.
+%
+In this paper, we discuss and illustrate the use of nonlinear intrinsic variables (NIV)
+in the mining of high-dimensional multiscale simulation data.
+%
+In particular, we focus on the way NIV allows us to functionally merge different
+simulation ensembles, and {\em different partial observations of these ensembles}, as well
+as to infer variables not explicitly measured.
+%
+The approach relies on certain simple features of the underlying process variability to
+filter out measurement noise and systematically recover a unique reference coordinate frame.
+%
+We illustrate the approach through two distinct sets of atomistic simulations:
+a stochastic simulation of an enzyme reaction network exhibiting both fast and slow time scales,
+ and a molecular dynamics simulation of alanine dipeptide in explicit water.
+
+\end{abstract}
+
+\keywords{Intrinsic variables, partial observations, complex dynamical systems}
+
+\maketitle
+
+\section{Introduction}
+The last decade has witnessed extensive advances in dimensionality reduction techniques:
+finding meaningful low-dimensional descriptions of high-dimensional data \cite{Tenenbaum2000,Roweis2000,Donoho2003,Belkin2003,Coifman2006}.
+%
+Often, high-dimensional data do not uniformly fill the entire ambient space, but rather lie on a lower-dimensional manifold.
+%
+Discovering a parameterization of the manifold therefore yields a compact representation of the data, and may lead to efficient analysis and processing schemes.
+%
+In particular, these developments have the potential to significantly enable the computational exploration
+of physicochemical problems.
+%
+Traditionally, state reduction in chemical reaction networks has been done using some {\em a priori} knowledge about separation of time scales,
+for example, using the quasi-steady state approximation to reduce a network of chemical reactions\cite{bowen1963singular}.
+%
+Alternatively, empirical knowledge about the system of interest has been used to develop coarse grained descriptions,
+such as grouping atoms of a macromolecule into larger ``beads'' to accelerate simulations\cite{monticelli2008martini, spiga2013electrostatic,izvekov2005systematic, saunders2013coarse}.
+%
+The use of manifold learning allows for the systematic discovery of data-driven, low-dimensional descriptions that circumvent the need for such {\em a priori} knowledge of the system.
+%
+If the (high-dimensional) data $\mathbf{Y}(t)$ arise from, for example, a
+molecular dynamics simulation of a macromolecule in solution, or from the stochastic
+simulation of a complex chemical reaction scheme, the detection of a few good, coarse-grained
+``reduction coordinates" $\mathbf{x}(t)$ can be invaluable in understanding and predicting system behavior.
+%
+For example, such reduction coordinates may be the dihedral angles inferred from trajectories of the atoms of a macromolecule.
+
+While the benefits from such reduced descriptions are manifest, a crucial shortcoming of
+ data-driven reduction coordinates is their dependence on the specific data set processed,
+and not only on the physical model in question.
+%
+It is well known that, even in the simple linear case of Principal Component Analysis \cite{jolliffe2005principal},
+different data sets on the same low-dimensional hyperplane in the ambient space
+will lead to different bases spanning the hyperplane - in effect, to different reduction coordinates $\mathbf{x}$.
+%
+While this can be easily rectified by an affine transformation
+(see, by analogy, the discussion in Lafon {\em et al.}\cite{lafon2006data}),
+the problem becomes
+exacerbated when the low-dimensional space is curved (a manifold, rather than a hyperplane)
+and when different data sets are obtained using different instrumental modalities
+(such as when one wants to merge molecular dynamics data with, for example, spectral information).
+%
+
+In this paper, we propose a new method to embed data in a low-dimensional space.
+%
+This method is based on a kernel constructed from a Riemannian metric that is specially designed to exploit the noise/diffusion induced variability of the data in local neighborhoods.
+%
+By solving the appropriate eigenvector problem, local affinities from the kernel are integrated into a global coordinate system for the data.
+
+We will demonstrate this can produce a {\em unique} and {\em consistent} reduction
+coordinate set, shared by all measurement ensembles and observation modalities.
+%
+We will call these coordinates Nonlinear Intrinsic Variables.
+%
+Embedding data in such a coordinate system allows us to naturally merge different observations of the same system;
+more importantly, it enables the construction of an empirical mapping between these different
+observation ensembles, allowing us to complete partial measurements in a test data set from a training data set
+that consists of {\em different} observations.
+%
+To construct this empirical mapping and the associated observers,
+accurate interpolation tools must be available in the embedding space; to this
+end, we will demonstrate the use of a multiscale Laplacian Pyramid approach \cite{rabin2012heterogeneous}.
+
+We will illustrate our methodologies with two distinct examples.
+%
+The first is a simulation
+of two Goldbeter-Koshland modules in an enzyme kinetics model using the Gillespie Stochastic Simulation
+Algorithm (SSA) \cite{gillespie1977exact};
+in certain parameter regimes, separation of time scales is known
+to reduce the ODE model of this kinetic scheme to an effective two-dimensional description \cite{zagaris2012stability}.
+%
+Although this example is rather simple, it will serve as an introduction to our techniques and highlight the main features of the algorithms.
+%
+The second example is a molecular dynamics
+simulation (in explicit water) of a simple peptide fragment (alanine dipeptide) whose folding
+dynamics are known to be described through a small set of physical observables \cite{bolhuis2000reaction}.
+%
+This example will allow us to compare our approach to more common techniques,
+such as diffusion maps \cite{coifman2005geometric} for dimensionality reduction
+and nearest neighbor interpolation for observation reconstruction.
+%
+The remainder of the paper is structured as follows: in Section \ref{sec:NIV} we present the Nonlinear Intrinsic Variable formulation and
+the associated inference method.
+%
+Section \ref{sec:LapPyr} contains our discussion of Laplacian Pyramids that
+is used for the completion of partial observations.
+%
+In Section \ref{sec:examples}, the results
+of the application of the approach to simulation data from our two illustrative examples are presented and discussed.
+%
+We conclude with a summary and our perspective on open issues in Section \ref{sec:conclusions}.
+
+\section{Nonlinear Intrinsic Variables} \label{sec:NIV}
+
+\subsection{Problem Formulation}
+Let $\mathbf{Y}(t)$ be a high-dimensional measured process in $\mathbb{R}^n$ consisting of $n$ observable variables.
+%
+We impose two critical assumptions. First, the measured process is assumed to be a manifestation in an observable domain of a low-dimensional diffusion process. Thus, it can be expressed by
+\begin{equation}
+	\mathbf{Y}(t) = f(\mathbf{x}(t)),
+\end{equation}
+where $f:\mathbb{R}^d \rightarrow \mathcal{M}$ is an unknown (possibly nonlinear) function, $\mathcal{M} \subset \mathbb{R}^n$ is a $d$-dimensional manifold,
+and $\mathbf{x}(t)$ is a diffusion process that consists of $d$ underlying variables (with $d \ll n$).
+%
+Second, the dynamics of the diffusion process in each of its underlying variables are described by normalized stochastic differential equations as
+\begin{equation}
+	d x_i(t) = a_i (\mathbf{x}(t)) dt + d w_i(t), \ i=1,\ldots,d,
+	\label{eq:dynamics}
+\end{equation}
+where $a_i$ are unknown drift functions and $\dot{w}_i(t)$ are independent white noises.
+%
+The independence is our second critical assumption.
+
+Given a sequence of samples $\mathbf{Y}(t), \ t=1,\ldots,T$, we present an empirical method to construct a unique and consistent reduction coordinate set, represented here by $\mathbf{x}(t)$ \cite{singer2008non}.
+%
+Because the empirical method we will describe is independent of the observation function $\mathbf{f}$,
+we refer to the coordinates of $\mathbf{x}(t)$ as Nonlinear Intrinsic Variables (NIV).
+%
+The available samples $\mathbf{Y}(t)$ may be the result of different measurement functions $\mathbf{f}$ in various observable domains,
+or they may be partial measurements consisting of merely a subset of the coordinates of the observable domains.
+%
+The idea is to empirically construct a NIV coordinate system driven entirely by measurements that is invariant to the observation function $\mathbf{f}$
+(see Figure \ref{fig:IntrinsicIllustration} for a schematic illustration).
+%
+We remark that the available data should be ``rich enough'', i.e., consist of a sufficient amount of historical data with adequate variability, in order to obtain the full empirical model;
+this is further discussed and demonstrated in the experimental study.
+
+The method consists of the following main principles.
+%
+(1) The underlying diffusion process implies that a short trajectory of successive samples mainly consists of diffusion noise,
+and hence, creates a ``sphere" of samples in the underlying domain $\mathbb{R}^d$.
+%
+This sphere is mapped to an ellipse in the observable domain by the measurement function $\mathbf{f}$.
+%
+In this work, the identification of the associated ellipse of samples according to the time trajectory of our data enables us
+to estimate the tangent planes of the observable manifolds {\em via the principal components of the covariance matrices of the samples in these ellipses}.
+%
+(2) The principal directions of the tangent planes are utilized to define a Riemannian metric that is shown to be {\em locally invariant to the measurement function $\mathbf{f}$}.
+%
+(3) The NIV are constructed through the eigenvalue decomposition of a Laplace operator that is built upon a pairwise affinity between the samples, defined using this Riemannian metric.
+
+\begin{figure*}[ht]
+\includegraphics[width=5in]{fig1}
+\caption{Illustration of the nonlinear embedding that yields an intrinsic representation independent of the measurement function $\mathbf{f}$. (Bottom) The underlying variables in which the noises are independent with unit variance. The circle illustrates samples from, say, a short trajectory in time that sample a disc on the manifold. (Top Left) The first set of observed variables. The ellipse illustrates the mapping of the sphere of the underlying samples into the observable domain via the first observation function. In this sketch, we illustrate that the observations might be {\em partial}, i.e., might consist of merely a subset of the observed domain variables. (Top Right) Second set of observable variables. The ellipse illustrates the mapping of the sphere of the underlying samples into this (different) observable domain via a second observation function.
+\label{fig:IntrinsicIllustration}}
+\end{figure*}
+
+\subsection{Mahalanobis Distance}
+\label{subsec:mahalanobis}
+
+Let $\mathbf{C}(t)$ be the covariance matrix associated with the measured sample $\mathbf{Y}(t)$. In practice, the covariance matrix can be estimated from a short trajectory of samples in time around the sample $\mathbf{Y}(t)$ by
+\begin{equation}
+	\widehat{\mathbf{C}}(t) = \sum \limits _{\tau = t-L}^{t+L} (\mathbf{Y}(\tau) - \widehat{\boldsymbol{\mu}}(t))(\mathbf{Y}(\tau) - \widehat{\boldsymbol{\mu}}(t))^T,
+	\label{eq:cov}
+\end{equation}
+where $\widehat{\boldsymbol{\mu}}(t)$ is the empirical mean of the short trajectory of samples.
+%
+We define a Riemannian metric between a pair of samples using the associated covariance matrices as
+\begin{equation}
+	d^2(\mathbf{Y}(t), \mathbf{Y}(\tau)) = 2 (\mathbf{Y}(t) - \mathbf{Y}(\tau))^T(\widehat{\mathbf{C}}(t) + \widehat{\mathbf{C}}(\tau))^{\dagger}(\mathbf{Y}(t) - \mathbf{Y}(\tau));
+	\label{eq:mahalanobis}
+\end{equation}
+this is the Mahalanobis distance (and $^{\dagger}$ denotes a pseudoinverse, as discussed below).
+%
+As previously described, the covariance matrices convey the local variability of the measurements and are utilized to explore and learn the tangent planes of the observable manifold.
+%
+This information is then utilized in \eqref{eq:mahalanobis} to compare a pair of points according to the directions of their respective tangent planes.
+%
+The Mahalanobis distance is invariant under affine transformations.
+%
+Thus, by assuming that the observation function $\mathbf{f}$ is bi-Lipschitz and smooth, and by using local linearization of the function, i.e., $\mathbf{Y}(t) = \mathbf{J}(t) \mathbf{x}(t) + \boldsymbol{\epsilon}(t)$ where $\mathbf{J}(t)$ is the Jacobian of $\mathbf{f}(\mathbf{x}(t))$ and $\boldsymbol{\epsilon}(t)$ is the residual consisting of higher-order terms, it was shown by Singer and Coifman \cite{singer2008non} that $\mathbf{C}(t) = \mathbf{J}(t)\mathbf{J}^T(t)$ and that the Mahalanobis distance approximates the Euclidean distance between the corresponding samples of the underlying process to second order, i.e.,
+\begin{equation}
+	\| \mathbf{x}(t) - \mathbf{x}(\tau) \|^2 = d^2(\mathbf{Y}(t), \mathbf{Y}(\tau)) + \mathcal{O}(\| \mathbf{Y}(t) - \mathbf{Y}(\tau)\|^4).
+\end{equation}
+%
+This result implies that the Mahalanobis distance is invariant to the measurement function $\mathbf{f}$, and hence,
+it yields the same distances between samples obtained under different observation functions or even partial observations.
+%
+We would like to note that, in general, $\mathbf{f}$ being bi-Lipschitz implies that $\mathbf{f}$ is invertible (on the $d$-dimensional
+manifold $\mathcal{M}$).
+%
+However, in practice, determining whether $\mathbf{f}$ contains sufficient information and is ``rich enough'' to completely determine the underlying process is a non-trivial task.
+%
+In this work, we exploit the fact that $\mathbf{C}(t) = \mathbf{J}(t)\mathbf{J}^T(t)$, which implies that $\mathbf{C}(t)$ is an $n \times n$ positive semidefinite matrix of rank $d$, to empirically infer the dimension $d$.
+%
+According to the spectrum of the local covariance matrices and their corresponding spectral gaps, we approximate the rank of the matrices.
+%
+Consistent rank estimates among these local covariance matrices are taken to imply that the measurements are ``rich enough", and hence, may be good indicators for the dimension $d$.
+%
+Since the dimension $d$ of the underlying process is typically considerably smaller than the dimension of the measured process $n$,
+the covariance matrix is singular and non-invertible;
+%
+thus, we use the pseudo-inverse in \eqref{eq:mahalanobis}.
+
+\subsection{Laplace Operator}
+The Mahalanobis distance described in Section \ref{subsec:mahalanobis} enables us to compare observations in terms of the intrinsic variables of the associated underlying diffusion process.
+%
+In this section, we show how to recover the underlying process itself from the pairwise Euclidean distances through the eigenvectors of a Laplace operator.
+
+Let $\mathbf{W}$ be a pairwise affinity matrix (kernel) based on a Gaussian, whose $(t,\tau)$-th element is given by
+\begin{equation}
+	W_{t,\tau} = \exp \left\{ - \frac{ d^2(\mathbf{Y}(t), \mathbf{Y}(\tau) )} {\varepsilon}\right\},
+	\label{eq:kernel}
+\end{equation}
+where $\varepsilon$ is the kernel scale, which can be set according to Hein and Audibert \cite{hein2005intrinsic} and Coifman {\em et al.} \cite{coifman2008graph}.
+%
+Based on the kernel, we form a weighted graph, where the measurements $\mathbf{Y}(t)$ are the graph nodes and the weight of the edge connecting node $\mathbf{Y}(t)$ to node $\mathbf{Y}(\tau)$ is $W_{t,\tau}$.
+%
+In particular, a Gaussian kernel exhibits a notion of locality by defining a neighborhood around each measurement $\mathbf{Y}(t)$ of radius $\varepsilon$,
+i.e., measurements $\mathbf{Y}(\tau)$ such that $d^2(\mathbf{Y}(t), \mathbf{Y}(\tau) ) > \varepsilon$ are weakly connected to $\mathbf{Y}(t)$.
+%
+In practice, we set $\varepsilon$ to be the median of the pairwise distances.
+%
+According to the graph interpretation, this implies a well-connected graph because each measurement is effectively connected to half of the other measurements \cite{rohrdanz2011determination}.
+
+Let $\mathbf{D}$ be a diagonal matrix whose elements are the row sums of $\mathbf{W}$, and let
+\begin{equation}\label{eq:kernel}
+\mathbf{W}^{\mathrm{norm}} = \mathbf{D}^{-1/2}\mathbf{W}\mathbf{D}^{-1/2}
+\end{equation}
+be a normalized kernel that shares its eigenvectors with the normalized graph-Laplacian $\mathbf{I}-\mathbf{W}^{\mathrm{norm}} \:$ \cite{chung1997spectral}.
+%
+The diagonal entries of $D$ serve as estimates for the density of data around each point.
+%
+The eigenvectors of $\mathbf{W}^{\mathrm{norm}}$, denoted $\psi_j$, reveal the underlying structure of the data \cite{coifman2005geometric}.
+%
+Specifically, the $i$-th coordinate of the $j$-th eigenvector can be associated with an intrinsic coordinate $j$ of the sample $\mathbf{x}(i)$ of the underlying process.
+%
+The eigenvectors are ordered such that $|\lambda_1| \ge |\lambda_2| \ge \dots \ge |\lambda_n|$, where $\lambda_j$ is the eigenvalue associated with eigenvector $\psi_j$.
+%
+Because $\mathbf{W}^{\mathrm{norm}} \sim \mathbf{D}^{-1}\mathbf{W} $, and $\mathbf{D}^{-1}\mathbf{W}$ is row-stochastic,
+$\lambda_1 = 1$ and $\psi_1$ is the diagonal of $\mathbf{D}^{1/2}$.
+%
+The next few eigenvectors can be argued to describe the geometry of the underlying manifold \cite{coifman2005geometric}.
+%
+However, some eigenvectors can be higher harmonics of the same principal direction along the data manifold.
+This is analogous to how the eigenfunctions $\cos x$ and $\cos 2x$ of the usual Laplacian in one spatial dimension
+and with no flux boundary conditions are one-to-one with the values of $x$ for $0 \le x \le 1$;
+one must check for correlations between the eigenvectors before selecting those that describe the underlying manifold geometry.
+%
+The above steps to construct the nonlinear intrinsic variables are summarized in Algorithm \ref{algo}.
+
+Ignoring the higher harmonics, each retained eigenvector then describes an intrinsic variable for the data set of interest.
+%
+%Because eigenvectors can be determined up to a scaling factor,
+We must normalize the eigenvectors from different data sets so that the resulting embeddings are consistent.
+%
+We first scale the eigenvectors so that $\|\psi_i\| = T$, where $T$ is the number of data points,
+to make the embedding coordinates invariant to the size of the data set.
+%twice as many samples as another data set, but with the same underlying geometry, should have twice the norm.
+%
+Still, the computed embedding eigenvectors, even for two identical data sets, may differ by a sign.
+%
+Reconciling the signs for the embeddings of different data sets can be rationally done in several ways and is somewhat problem-specific.
+%
+For example, if the mean of the embedding is sufficiently far from 0, we can require $\langle \psi_i \rangle > 0$;
+alternatively, if there is a common region sampled by both data sets, the sign of each eigenvector can be chosen to optimize the consistency of the embeddings of the common region data.
+%
+We will return to the issue of embedding consistency for different data sets in our concluding discussion; for the moment,
+we will assume that our different sets sample the same region of data space in a representative enough way such that the
+correspondence between the sequences of retained eigenvectors for different embeddings is obvious.
+
+\begin{algorithm}[th!]
+\caption{Nonlinear Intrinsic Variables Construction}
+\begin{enumerate}
+
+\item
+Obtain a sequence of high-dimensional observation samples $\mathbf{Y}(t)$.
+
+\item
+Compute the empirical covariance matrix $\widehat{\mathbf{C}}(t)$ of each sample $\mathbf{Y}(t)$ {\em in a short window in time} according to \eqref{eq:cov}.
+
+\item
+Using the samples and their associated covariance matrices, compute the Mahalanobis distance between the observations \eqref{eq:mahalanobis} .
+
+\item
+Build the pairwise affinity matrix $\mathbf{W}$ and the corresponding normalized kernel $\mathbf{W}^{\mathrm{norm}}$ (\ref{eq:kernel}).
+
+\item
+Apply eigenvalue decomposition to the normalized kernel and view the values of its principal eigenvectors (modulo the possibility of
+ ``higher harmonics", see text) as the Nonlinear Intrinsic Variables (NIV) of the given observations.
+
+\end{enumerate}
+\hrule
+\label{algo}
+\end{algorithm}
+
+\subsection{Limiting Diffusion Operator} \label{sec:diff_limit}
+Assume that the dynamics of the underlying variables in \eqref{eq:dynamics} can be rewritten as
+\begin{equation} \label{eq:Langevin}
+	d\mathbf{x}(t) = - \nabla U(\mathbf{x}(t)) dt + d \mathbf{w}(t),
+\end{equation}
+where the drift term is expressed as a gradient of a potential $U$ and $\dot{\mathbf{w}}(t) \in \mathbb{R}^d$ is a vector consisting of independent white noises.
+%
+Nadler {\em et al.} \cite{nadler2006diffusion} showed that in the limit $\varepsilon \rightarrow 0$ and $T \rightarrow \infty$ the kernel $\mathbf{W}^{\mathrm{norm}}$ converges to the continuous backward Fokker-Planck operator
+\begin{equation}
+	\mathcal{L} = \Delta - \nabla U \cdot \nabla.
+	\label{eq:limiting_operator}
+\end{equation}
+%
+We remark that, while in diffusion maps \cite{coifman2005geometric}, the limiting operator is the Laplacian on the manifold on which the observations lie,
+here the Laplacian operator on the data that is based on the Mahalanobis distance converges to a limiting Laplacian operator on the
+manifold of the intrinsic variables $\mathbf{x}$.
+
+The convergence to the limiting operator implies that the eigenvectors of $\mathbf{W}^{\mathrm{norm}}$, which are used to represent the NIV, approximate the eigenfunctions of the limiting Fokker-Planck operator on the NIV manifold.
+%
+As such, according to \eqref{eq:limiting_operator}, they depend on the potential.
+%
+Thus, the constructed embedding is consistent as long as the subsets of observations $\mathbf{Y}(t)$ are
+adequate samples of the same (equilibrium) density.
+%
+For example, when looking at multiple data sets from a molecular simulation, the embeddings will be consistent provided each simulation sufficiently samples the same underling free energy surface.
+
+In order to merge observations from different regions,
+the fundamental question is, to what extent the respective sampling densities affect the coordinates we obtain.
+%
+In principle, we can decouple diffusion dynamics (and thus, equilibrium densities)
+from geometry by normalizing the diffusion kernel with the sample density.
+%
+This has been explored for diffusion maps independently of NIV \cite{coifman2005geometric}.
+%
+When the normalized kernel is defined as
+\begin{equation} \label{eq:norm_kernel}
+\widetilde{\mathbf{W}}^{\mathrm{norm}} = \mathbf{D}^{-1}\mathbf{W}\mathbf{D}^{-1},
+\end{equation}
+the limiting diffusion operator is the Laplace-Beltrami operator \cite{nadler2006diffusion}, given by $\widetilde{\mathcal{L}} = \Delta$.
+%
+In other words, this diffusion captures only the geometry of the observations and is invariant to the potential (or, alternatively,
+to the details of the sampling density).
+This kernel is similar to the kernel in \eqref{eq:kernel}, but $D$ appears with coefficient -1 rather than $-1/2$.
+
+Since local coordinates are based on the noise term in \eqref{eq:Langevin}, sets of measurements from different regions
+will essentially detect the same system of coordinates (the same variable ``axes");
+yet different sampling densities (arising, for example,
+from the drift term in \eqref{eq:Langevin}) will result in different {\em scalings} of these axes.
+%
+Applying the Laplace-Beltrami normalization in the NIV context will thus eliminate sampling density effects.
+%
+An alternative approach would find the scaling transformations that optimally ``register"
+data sampled from common regions (in the spirit of histogram reweighting \cite{ferrenberg1988new}).
+
+\section{Laplacian Pyramids for Data Extension} \label{sec:LapPyr}
+
+In this work, we are not only interested in extracting the underlying variables $\mathbf{x}$ from some (partial) observations $\mathbf{Y}$,
+but also interested in extending high-dimensional functions on a set of points which lie in a low-dimensional space.
+%
+More specifically, viewing the ambient space coordinates $\mathbf{Y}$ as functions on the low-dimensional data $\mathbf{x} \in \mathbb{R}^d$,
+we want to estimate $\mathbf{Y}$ for new points $\mathbf{x}$.
+%
+Laplacian Pyramids (LP) is a multiscale algorithm for extending an empirical function $\mathbf{f}$ defined on a set of points
+to new points not in the dataset.
+%
+The algorithm uses Laplacian kernels of decreasing widths to create multiscale representations of $\mathbf{f}$;
+these representations can be easily extended to new data points.
+%
+This type of multiscale representation was introduced by Burt and Adelson \cite{burt1983laplacian} for image coding,
+and was later shown to be a tight frame by Do and Veterli \cite{do2003framing}.
+%
+Recently, LP was used to extend nonlinear embedding coordinates to new high-dimensional data points \cite{rabin2012heterogeneous}.
+%
+We will first review the LP algorithm for approximating and extending a one-dimensional function,
+and then describe the application of LP in extending high-dimensional functions.
+
+Let $\mathbf{f}: \Gamma \rightarrow \mathbb{R}^n$ be a function that is known on a subset of points $S \subset \Gamma$.
+%
+A coarse representation of $\mathbf{f}$ is generated using a coarse smoothing operator $P_0$.
+%
+The smoothing operator $P_0$ is a normalized, coarse Laplacian kernel, defined by
+\begin{equation}
+p_0(i, j)= s_0^{-1}(i)w_0(i, j),\: i, j \in \Gamma,
+\end{equation}
+where $w_0(i, j)=e^{-d^2(i, j) / \sigma_0}$ and $s_0(i)=\sum_{j \in S}w_0(i, j)$ is the normalizing term.
+%
+The pairwise distance $d(i, j)$ is typically the Euclidean distance, and the parameter $\sigma_0$ is set to be large compared to the values of $d^2(i, j)$.
+%
+The application of $P_0$ to $\mathbf{f}$ yields a coarse representation of the function, which we denote by $\mathbf{f}_0=P_0(\mathbf{f})$.
+
+The difference $\delta_1 = \mathbf{f}-P_0(\mathbf{f})$ is the input for the next iteration of the algorithm,
+which uses the smoothing operator $P_1$, $P_1 \propto e^{-d^2(i, j)^2 / 2^{-1} \sigma_0}$, to construct a coarse representation of $\delta_1$.
+%
+The obtained representation of $\delta_1$, $P_1(\delta_1)$ together with the result of the previous iteration $\mathbf{f}_0 = P_0(\mathbf{f})$
+yields a new, finer representation of $\mathbf{f}$, $\mathbf{f}_1 = P_0(\mathbf{f}) + P_1(\delta_1)$.
+%
+In an iterative manner, multiscale representations of the function $\mathbf{f}$, denoted $\mathbf{f}_l$, are constructed.
+\begin{equation} \label{eq:LP_multi_scale}
+ \begin{array}{cl}
+\mbox{scale 0:} & \mathbf{f}_0 = P_0(\mathbf{f}) \\
+\mbox{scale 1:} & \mathbf{f}_1 = P_0(\mathbf{f}) + P_1(\delta_1) \\
+: & : \\
+\mbox{scale l:} & \mathbf{f}_l = P_0(\mathbf{f}) + \sum_{k=1}^{l}P_k(\delta_k)\\
+\end{array}
+\end{equation}
+As $l$ increases, the approximation becomes more refined because $P_l \propto e^{-d^2(i, j) / 2^{-l} \sigma_0}$ uses a Laplacian kernel of a finer width.
+%
+The iterations stop when the difference between $\mathbf{f}$ and $\mathbf{f}_l$ is smaller than a pre-defined error threshold.
+
+The representations $\mathbf{f}_0, \mathbf{f}_1, \dots, \mathbf{f}_l$ can be extended to a new point $\tilde{i} \in \Gamma \backslash S $ by extending the operators $P_0, P_1,\ldots,P_l$.
+%
+For example, $\mathbf{f}_0(\tilde{i}) = \sum_{i \in S} p_0(\tilde{i}, i)\mathbf{f}(i)$ and
+$\mathbf{f}_1(\tilde{i}) = \mathbf{f}_0(\tilde{i}) + \sum_{(i \in S)}p_1(\tilde{i}, i)\delta_1(i)$.
+
+\begin{widetext}
+Figure \ref{fig:LP_ex} displays an illustrative example of the algorithm, when applied to the function
+ \begin{equation} \label{eq:LP_example}
+\mathbf{f}(x) = \left\{
+\begin{array}{l l}
+-0.02(x-4\pi)^2 + \sin(x) &  0 \le x \le 4\pi \\
+-0.02(x-4\pi)^2 + \sin(x) + 0.5 \sin(3x) &  4\pi < x \le 7.5 \pi \\
+-0.02(x-4\pi)^2 + \sin(x) + 0.5 \sin(3x) +0.25 \sin(9x) &  7.5 \pi < x \le 10 \pi
+\end{array}
+\right.
+\end{equation}
+that contains several scales.
+%
+The coarse regions of the function ($0 \le x \le 4\pi$) are well approximated by a small number of scales.
+%
+As the function becomes more oscillatory ($\pi \le x \le 7.5\pi$ and $7.5\pi \le x \le 10\pi$),
+a finer representation, and a larger number of scales  $l$, is required to capture its behavior.
+\end{widetext}
+
+In this work, LP is applied to extend a high-dimensional function $\mathbf{f}:\mathbb{R}^d \rightarrow \mathcal{M}$,
+which maps a set of points in the NIV space to their values $\mathbf{Y}(i)$ in the observable space.
+%
+Let $\Psi(i) = \left(\psi_1(i),\psi_2(i),\ldots,\psi_d(i)\right)$ be the set of NIV that were constructed from the data samples $\mathbf{Y}(i)$, as described in Algorithm \ref{algo}.
+%
+The values of function $\mathbf{f}:\mathbb{R}^d \rightarrow \mathcal{M}$ are known on the subset $S = \{\Psi(i)\}$, with $\mathbf{f}(\Psi(i)) = \mathbf{Y}(i)$.
+
+A na\"{\i}ve way to extend $\mathbf{f}$ to a new data point $\Psi(\tilde{i})$ is find the point's nearest neighbors in NIV space and average their function values.
+%
+A different, point-wise adaptive approach is described by Buchman {\em et al.} \cite{buchman2011high}:
+high-dimensional hurricane tracks were estimated from low dimensional embedding coordinates using a weighted average of the points close to $\Psi(\tilde{i})$ in the embedded space.
+%
+However, this point-wise adaptation requires setting the nearest neighborhood radius parameter for every point.
+%
+The LP algorithm finds the appropriate nearest neighborhood radius for each new point $\Psi(\tilde{i})$.
+%
+This radius will be large in smooth regions of the function, and small in regions in which $\mathbf{f}$ contains higher frequency components.
+%
+The LP approximation of a new, high dimensional point $\mathbf{Y}(\tilde{i})$ is calculated by a weighted average of the function values that belong to the neighboring points.
+%
+The weights are based on the pairwise distances in the intrinsic, low-dimensional space.
+%
+In practice, a set of smoothing operators $P_0, P_1, \ldots, P_l$, with
+\begin{equation} \label{eq:LP_multi_scale_app}
+P_l \propto e^{-d^2(\Psi(i),\Psi(j)) / 2^{-l} \sigma_0},
+\end{equation}
+are constructed and later extended to create the multiscale approximations as defined in \eqref{eq:LP_multi_scale}.
+%
+The LP algorithm for the inverse mapping is summarized in Algorithm \ref{algo_LP}.
+
+\begin{algorithm}[th!]
+\caption{Laplacian Pyramids for Inverse Mapping}
+\begin{enumerate}
+
+\item
+Construct a set of smoothing operators $P_0, P_1, \ldots, P_l$  based on intrinsic pairwise distances $d(\Psi(i),\Psi(j))$ (where $d$ is typically the Euclidean distance).
+
+\item
+Use the smoothing operators to obtain a multiscale representation (see \eqref{eq:LP_multi_scale_app}) of $\mathbf{f}:\Psi(i) \rightarrow Y(i)$.
+
+\item Given a new point $\Psi(\tilde{i})$ in NIV, extend the smoothing operators $P_0, P_1, \ldots, P_l$  by
+$p_l(\Psi(\tilde{i}), \Psi(i)) = s_l^{-1}(\Psi(i)) w_l(\Psi(\tilde{i}),\Psi(i))$.
+
+\item
+Use the extended smoothing operators to approximate the value of $Y(\tilde{i})$ as $Y(\tilde{i}) \approx \mathbf{f}_l(\Psi(\tilde{i})) = \mathbf{f}_0(\Psi(\tilde{i})) + \sum_{k}\sum_{(i \in S)}p_k(\Psi(\tilde{i}), \Psi(i))\delta_k(\Psi(i))$
+
+\end{enumerate}
+\hrule
+\label{algo_LP}
+\end{algorithm}
+
+
+\begin{figure*}[ht]
+\includegraphics[width=6in]{fig2}
+\caption{Approximation of the function $\mathbf{f}(x)$ defined in \eqref{eq:LP_example} using Laplacian Pyramids for ``scales'' (a) 3, (b) 5, (c) 8, and (d) 11. The top shows the true function in blue and the LP approximation is shown in black, and the bottom shows the residual error in the LP approximation.}
+\label{fig:LP_ex}
+\end{figure*}
+
+\section{Models and Results} \label{sec:examples}
+
+\subsection{A Chemical Reaction Network}\label{subsec:rxn_network}
+
+We first consider a chemical reaction network involving  multiple enzyme-substrate interactions \cite{zagaris2012stability}.
+%
+The reaction steps that comprise the network are\\
+\begin{equation}
+\begin{array}{rcl}
+E + S \overset{e_1}{\underset{e_{-1}}{\leftrightharpoons}} & E:S & \overset{e_2}{\rightarrow} E + S^{*} \\
+S + E \overset{b_1}{\underset{b_{-1}}{\leftrightharpoons}} & S:E & \overset{b_2}{\rightarrow} S + E^{*}\\
+D + S^{*} \overset{d_1}{\underset{d_{-1}}{\leftrightharpoons}} & D:S^{*} & \overset{d_2}{\rightarrow} D + S\\
+F + E^{*} \overset{f_1}{\underset{f_{-1}}{\leftrightharpoons}} & F:E^{*} & \overset{f_2}{\rightarrow} F + E
+\end{array}
+\end{equation}
+The ``$^{*}$'' denotes an activated form of a species, and the ``:'' denotes a complex formed between two species; the complexes $E:S$ and $S:E$ are not equivalent.
+%
+There are 10 species in this reaction system.
+%
+However, one can write four conservation equations (since total $E$, $S$, $D$, and $F$ are all conserved) to reduce the system to 6 dimensions
+(which we order as $S$, $E$, $E:S$, $S:E$, $D:S^{*}$, $F:E^{*}$).
+%
+We consider a parameter regime in which the ODE approximation of this scheme exhibits a separation of time scales, so that initial conditions quickly approach a two-dimensional manifold.
+%
+Details about the specific parameter values can be found in Appendix \ref{app:rxn}.
+
+Although the dynamics of chemical reaction networks are typically described by a system of ODEs, the ODEs are only an approximation that holds
+in the limit of a large number of molecules.
+%
+When the number of molecules is small, the system is inherently stochastic and its dynamics can be simulated using the
+Gillespie Stochastic Simulation Algorithm (SSA) \cite{gillespie1977exact}; at intermediate molecule counts, the chemical Langevin approximation \cite{gillespie2000chemical}
+becomes useful.
+%
+We can control the level of noise in our simulation by adjusting the volume $V$, and therefore, adjusting the number of molecules, in the system.
+%
+We take the volume small enough so that we can still observe appreciable stochasticity in small simulation bursts, but large enough (in our simulations, we take $V=10^5$) so that the underlying two-dimensional manifold is (relatively) smooth.
+
+We generate 3000 initial conditions $\mathbf{Y}_0(1), \dots, \mathbf{Y}_0(3000) \in \mathbb{R}^6$ uniformly at random from the
+region of state space where all concentrations (respecting conservation laws) are non-negative.
+%
+We evolve each point $\mathbf{Y}_0(t)$ forward for 10 time units using the SSA to obtain a point $\mathbf{Y}(t) \in \mathbb{R}^6$;
+according to the time scales calculated from the linearized ODEs, 10 time units is sufficiently long for the initial points in the ODE system to converge to the two-dimensional manifold,
+but not long enough for the points to converge to a one-dimensional curve or to the final steady state (see Appendix \ref{app:rxn} for more details).
+%
+In our stochastic simulations, the initial points appear to converge to an approximate two-dimensional manifold
+(in expected value, see Figure \ref{fig:rxn_manifolds}).
+%
+We consider $\mathcal{Y} = \{ \mathbf{Y}(t): t=1, \dots, 3000 \}$ to be representative points ``on" this apparent two-dimensional manifold.
+%
+From each manifold point $\mathbf{y} \in \mathcal{Y}$, we run 20 short simulation ``bursts'', each for 0.2 time units.
+%
+We denote the endpoints from the short simulations as $\mathcal{Y}^{burst}(\mathbf{y})$.
+
+\begin{figure*}[ht]
+  \includegraphics[width=6in]{fig3}
+    \caption{Projections of the data obtained from stochastic simulation of the chemical reaction network described in Section \ref{subsec:rxn_network}. The insets show rotations of the projections to illustrate the approximate two-dimensionality of the ``slow manifold''.}
+    \label{fig:rxn_manifolds}
+\end{figure*}
+
+We consider two different data sets from our simulations.
+%
+Data set 1, denoted $\mathcal{Y}_1$, consists of $\mathbf{Y}(1), \dots, \mathbf{Y}(2000)$, restricted to components $S$, $E$, $S:E$, and $F:E^{*}$, i.e.,
+$$\mathcal{Y}_1 = \left\{
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1
+\end{array} \right) \mathbf{Y}(t) \in \mathbb{R}^4: t=1, \dots, 2000 \right\}.$$
+%
+Data set 2, denoted $\mathcal{Y}_2$, consists of $\mathbf{Y}(1500), \dots, \mathbf{Y}(3000)$, restricted to components $S$, $E$, $E:S$, and $D:S^{*}$, i.e.,
+$$\mathcal{Y}_2 = \left\{
+\left( \begin{array}{cccccc}
+1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0
+\end{array} \right)
+\mathbf{Y}(t) \in \mathbb{R}^4: t=1500, \dots, 3000 \right\}.$$
+%
+The endpoints of the simulation bursts for the two data sets, $\mathcal{Y}^{burst}_1(\mathbf{y})$ and $\mathcal{Y}^{burst}_2(\mathbf{y})$, are defined analogously.
+%
+We then estimate the covariances for each point in each data set as
+\begin{equation}
+\widehat{\mathbf{C}}_i(\mathbf{y}) = \sum_{\mathbf{z} \in \mathcal{Y}^{burst}_i(\mathbf{y})} \left( \mathbf{z} - \hat{\mathbf{\mu}}_i(\mathbf{y}) \right)\left( \mathbf{z} - \hat{\mathbf{\mu}}_i(\mathbf{y}) \right)^T, \mathbf{y} \in \mathcal{Y}_i, i \in \{1, 2\}
+\end{equation}
+where $\hat{\mathbf{\mu}}_i(\mathbf{y})$ is the empirical mean of $\mathcal{Y}^{burst}_i(\mathbf{y})$.
+
+We first demonstrate that NIV produces the same embeddings for $\mathcal{Y}_1$ and $\mathcal{Y}_2$, even though the two data sets contain information of different chemical species.
+%
+Figure \ref{fig:rxn_embedding} shows the two-dimensional NIV embeddings for the two different data sets; the embeddings appear visually consistent.
+%
+We also note that both $\mathcal{Y}_1$ and $\mathcal{Y}_2$ contain points that are projections of $\mathbf{Y}(1500), \dots, \mathbf{Y}(2000)$.
+%
+We therefore compute the correlation between the embedding coordinates for these points common to $\mathcal{Y}_1$ and $\mathcal{Y}_2$.
+%
+We obtain a correlation of 0.97 and 0.95 for the first and second NIV, respectively, indicating that the two embeddings are in quantitative
+agreement with each other.
+%
+We would like to note that both $\mathcal{Y}_1$ and $\mathcal{Y}_2$ are sufficiently high-dimensional (``rich enough'') to allows us to recover
+the common underlying two-dimensional manifold.
+%
+\begin{figure*}[ht]
+    \includegraphics[width=6in]{fig4}
+    \caption{(a) NIV embedding obtained from $\mathcal{Y}_1$ (observations of components E, S, S:E, and F:E$^{*}$), colored by $S$. (b) NIV embedding obtained from $\mathcal{Y}_2$ (observations of components E, S, E:S, and D:S$^{*}$), colored by $S$. Visually, we can see that the embeddings obtained from $\mathcal{Y}_1$ and $\mathcal{Y}_2$ are consistent, even though the two data sets consist of observations of different chemical species. (c) Correlation of first NIV between two different embeddings (correlation=0.97). (d)  Correlation of second NIV between two different embeddings (correlation=0.95). We obtain a good quantitative agreement between the embedding coordinates for the two data sets.}
+    \label{fig:rxn_embedding}
+\end{figure*}
+
+To determine whether a sufficient amount of data is available to obtain an accurate embedding, we compute the NIV embeddings for different numbers of data points
+(arising from different numbers of trajectories initialized randomly in the full concentration space).
+%
+Figure \ref{fig:rxn_convergence} shows the two-dimensional NIV embeddings and corresponding eigenvalue spectra of the kernel for the Gillespie SSA example computed from 10, 100, 500, and 1500 data points.
+%
+We observe that the eigenvalue spectra appear converged for 100 data points and above.
+%
+This implies that a sufficient amount of data is available merely to discover the intrinsic variables.
+%
+However, we observe that 100 points are insufficient to construct a self-consistent embedding {\em in the two variables discovered}.
+%
+In order to account for the different scaling of the NIV coordinate axes, we require at least 500 data points.
+%
+This last convergence is exemplified in Figure \ref{fig:rxn_convergence} (c) and (d).
+%
+The convergence of the spectrum of the kernel and the ultimate self-consistency of the NIV embedding is our empirical indicator that a sufficient amount of data is available.
+\begin{figure*}[ht]
+    \includegraphics[width=6in]{fig4b}
+    \caption{Two-dimensional NIV embeddings (top) and corresponding eigenvalue spectra (bottom) calculated from subsets of $\mathcal{Y}_1$ containing (a) 10 data points, (b) 100 data points, (c) 500 data points, and (d) 1500 data points. One can see that the embedding and spectrum in (a) is inconsistent with the other embeddings, and that, although the spectrum in (b) appears converged, the embedding is not converged until (c). }
+    \label{fig:rxn_convergence}
+\end{figure*}
+
+We then use NIV together with Laplacian Pyramids to estimate the values of $S:E$ and $F:E^{*}$ for $\mathcal{Y}_2$.
+%
+Because $\mathcal{Y}_1$ and $\mathcal{Y}_2$ are measured for different components, there is no simple way to estimate $S:E$ and $F:E^{*}$ directly in the observation space.
+%
+Instead, we must first embed the data into the NIV space so that we can compute neighbors {\em between the two data sets}.
+%
+We use $\mathcal{Y}_1$ to train an LP function from the two-dimensional NIV embedding to $S:E$ and $F:E^{*}$.
+%
+We then use this function to predict the values  of $S:E$ and $F:E^{*}$ for $\mathcal{Y}_2$, using the computed NIV embedding for $\mathcal{Y}_2$.
+%
+In this way, we are exploiting the fact that the NIV embedding is intrinsic and consistent between the two data sets, even though the two data sets contain measurements of different chemical species.
+
+The results of the LP prediction are shown in Figure \ref{fig:rxn_recon}.
+%
+The normalized mean-squared errors between the true and estimated values for $S:E$ and $F:E^{*}$, defined as $\frac{\langle (y_{true}-y_{pred})^2 \rangle}{\langle y_{true}^2 \rangle}$, are 0.0372 and 0.0287 , respectively.
+%
+Therefore, we can effectively estimate the unobserved components in the reaction network using NIV together with LP.
+%
+
+\begin{figure*}[ht]
+    \includegraphics[width=6in]{fig5}
+    \caption{LP reconstructions of (a) $S:E$ and (b) $F:E^{*}$ for $\mathcal{Y}_2$, using $\mathcal{Y}_1$ as training data.}
+    \label{fig:rxn_recon}
+\end{figure*}
+
+\subsection{Alanine Dipeptide}
+
+Our second example comes from the molecular dynamics simulation of a small peptide fragment.
+%
+Alanine dipeptide (Ala2) is often used as a ``prototypical'' protein caricature for simulation studies
+\cite{apostolakis1999calculation, bolhuis2000reaction, chekmarev2004long, ma2005automatic, frewen2009exploration, ferguson2011integrating}.
+%
+We simulate the motion of Ala2 in explicit solvent using the AMBER 10 molecular simulation package \cite{case2008Amber} with an
+optimized version \cite{best2009optimized} of the AMBER ff03 force field \cite{duan2003point}.
+%
+The molecule is solvated with 638 TIP3P water molecules \cite{jorgensen1983comparison}
+with periodic boundary conditions, and the particle mesh Ewald method is used for long-range electrostatic interactions \cite{essmann1995smooth}.
+%
+The simulation is performed at constant volume and temperature (NVT ensemble), with the temperature being maintained at 300~K with a Langevin thermostat \cite{loncharich1992langevin}.
+%
+Hydrogen bond lengths are fixed using the SHAKE algorithm \cite{ryckaert1977numerical}.
+%
+The two dihedral angles $\phi$ and $\psi$ are known to parameterize the free energy surface, which contains three important minima (labeled A, B, and C, see Figure \ref{fig:ala_fes}).
+%
+Our simulations are concentrated around minimum B in the free energy surface, located at $\phi \approx -65^{\circ}$, $\psi \approx 150^{\circ}$.
+%
+We choose to sample only around minimum B, as each data set must sample the same region of the potential energy surface to obtain consistent NIV, as described in Section \ref{sec:diff_limit}.
+%
+We start many simulations at $10^{\circ}$ away from the minimum, and allow the simulations to each run for 0.1~ps, while recording the configuration of Ala2 every 1~fs (therefore, each trajectory is 100 points long).
+%
+Configurations are recorded with all atoms except the hydrogens.
+
+\begin{figure*}[ht]
+    \includegraphics[width=6in]{fig6}
+    \caption{(a) Free energy surface for Ala2. The relevant minima are labeled A, B, and C, and the corresponding molecular configurations are shown.
+    (b) Sample representative molecular structure of Ala2, excluding the hydrogens. The atoms are numbered and the two dihedral angles $\phi$ and $\psi$ are indicated.}
+    \label{fig:ala_fes}
+\end{figure*}
+
+
+We first compare NIV with direct diffusion maps \cite{coifman2005geometric}, an established nonlinear dimensionality reduction technique.
+%
+We consider 10,000 data points from our simulation $\mathbf{Y}(1), \dots, \mathbf{Y}(10000) \in \mathbb{R}^{30}$; every 100 data points comes from a continuous simulation trajectory.
+%
+We construct two data sets:
+%
+$\mathcal{Y}_{even} = \{\mathbf{Y}(t) \text{ restricted to atoms 2, 4, 6, 8, and 10}: t=1, \dots, 10000 \}$,
+and $\mathcal{Y}_{odd} = \{\mathbf{Y}(t) \text{ restricted to atoms 5, 7, and 9}: t=1, \dots, 10000 \}$ (see Figure \ref{fig:ala_fes} for the atom indexing).
+%
+We then compute the NIV and diffusion maps embeddings for $\mathcal{Y}_{even}$ and $\mathcal{Y}_{odd}$;
+for NIV, we compute the covariances as in \eqref{eq:cov}, with $L=10$.
+
+The correlation between the NIV coordinates for the two data sets and the diffusion map (DM) coordinates for the two data sets are shown in Figure \ref{fig:ala_corr}.
+%
+The correlation between the two NIV embeddings is higher than the correlation between the two diffusion map embeddings.
+Therefore, it appears advantageous to use NIV over diffusion maps if one wishes to obtain a consistent embedding and merge data sets from different observation domains (as long as the two main assumptions underpinning the NIV algorithm hold).
+
+\begin{figure*}[ht]
+    \includegraphics[width=6in]{fig7}
+    \caption{(a) Correlation between the second NIV computed using the atoms 2, 4, 6, 8, and 10 ($\psi_2^{even}$) and the second NIV computed using atoms 5, 7, and 9 ($\psi_2^{odd}$).
+    (b) Correlation between the second DM computed using the atoms 2, 4, 6, 8, and 10 ($DM_2^{even}$) and the second DM computed using atoms 5, 7, and 9 ($DM_2^{odd}$).
+    The correlations for the first (not shown) and second NIV coordinates are found to be 0.62 and 0.84, respectively.
+    The correlations for the first (not shown) and second DM coordinates are found to be 0.54 and 0.60, respectively. }
+    \label{fig:ala_corr}
+\end{figure*}
+
+We then use NIV together with LP to predict the conformation of Ala2 when we only observe some of the atoms.
+%
+We have 20000 data points $\mathbf{Y}(1), \dots, \mathbf{Y}(20000)$, where every 100 data points come from one continuous simulation trajectory.
+%
+Our first data set (which will serve as our training data for LP), $\mathcal{Y}_{all}$,
+consists of the first 10000 data points ($\mathcal{Y}_{all} = \{\mathbf{Y}(t): t=1, \dots, 10000\}$).
+%
+Our second data set (which will serve as our test data), $\mathcal{Y}_{odd}$, consists of the last 12000 data points restricted to {\em only} the odd atoms
+($\mathcal{Y}_{odd} = \{ \mathbf{Y}(t) \text{ restricted to the odd atoms}: t = 8001, \dots, 20000\}$).
+%
+We compute the covariances as in \eqref{eq:cov} with $L=15$.
+%
+We compute the NIV embedding for the training data $\mathcal{Y}_{all}$ and the test data $\mathcal{Y}_{odd}$; we then use LP interpolation from the training data to predict the location of all the atoms for each point in the test data.
+
+The NIV embedding for the training data $\mathcal{Y}_{all}$ is shown in Figure \ref{fig:ala_embed}.
+%
+The embedding is three-dimensional, and visual inspection reveals that each coordinate can be directly linked with one physical variable:
+the first coordinate describes the flipping of atoms 1 and 3, the second coordinate describes the dihedral angle $\phi$, and the third coordinate describes the dihedral angle $\psi$.
+%
+We calculate the correlation between the embedding coordinates for the points in $\mathcal{Y}_{all}$ and $\mathcal{Y}_{odd}$
+that come from the common simulation data points $\mathbf{Y}(8001), \dots, \mathbf{Y}(10000)$.
+%
+The embeddings for the two data sets are found to be fairly consistent, with correlations of 0.97, 0.72, 0.85 for the first, second, and third NIV, respectively.
+
+\begin{figure*}[ht]
+    \includegraphics[width=6in]{fig8}
+    \caption{The 3-dimensional NIV embedding for Ala2 computed using $\mathcal{Y}_{all}$, colored by (a) the y-coordinate of the first atom, (b) the dihedral angle $\phi$, and (c) the dihedral angle $\psi$. Each embedding is rotated so that the correlation between the colors and the relevant NIV can easily be seen.}
+    \label{fig:ala_embed}
+\end{figure*}
+
+
+Figure \ref{fig:ala_recon} shows the reconstructed position from partial observation versus true position for certain selected atoms.
+%
+The strong correlation between the true and reconstructed positions is easier to appreciate for
+atoms that move substantially within the data set (such as atoms 1 and 3).
+%
+Figure \ref{fig:ala_molecules} shows molecular structures for the true and reconstructed configurations for selected data points;
+there is qualitative agreement between the true and reconstructed configurations.
+%
+The discrepancies between the true and reconstructed positions of atoms 9 and 10 (see Figure \ref{fig:ala_fes} for atom indexing) for some of the molecular structures are not surprising.
+%
+From Figure \ref{fig:ala_embed}, one can see that the first three NIV describe the flipping of atoms 1 and 3 and the dihedral angles $\phi$ and $\psi$.
+%
+However, atoms 9 and 10 do not participate in any of these physical quantities, and so there is little information about their positions contained in the first three NIV.
+%
+We suspect that using more NIV would result in a better description of atoms 9 and 10 and lead to more accurate structure reconstructions.
+
+For a brief comparison of LP over other reconstruction techniques, we also reconstruct configurations from the
+NIV components using simple nearest-neighbor interpolation.
+%
+The average reconstruction error, scaled by the average bond length within the molecule, is shown in Figure \ref{fig:ala_mse};
+LP arguably outperforms simple nearest neighbor search for all of the atoms.
+%
+To determine why LP outperforms nearest neighbor search, we examine the errors at different scales in the LP algorithm.
+%
+The example described in Figure \ref{fig:LP_ex} demonstrates the appropriateness of the LP algorithm to signals with an intrinsic multiscale structure.
+%
+We perform a similar analysis using the data from the alanine dipeptide example, and show that the observed signal does exhibit a similar error structure,
+with large errors in some regions of NIV space and small errors in other regions;
+these results are shown in Figure \ref{fig:LapPyr_ala2_errors}.
+%
+We therefore conclude that the alanine dipeptide data does contain a measure of multiscale behavior, and, therefore, that LP is an appropriate algorithm for reconstruction.
+
+\begin{figure*}[ht]
+  \centering
+        \includegraphics[width=4.5in]{fig9}
+  \caption{The correlation between the true position and the reconstructed position (using LP) for the test data. The columns correspond the x-, y-, and z-coordinates, and the rows correspond to atoms 1, 2, 3, 6, and 8.}
+  \label{fig:ala_recon}
+\end{figure*}
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=4in]{fig10}
+    \caption{True structure (black) and reconstructed structure (red) for three different data points. Each data point is shown in ``ball-and-stick'' representation (left) and ``wireframe'' representation (right) so that the discrepancies can easily be seen between the different configurations.}
+    \label{fig:ala_molecules}
+\end{figure*}
+
+\begin{figure*}
+    \includegraphics[width=3in]{fig11}
+    \caption{Mean squared error of reconstructed position, normalized by the average bond length, for each atom in Ala2.
+    The positions were reconstructed using both LP and nearest neighbor (nn) interpolation .}
+    \label{fig:ala_mse}
+\end{figure*}
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=3in]{fig10b}
+    \caption{The error in the reconstructed position of the z-coordinate of atom 10 as a function of $\psi_1$. One can see that the error is large when $\psi_1$ is large (similar to the error structure in Figure \ref{fig:LP_ex}), demonstrating that our data is indeed multiscale and that Laplacian Pyramids is an appropriate interpolation algorithm to use.}
+    \label{fig:LapPyr_ala2_errors}
+\end{figure*}
+
+\section{Conclusions} \label{sec:conclusions}
+%
+We have used Nonlinear Intrinsic Variables to analyze two complex atomistic simulations: a stochastic simulation of a chemical reaction network and a molecular dynamics simulation of alanine dipeptide.
+%
+In both examples, we were able to uncover the intrinsic variables governing the underlying stochastic process, which are independent
+of the particular measurement or observation  of the system (under the conditions mentioned).
+%
+The uniqueness of the embedding coordinates allowed us to compare and merge data sets from different measurement functions,
+and therefore allowed us to use an interpolation/extension scheme (here Laplacian Pyramids) to complete partial observations.
+%
+Different interpolation techniques (e.g. kriging \cite{matheron1963principles, matheron1973intrinsic}, geometric harmonics \cite{coifman2006geometric},  versions of the Nystr\"{o}m extension) can and should
+be explored, since the performance of such techniques may well be problem dependent, especially for multiscale, complex simulation data.
+
+There are many open questions leading to interesting research directions to be explored.
+%
+In this work, we considered data sets that consist of different partial observations, but in which each data set samples the entire underlying manifold in
+what we loosely referred to as a ``representative enough" way.
+%
+However, NIV could also be used to merge data sets when each data set samples only a portion of the manifold, provided there is enough overlap to ``register'' the embeddings.
+%
+Merging data sets that come from different portions of the manifold would not only require scaling the embedding coordinates,
+but also shifting and possibly permuting the embedding coordinates (in this spirit, see the discussion in Lafon {\em et al.} \cite{lafon2006data}).
+%
+The ability to merge data from different regions would then allow us to analyze systems where complete sampling is computationally intractable,
+such as molecular systems with several high energy barriers separating regions of state space.
+
+Other issues, such as accurately estimating the covariance matrices required for the computation of the Mahalanobis distance, are also of current research interest.
+%
+It is clearly necessary to link this type of calculation with modern estimation techniques for (multiscale) diffusions \cite{ait2002maximum, ait2003effects, ait2008closed}
+to test the appropriateness of the window sampling lengths selected; this will determine the accuracy of the noise covariance estimation by eliminating
+the bias due to drift variations.
+%
+We are confident that the exploration of these open questions will enable the use of our methodology in many  interesting applications,
+such as merging data from molecular simulations at different levels of granularity, or merging simulation data with experimental observations.
+
+\begin{acknowledgments}
+C. J. D. would like to acknowledge support from the US Department of Energy Computation Science Graduate Fellowship, grant number DE-FG02-97ER25308.
+%
+I. G. K. would like to acknowledge support from the US Department of Energy, grant numbers DE-FG02-10ER26024 and DE-FG02-09ER25877.
+\end{acknowledgments}
+
+%\bibliography{../../references/references}
+%\bibliography{references}
+%merlin.mbs aipnum4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
+%Control: key (0)
+%Control: author (8) initials jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (-1) disabled
+%Control: page (0) single
+%Control: year (1) truncated
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{46}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{``#1''}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
+  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\providecommand \doibase [0]{http://dx.doi.org/}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+\let\auto@bib@innerbib\@empty
+%</preamble>
+\bibitem [{\citenamefont {Tenenbaum}, \citenamefont {de~Silva},\ and\
+  \citenamefont {Langford}(2000)}]{Tenenbaum2000}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~B.}\ \bibnamefont
+  {Tenenbaum}}, \bibinfo {author} {\bibfnamefont {V.}~\bibnamefont {de~Silva}},
+  \ and\ \bibinfo {author} {\bibfnamefont {J.~C.}\ \bibnamefont {Langford}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Science}\ }\textbf
+  {\bibinfo {volume} {260}},\ \bibinfo {pages} {2319} (\bibinfo {year}
+  {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Roweis}\ and\ \citenamefont
+  {Saul}(2000)}]{Roweis2000}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~T.}\ \bibnamefont
+  {Roweis}}\ and\ \bibinfo {author} {\bibfnamefont {L.~K.}\ \bibnamefont
+  {Saul}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Science}\ }\textbf {\bibinfo {volume} {260}},\ \bibinfo {pages} {2323}
+  (\bibinfo {year} {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Donoho}\ and\ \citenamefont
+  {Grimes}(2003)}]{Donoho2003}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.~L.}\ \bibnamefont
+  {Donoho}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Grimes}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {PNAS}\
+  }\textbf {\bibinfo {volume} {100}},\ \bibinfo {pages} {5591} (\bibinfo {year}
+  {2003})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Belkin}\ and\ \citenamefont
+  {Niyogi}(2003)}]{Belkin2003}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Belkin}}\ and\ \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {Niyogi}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Neural
+  Comput.}\ }\textbf {\bibinfo {volume} {15}},\ \bibinfo {pages} {1373}
+  (\bibinfo {year} {2003})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Coifman}\ and\ \citenamefont
+  {Lafon}(2006{\natexlab{a}})}]{Coifman2006}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.}~\bibnamefont
+  {Coifman}}\ and\ \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Lafon}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Appl.
+  Comput. Harmon. Anal.}\ }\textbf {\bibinfo {volume} {21}},\ \bibinfo {pages}
+  {5} (\bibinfo {year} {2006}{\natexlab{a}})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bowen}, \citenamefont {Acrivos},\ and\ \citenamefont
+  {Oppenheim}(1963)}]{bowen1963singular}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {Bowen}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Acrivos}}, \
+  and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Oppenheim}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Chemical
+  Engineering Science}\ }\textbf {\bibinfo {volume} {18}},\ \bibinfo {pages}
+  {177} (\bibinfo {year} {1963})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Monticelli}\ \emph {et~al.}(2008)\citenamefont
+  {Monticelli}, \citenamefont {Kandasamy}, \citenamefont {Periole},
+  \citenamefont {Larson}, \citenamefont {Tieleman},\ and\ \citenamefont
+  {Marrink}}]{monticelli2008martini}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {L.}~\bibnamefont
+  {Monticelli}}, \bibinfo {author} {\bibfnamefont {S.~K.}\ \bibnamefont
+  {Kandasamy}}, \bibinfo {author} {\bibfnamefont {X.}~\bibnamefont {Periole}},
+  \bibinfo {author} {\bibfnamefont {R.~G.}\ \bibnamefont {Larson}}, \bibinfo
+  {author} {\bibfnamefont {D.~P.}\ \bibnamefont {Tieleman}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {S.-J.}\ \bibnamefont {Marrink}},\ }\href@noop {}
+  {\bibfield  {journal} {\bibinfo  {journal} {Journal of Chemical Theory and
+  Computation}\ }\textbf {\bibinfo {volume} {4}},\ \bibinfo {pages} {819}
+  (\bibinfo {year} {2008})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Spiga}\ \emph {et~al.}(2013)\citenamefont {Spiga},
+  \citenamefont {Alemani}, \citenamefont {Degiacomi}, \citenamefont
+  {Cascella},\ and\ \citenamefont {Dal~Peraro}}]{spiga2013electrostatic}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {E.}~\bibnamefont
+  {Spiga}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont {Alemani}},
+  \bibinfo {author} {\bibfnamefont {M.~T.}\ \bibnamefont {Degiacomi}}, \bibinfo
+  {author} {\bibfnamefont {M.}~\bibnamefont {Cascella}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {M.}~\bibnamefont {Dal~Peraro}},\ }\href@noop {}
+  {\bibfield  {journal} {\bibinfo  {journal} {Journal of Chemical Theory and
+  Computation}\ } (\bibinfo {year} {2013})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Izvekov}, \citenamefont {Violi},\ and\ \citenamefont
+  {Voth}(2005)}]{izvekov2005systematic}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Izvekov}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Violi}}, \
+  and\ \bibinfo {author} {\bibfnamefont {G.~A.}\ \bibnamefont {Voth}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The Journal of
+  Physical Chemistry B}\ }\textbf {\bibinfo {volume} {109}},\ \bibinfo {pages}
+  {17019} (\bibinfo {year} {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Saunders}\ and\ \citenamefont
+  {Voth}(2013)}]{saunders2013coarse}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.~G.}\ \bibnamefont
+  {Saunders}}\ and\ \bibinfo {author} {\bibfnamefont {G.~A.}\ \bibnamefont
+  {Voth}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Annual
+  review of biophysics}\ }\textbf {\bibinfo {volume} {42}},\ \bibinfo {pages}
+  {73} (\bibinfo {year} {2013})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Jolliffe}(2005)}]{jolliffe2005principal}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {I.}~\bibnamefont
+  {Jolliffe}},\ }\href@noop {} {\emph {\bibinfo {title} {Principal Component
+  Analysis}}}\ (\bibinfo  {publisher} {Wiley Online Library},\ \bibinfo {year}
+  {2005})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Lafon}, \citenamefont {Keller},\ and\ \citenamefont
+  {Coifman}(2006)}]{lafon2006data}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Lafon}}, \bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont {Keller}}, \
+  and\ \bibinfo {author} {\bibfnamefont {R.~R.}\ \bibnamefont {Coifman}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {IEEE Transactions
+  on Pattern Analysis and Machine Intelligence}\ }\textbf {\bibinfo {volume}
+  {28}},\ \bibinfo {pages} {1784} (\bibinfo {year} {2006})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Rabin}\ and\ \citenamefont
+  {Coifman}(2012)}]{rabin2012heterogeneous}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {N.}~\bibnamefont
+  {Rabin}}\ and\ \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont
+  {Coifman}},\ }in\ \href@noop {} {\emph {\bibinfo {booktitle} {Proceedings of
+  the 12th SIAM International Conference on Data Mining (SDM 2012), Anaheim,
+  California, USA}}}\ (\bibinfo {year} {2012})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Gillespie}(1977)}]{gillespie1977exact}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.~T.}\ \bibnamefont
+  {Gillespie}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The
+  Journal of Physical Chemistry}\ }\textbf {\bibinfo {volume} {81}},\ \bibinfo
+  {pages} {2340} (\bibinfo {year} {1977})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Zagaris}\ \emph {et~al.}(2012)\citenamefont
+  {Zagaris}, \citenamefont {Vandekerckhove}, \citenamefont {Gear},
+  \citenamefont {Kaper},\ and\ \citenamefont
+  {Kevrekidis}}]{zagaris2012stability}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Zagaris}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Vandekerckhove}}, \bibinfo {author} {\bibfnamefont {C.~W.}\ \bibnamefont
+  {Gear}}, \bibinfo {author} {\bibfnamefont {T.~J.}\ \bibnamefont {Kaper}}, \
+  and\ \bibinfo {author} {\bibfnamefont {I.~G.}\ \bibnamefont {Kevrekidis}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Discrete and
+  Continuous Dynamical Systems-Series A}\ }\textbf {\bibinfo {volume} {32}},\
+  \bibinfo {pages} {2759} (\bibinfo {year} {2012})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bolhuis}, \citenamefont {Dellago},\ and\
+  \citenamefont {Chandler}(2000)}]{bolhuis2000reaction}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.~G.}\ \bibnamefont
+  {Bolhuis}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Dellago}}, \
+  and\ \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont {Chandler}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Proceedings of the
+  National Academy of Sciences}\ }\textbf {\bibinfo {volume} {97}},\ \bibinfo
+  {pages} {5877} (\bibinfo {year} {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Coifman}\ \emph {et~al.}(2005)\citenamefont
+  {Coifman}, \citenamefont {Lafon}, \citenamefont {Lee}, \citenamefont
+  {Maggioni}, \citenamefont {Nadler}, \citenamefont {Warner},\ and\
+  \citenamefont {Zucker}}]{coifman2005geometric}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~R.}\ \bibnamefont
+  {Coifman}}, \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Lafon}},
+  \bibinfo {author} {\bibfnamefont {A.~B.}\ \bibnamefont {Lee}}, \bibinfo
+  {author} {\bibfnamefont {M.}~\bibnamefont {Maggioni}}, \bibinfo {author}
+  {\bibfnamefont {B.}~\bibnamefont {Nadler}}, \bibinfo {author} {\bibfnamefont
+  {F.}~\bibnamefont {Warner}}, \ and\ \bibinfo {author} {\bibfnamefont {S.~W.}\
+  \bibnamefont {Zucker}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo
+  {journal} {Proceedings of the National Academy of Sciences}\ }\textbf
+  {\bibinfo {volume} {102}},\ \bibinfo {pages} {7426} (\bibinfo {year}
+  {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Singer}\ and\ \citenamefont
+  {Coifman}(2008)}]{singer2008non}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Singer}}\ and\ \bibinfo {author} {\bibfnamefont {R.~R.}\ \bibnamefont
+  {Coifman}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Applied and Computational Harmonic Analysis}\ }\textbf {\bibinfo {volume}
+  {25}},\ \bibinfo {pages} {226} (\bibinfo {year} {2008})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Hein}\ and\ \citenamefont
+  {Audibert}(2005)}]{hein2005intrinsic}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Hein}}\ and\ \bibinfo {author} {\bibfnamefont {J.~Y.}\ \bibnamefont
+  {Audibert}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {L.
+  De Raedt, S. Wrobel (Eds.), Proc. 22nd Int. Conf. Mach. Learn., ACM}\ ,\
+  \bibinfo {pages} {289}} (\bibinfo {year} {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Coifman}\ \emph {et~al.}(2008)\citenamefont
+  {Coifman}, \citenamefont {Shkolnisky}, \citenamefont {Sigworth},\ and\
+  \citenamefont {Singer}}]{coifman2008graph}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~R.}\ \bibnamefont
+  {Coifman}}, \bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont {Shkolnisky}},
+  \bibinfo {author} {\bibfnamefont {F.~J.}\ \bibnamefont {Sigworth}}, \ and\
+  \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Singer}},\ }\href@noop {}
+  {\bibfield  {journal} {\bibinfo  {journal} {IEEE Transactions on Image
+  Processing}\ }\textbf {\bibinfo {volume} {17}},\ \bibinfo {pages} {1891}
+  (\bibinfo {year} {2008})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Rohrdanz}\ \emph {et~al.}(2011)\citenamefont
+  {Rohrdanz}, \citenamefont {Zheng}, \citenamefont {Maggioni},\ and\
+  \citenamefont {Clementi}}]{rohrdanz2011determination}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.~A.}\ \bibnamefont
+  {Rohrdanz}}, \bibinfo {author} {\bibfnamefont {W.}~\bibnamefont {Zheng}},
+  \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Maggioni}}, \ and\
+  \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Clementi}},\ }\href@noop
+  {} {\bibfield  {journal} {\bibinfo  {journal} {The Journal of Chemical
+  Physics}\ }\textbf {\bibinfo {volume} {134}},\ \bibinfo {pages} {124116}
+  (\bibinfo {year} {2011})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Chung}(1997)}]{chung1997spectral}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {F.~R.}\ \bibnamefont
+  {Chung}},\ }\href@noop {} {\emph {\bibinfo {title} {Spectral Graph
+  Theory}}},\ Vol.~\bibinfo {volume} {92}\ (\bibinfo  {publisher} {AMS
+  Bookstore},\ \bibinfo {year} {1997})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Nadler}\ \emph {et~al.}(2006)\citenamefont {Nadler},
+  \citenamefont {Lafon}, \citenamefont {Coifman},\ and\ \citenamefont
+  {Kevrekidis}}]{nadler2006diffusion}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont
+  {Nadler}}, \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Lafon}},
+  \bibinfo {author} {\bibfnamefont {R.~R.}\ \bibnamefont {Coifman}}, \ and\
+  \bibinfo {author} {\bibfnamefont {I.~G.}\ \bibnamefont {Kevrekidis}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Applied and
+  Computational Harmonic Analysis}\ }\textbf {\bibinfo {volume} {21}},\
+  \bibinfo {pages} {113} (\bibinfo {year} {2006})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Ferrenberg}\ and\ \citenamefont
+  {Swendsen}(1988)}]{ferrenberg1988new}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.~M.}\ \bibnamefont
+  {Ferrenberg}}\ and\ \bibinfo {author} {\bibfnamefont {R.~H.}\ \bibnamefont
+  {Swendsen}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical review letters}\ }\textbf {\bibinfo {volume} {61}},\ \bibinfo
+  {pages} {2635} (\bibinfo {year} {1988})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Burt}\ and\ \citenamefont
+  {Adelson}(1983)}]{burt1983laplacian}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {Burt}}\ and\ \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Adelson}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Communications,
+  IEEE Transactions on}\ }\textbf {\bibinfo {volume} {31}},\ \bibinfo {pages}
+  {532} (\bibinfo {year} {1983})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Do}\ and\ \citenamefont
+  {Vetterli}(2003)}]{do2003framing}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.~N.}\ \bibnamefont
+  {Do}}\ and\ \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Vetterli}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Signal Processing,
+  IEEE Transactions on}\ }\textbf {\bibinfo {volume} {51}},\ \bibinfo {pages}
+  {2329} (\bibinfo {year} {2003})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Buchman}, \citenamefont {Lee},\ and\ \citenamefont
+  {Schafer}(2011)}]{buchman2011high}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~M.}\ \bibnamefont
+  {Buchman}}, \bibinfo {author} {\bibfnamefont {A.~B.}\ \bibnamefont {Lee}}, \
+  and\ \bibinfo {author} {\bibfnamefont {C.~M.}\ \bibnamefont {Schafer}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Statistical
+  Methodology}\ }\textbf {\bibinfo {volume} {8}},\ \bibinfo {pages} {18}
+  (\bibinfo {year} {2011})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Gillespie}(2000)}]{gillespie2000chemical}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.~T.}\ \bibnamefont
+  {Gillespie}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The
+  Journal of Chemical Physics}\ }\textbf {\bibinfo {volume} {113}},\ \bibinfo
+  {pages} {297} (\bibinfo {year} {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Apostolakis}, \citenamefont {Ferrara},\ and\
+  \citenamefont {Caflisch}(1999)}]{apostolakis1999calculation}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {Apostolakis}}, \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {Ferrara}}, \ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Caflisch}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The
+  Journal of Chemical Physics}\ }\textbf {\bibinfo {volume} {110}},\ \bibinfo
+  {pages} {2099} (\bibinfo {year} {1999})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Chekmarev}, \citenamefont {Ishida},\ and\
+  \citenamefont {Levy}(2004)}]{chekmarev2004long}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.~S.}\ \bibnamefont
+  {Chekmarev}}, \bibinfo {author} {\bibfnamefont {T.}~\bibnamefont {Ishida}}, \
+  and\ \bibinfo {author} {\bibfnamefont {R.~M.}\ \bibnamefont {Levy}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The Journal of
+  Physical Chemistry B}\ }\textbf {\bibinfo {volume} {108}},\ \bibinfo {pages}
+  {19487} (\bibinfo {year} {2004})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Ma}\ and\ \citenamefont
+  {Dinner}(2005)}]{ma2005automatic}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Ma}}\ and\ \bibinfo {author} {\bibfnamefont {A.~R.}\ \bibnamefont
+  {Dinner}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The
+  Journal of Physical Chemistry B}\ }\textbf {\bibinfo {volume} {109}},\
+  \bibinfo {pages} {6769} (\bibinfo {year} {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Frewen}, \citenamefont {Hummer},\ and\ \citenamefont
+  {Kevrekidis}(2009)}]{frewen2009exploration}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {T.~A.}\ \bibnamefont
+  {Frewen}}, \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Hummer}}, \
+  and\ \bibinfo {author} {\bibfnamefont {I.~G.}\ \bibnamefont {Kevrekidis}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The Journal of
+  Chemical Physics}\ }\textbf {\bibinfo {volume} {131}},\ \bibinfo {pages}
+  {134104} (\bibinfo {year} {2009})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Ferguson}\ \emph {et~al.}(2011)\citenamefont
+  {Ferguson}, \citenamefont {Panagiotopoulos}, \citenamefont {Debenedetti},\
+  and\ \citenamefont {Kevrekidis}}]{ferguson2011integrating}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.~L.}\ \bibnamefont
+  {Ferguson}}, \bibinfo {author} {\bibfnamefont {A.~Z.}\ \bibnamefont
+  {Panagiotopoulos}}, \bibinfo {author} {\bibfnamefont {P.~G.}\ \bibnamefont
+  {Debenedetti}}, \ and\ \bibinfo {author} {\bibfnamefont {I.~G.}\ \bibnamefont
+  {Kevrekidis}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {The Journal of Chemical Physics}\ }\textbf {\bibinfo {volume} {134}},\
+  \bibinfo {pages} {135103} (\bibinfo {year} {2011})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Case}\ \emph {et~al.}(2008)\citenamefont {Case},
+  \citenamefont {Darden}, \citenamefont {T.~E.~Cheatham}, \citenamefont
+  {Simmerling}, \citenamefont {Wang}, \citenamefont {Duke}, \citenamefont
+  {Luo}, \citenamefont {Crowley}, \citenamefont {Walker}, \citenamefont
+  {Zhang}, \citenamefont {Merz}, \citenamefont {Wang}, \citenamefont {Hayik},
+  \citenamefont {Roitberg}, \citenamefont {Seabra}, \citenamefont
+  {Kolossv\'{a}ry}, \citenamefont {Wong}, \citenamefont {Paesani},
+  \citenamefont {Vanicek}, \citenamefont {Wu}, \citenamefont {Brozell},
+  \citenamefont {Steinbrecher}, \citenamefont {Gohlke}, \citenamefont {Yang},
+  \citenamefont {Tan}, \citenamefont {Mongan}, \citenamefont {Hornak},
+  \citenamefont {Cui}, \citenamefont {Mathews}, \citenamefont {Seetin},
+  \citenamefont {Sagui}, \citenamefont {Babin},\ and\ \citenamefont
+  {Kollman}}]{case2008Amber}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.~A.}\ \bibnamefont
+  {Case}}, \bibinfo {author} {\bibfnamefont {T.~A.}\ \bibnamefont {Darden}},
+  \bibinfo {author} {\bibfnamefont {I.}~\bibnamefont {T.~E.~Cheatham}},
+  \bibinfo {author} {\bibfnamefont {C.~L.}\ \bibnamefont {Simmerling}},
+  \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Wang}}, \bibinfo {author}
+  {\bibfnamefont {R.~E.}\ \bibnamefont {Duke}}, \bibinfo {author}
+  {\bibfnamefont {R.}~\bibnamefont {Luo}}, \bibinfo {author} {\bibfnamefont
+  {M.}~\bibnamefont {Crowley}}, \bibinfo {author} {\bibfnamefont {R.~C.}\
+  \bibnamefont {Walker}}, \bibinfo {author} {\bibfnamefont {W.}~\bibnamefont
+  {Zhang}}, \bibinfo {author} {\bibfnamefont {K.~M.}\ \bibnamefont {Merz}},
+  \bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Wang}}, \bibinfo {author}
+  {\bibfnamefont {S.}~\bibnamefont {Hayik}}, \bibinfo {author} {\bibfnamefont
+  {A.}~\bibnamefont {Roitberg}}, \bibinfo {author} {\bibfnamefont
+  {G.}~\bibnamefont {Seabra}}, \bibinfo {author} {\bibfnamefont
+  {I.}~\bibnamefont {Kolossv\'{a}ry}}, \bibinfo {author} {\bibfnamefont
+  {K.~F.}\ \bibnamefont {Wong}}, \bibinfo {author} {\bibfnamefont
+  {F.}~\bibnamefont {Paesani}}, \bibinfo {author} {\bibfnamefont
+  {J.}~\bibnamefont {Vanicek}}, \bibinfo {author} {\bibfnamefont
+  {X.}~\bibnamefont {Wu}}, \bibinfo {author} {\bibfnamefont {S.~R.}\
+  \bibnamefont {Brozell}}, \bibinfo {author} {\bibfnamefont {T.}~\bibnamefont
+  {Steinbrecher}}, \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont
+  {Gohlke}}, \bibinfo {author} {\bibfnamefont {L.}~\bibnamefont {Yang}},
+  \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Tan}}, \bibinfo {author}
+  {\bibfnamefont {J.}~\bibnamefont {Mongan}}, \bibinfo {author} {\bibfnamefont
+  {V.}~\bibnamefont {Hornak}}, \bibinfo {author} {\bibfnamefont
+  {G.}~\bibnamefont {Cui}}, \bibinfo {author} {\bibfnamefont {D.~H.}\
+  \bibnamefont {Mathews}}, \bibinfo {author} {\bibfnamefont {M.~G.}\
+  \bibnamefont {Seetin}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Sagui}}, \bibinfo {author} {\bibfnamefont {V.}~\bibnamefont {Babin}}, \ and\
+  \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont {Kollman}},\ }\href@noop
+  {} {\enquote {\bibinfo {title} {{AMBER} 10},}\ }\bibinfo {howpublished}
+  {University of California, San Francisco} (\bibinfo {year}
+  {2008})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Best}\ and\ \citenamefont
+  {Hummer}(2009)}]{best2009optimized}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~B.}\ \bibnamefont
+  {Best}}\ and\ \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Hummer}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Journal of
+  Physical Chemistry B}\ }\textbf {\bibinfo {volume} {113}},\ \bibinfo {pages}
+  {9004} (\bibinfo {year} {2009})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Duan}\ \emph {et~al.}(2003)\citenamefont {Duan},
+  \citenamefont {Wu}, \citenamefont {Chowdhury}, \citenamefont {Lee},
+  \citenamefont {Xiong}, \citenamefont {Zhang}, \citenamefont {Yang},
+  \citenamefont {Cieplak}, \citenamefont {Luo}, \citenamefont {Lee},
+  \citenamefont {Caldwell}, \citenamefont {Wang},\ and\ \citenamefont
+  {Kollman}}]{duan2003point}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont
+  {Duan}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Wu}}, \bibinfo
+  {author} {\bibfnamefont {S.}~\bibnamefont {Chowdhury}}, \bibinfo {author}
+  {\bibfnamefont {M.~C.}\ \bibnamefont {Lee}}, \bibinfo {author} {\bibfnamefont
+  {G.~M.}\ \bibnamefont {Xiong}}, \bibinfo {author} {\bibfnamefont
+  {W.}~\bibnamefont {Zhang}}, \bibinfo {author} {\bibfnamefont
+  {R.}~\bibnamefont {Yang}}, \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {Cieplak}}, \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont {Luo}},
+  \bibinfo {author} {\bibfnamefont {T.}~\bibnamefont {Lee}}, \bibinfo {author}
+  {\bibfnamefont {J.}~\bibnamefont {Caldwell}}, \bibinfo {author}
+  {\bibfnamefont {J.~M.}\ \bibnamefont {Wang}}, \ and\ \bibinfo {author}
+  {\bibfnamefont {P.}~\bibnamefont {Kollman}},\ }\href@noop {} {\bibfield
+  {journal} {\bibinfo  {journal} {Journal of Computational Chemistry}\ }\textbf
+  {\bibinfo {volume} {24}},\ \bibinfo {pages} {1999} (\bibinfo {year}
+  {2003})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Jorgensen}\ \emph {et~al.}(1983)\citenamefont
+  {Jorgensen}, \citenamefont {Chandrasekhar}, \citenamefont {Madura},
+  \citenamefont {Impey},\ and\ \citenamefont
+  {Klein}}]{jorgensen1983comparison}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.~L.}\ \bibnamefont
+  {Jorgensen}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {Chandrasekhar}}, \bibinfo {author} {\bibfnamefont {J.~D.}\ \bibnamefont
+  {Madura}}, \bibinfo {author} {\bibfnamefont {R.~W.}\ \bibnamefont {Impey}}, \
+  and\ \bibinfo {author} {\bibfnamefont {M.~L.}\ \bibnamefont {Klein}},\
+  }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {The Journal of
+  Chemical Physics}\ }\textbf {\bibinfo {volume} {79}},\ \bibinfo {pages} {926}
+  (\bibinfo {year} {1983})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Essmann}\ \emph {et~al.}(1995)\citenamefont
+  {Essmann}, \citenamefont {Perera}, \citenamefont {Berkowitz}, \citenamefont
+  {Darden}, \citenamefont {Lee},\ and\ \citenamefont
+  {Pedersen}}]{essmann1995smooth}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {U.}~\bibnamefont
+  {Essmann}}, \bibinfo {author} {\bibfnamefont {L.}~\bibnamefont {Perera}},
+  \bibinfo {author} {\bibfnamefont {M.~L.}\ \bibnamefont {Berkowitz}}, \bibinfo
+  {author} {\bibfnamefont {T.}~\bibnamefont {Darden}}, \bibinfo {author}
+  {\bibfnamefont {H.}~\bibnamefont {Lee}}, \ and\ \bibinfo {author}
+  {\bibfnamefont {L.~G.}\ \bibnamefont {Pedersen}},\ }\href@noop {} {\bibfield
+  {journal} {\bibinfo  {journal} {The Journal of Chemical Physics}\ }\textbf
+  {\bibinfo {volume} {103}},\ \bibinfo {pages} {8577} (\bibinfo {year}
+  {1995})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Loncharich}, \citenamefont {Brooks},\ and\
+  \citenamefont {Pastor}(1992)}]{loncharich1992langevin}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~J.}\ \bibnamefont
+  {Loncharich}}, \bibinfo {author} {\bibfnamefont {B.~R.}\ \bibnamefont
+  {Brooks}}, \ and\ \bibinfo {author} {\bibfnamefont {R.~W.}\ \bibnamefont
+  {Pastor}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Biopolymers}\ }\textbf {\bibinfo {volume} {32}},\ \bibinfo {pages} {523}
+  (\bibinfo {year} {1992})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Ryckaert}, \citenamefont {Ciccotti},\ and\
+  \citenamefont {Berendsen}(1977)}]{ryckaert1977numerical}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~P.}\ \bibnamefont
+  {Ryckaert}}, \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Ciccotti}},
+  \ and\ \bibinfo {author} {\bibfnamefont {H.~J.~C.}\ \bibnamefont
+  {Berendsen}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Journal of Computational Physics}\ }\textbf {\bibinfo {volume} {23}},\
+  \bibinfo {pages} {327} (\bibinfo {year} {1977})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Matheron}(1963)}]{matheron1963principles}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
+  {Matheron}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Economic Geology}\ }\textbf {\bibinfo {volume} {58}},\ \bibinfo {pages}
+  {1246} (\bibinfo {year} {1963})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Matheron}(1973)}]{matheron1973intrinsic}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
+  {Matheron}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Advances in Applied Probability}\ ,\ \bibinfo {pages} {439}} (\bibinfo
+  {year} {1973})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Coifman}\ and\ \citenamefont
+  {Lafon}(2006{\natexlab{b}})}]{coifman2006geometric}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~R.}\ \bibnamefont
+  {Coifman}}\ and\ \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Lafon}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal} {Applied
+  and Computational Harmonic Analysis}\ }\textbf {\bibinfo {volume} {21}},\
+  \bibinfo {pages} {31} (\bibinfo {year} {2006}{\natexlab{b}})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {A{\"\i}t-Sahalia}(2002)}]{ait2002maximum}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont
+  {A{\"\i}t-Sahalia}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo
+  {journal} {Econometrica}\ }\textbf {\bibinfo {volume} {70}},\ \bibinfo
+  {pages} {223} (\bibinfo {year} {2002})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {A{\"\i}t-Sahalia}\ and\ \citenamefont
+  {Mykland}(2003)}]{ait2003effects}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont
+  {A{\"\i}t-Sahalia}}\ and\ \bibinfo {author} {\bibfnamefont {P.~A.}\
+  \bibnamefont {Mykland}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo
+  {journal} {Econometrica}\ }\textbf {\bibinfo {volume} {71}},\ \bibinfo
+  {pages} {483} (\bibinfo {year} {2003})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {A{\"\i}t-Sahalia}(2008)}]{ait2008closed}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont
+  {A{\"\i}t-Sahalia}},\ }\href@noop {} {\bibfield  {journal} {\bibinfo
+  {journal} {The Annals of Statistics}\ ,\ \bibinfo {pages} {906}} (\bibinfo
+  {year} {2008})}\BibitemShut {NoStop}%
+\end{thebibliography}%
+
+\appendix
+
+\section{Chemical Reaction Network Parameters} \label{app:rxn}
+
+We consider the following network of chemical reactions.
+\begin{equation}
+\begin{array}{rcl}
+E + S \overset{e_1}{\underset{e_{-1}}{\leftrightharpoons}} & E:S & \overset{e_2}{\rightarrow} E + S^{*} \\
+S + E \overset{b_1}{\underset{b_{-1}}{\leftrightharpoons}} & S:E & \overset{b_2}{\rightarrow} S + E^{*}\\
+D + S^{*} \overset{d_1}{\underset{d_{-1}}{\leftrightharpoons}} & D:S^{*} & \overset{d_2}{\rightarrow} D + S\\
+F + E^{*} \overset{f_1}{\underset{f_{-1}}{\leftrightharpoons}} & F:E^{*} & \overset{f_2}{\rightarrow} F + E
+\end{array}
+\end{equation}
+
+\begin{widetext}
+In the limit of a large number of molecules, the dynamics of this network is governed by the following ODEs.
+\begin{equation}
+    \begin{array}{rcl}
+        S^\prime & = & -e_1 S E + e_{-1} E:S -b_1 S E + b_{-1} S:E + b_2 S:E + d_2 D:S^{*} \\
+        E^\prime & = & -e_1 S E + e_{-1} E:S + e_2 E:S - b_1 S E +b_{-1} S:E + f_2 F:E^{*} \\
+        E:S^\prime & = & e_1 S E -e_{-1} E:S -e_2 E:S \\
+        S:E^\prime & = & b_1 S E -b_{-1} S:E -b_2 S:E \\
+        {S^{*}}^\prime & = & e_2 E:S -d_1 D S^{*} + d_{-1} D:S^{*} \\
+        {E^{*}}^\prime & = & b_2 S:E -f_1 F E^{*} + d_{-1} F:E^{*} \\
+        D^\prime & = & -d_1 D S^{*} + d_{-1} D:S^{*} + d_2 D:S^{*} \\
+        F^\prime & = & -f_1 F E^{*} + f_{-1} F:E^{*} + f_2 F:E^{*} \\
+        {D:S^{*}}^\prime & = & d_1 D S^{*} - d_{-1} D:S^{*} -d_2 D:S^{*} \\
+        {F:E^{*}}^\prime & = & f_1 FE^{*} - f_{-1} F:E^{*} -f_2 F:E^{*}
+    \end{array}
+\end{equation}
+\end{widetext}
+
+We can write four balance equations for the conservation of total $S$, $E$, $D$, and $F$.
+\begin{equation}
+    \begin{array}{rcl}
+        S_T & = & S^{*} + S + E:S + S:E + D:S^{*} \\
+        E_T & = & E^{*} + E + E:S + S:E + F:E^{*} \\
+        D_T & = & D + D:S^{*} \\
+        F_T & = & F + F:E^{*}
+    \end{array}
+\end{equation}
+
+\begin{widetext}
+We choose to eliminate $S^{*}$, $E^{*}$, $D$, and $F$ from the system of ODEs.
+%
+We therefore obtain a system of 6 ODEs.
+\begin{equation}
+    \begin{array}{rcl}
+        S^\prime & = & -e_1 S E + e_{-1} E:S -b_1 S E \\
+                        &   & + b_{-1} S:E + b_2 S:E + d_2 D:S^{*} \\
+        E^\prime & = & -e_1 S E + e_{-1} E:S + e_2 E:S \\
+                        &   & - b_1 S E +b_{-1} S:E + f_2 F:E^{*} \\
+        E:S^\prime  & = & e_1 S E -e_{-1} E:S -e_2 E:S \\
+        S:E^\prime & = & b_1 S E -b_{-1} S:E -b_2 S:E \\
+        {D:S^{*}}^\prime & = & d_1 (D_T - D:S^{*}) (S_T - S - E:S - S:E - D:S^{*}) - d_{-1} D:S^{*} -d_2 D:S^{*} \\
+        {F:E^{*}}^\prime & = & f_1 (F_T - F:E^{*}) (E_T - E - E:S - S:E - F:E^{*}) - f_{-1} F:E^{*} -f_2 F:E^{*}
+    \end{array}
+\end{equation}
+\end{widetext}
+
+Alternatively, we can write the rates for the 12 chemical reactions as
+\begin{equation}
+    \begin{array}{rcl}
+        r_1 & = & e_1 S E \\
+        r_2 & = & e_{-1} E:S \\
+        r_3 & = & e_2 E:S \\
+        r_4 & = & b_1 S E \\
+        r_5 & = & b_{-1} S:E \\
+        r_6 & = & b_2 S:E \\
+        r_7 & = & d_1 (D_T - D:S^{*}) (S_T - S - E:S - S:E - D:S^{*}) \\
+        r_8 & = & d_{-1} D:S^{*} \\
+        r_9 & = & d_2 D:S^{*} \\
+        r_{10} & = & f_1 (F_T - F:E^{*}) (E_T - E - E:S - S:E - F:E^{*}) \\
+        r_{11} & = & f_{-1} F:E^{*} \\
+        r_{12} & = & f_2 F:E^{*}
+    \end{array}
+\end{equation}
+
+For the Gillespie SSA, we use these rates to adjust the {\em number} of each molecule, depending on which reaction occurs.
+%
+We take the volume of the reactor $V=10^5$.
+%
+We use the parameters $b_1=5/V$, $d_1=0.0009/V$, $e_1=0.1/V$, $f_1=0.1/V$, $b_{-1} = 10.6$, $d_{-1}=0.05$, $e_{-1}=0.5$, $f_{-1} =0.01$, $b_2=0.4$, $d_2=0.85$, $e_2=0.05$, and $f_2=2$.
+%
+We take $S_T=E_T=D_T=1V$, and $F_T=0.02V$, where $S_T$, $E_T$, $D_T$, and $F_T$ are total number of $S$, $E$, $D$, and $F$, respectively.
+%
+In this parameter regime, the relevant timescales around the steady state ($-1/\lambda_i$, where $\lambda_i$ are the eigenvalues of the Hessian) are 1176, 9.731, 1.594, 1.111, 0.4975, 0.06498.
+%
+Therefore, we choose to evolve forward for 10 time units to find points on a perceived two-dimensional manifold.
+
+\end{document}

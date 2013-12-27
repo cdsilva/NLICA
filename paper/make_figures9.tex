@@ -1,0 +1,16 @@
+\documentclass[]{article}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[paperwidth=4.5in, paperheight=7in, top=0in, bottom=0in, left=0in, right=0in]{geometry}
+
+\thispagestyle{empty}
+
+\begin{document}
+
+  \centering
+    \foreach \atomnumber in {1,2,3,6,8} {
+        \includegraphics[width=0.3\textwidth]{ala_figures_allodd/ala2_recon_corr_\atomnumber_1}
+        \includegraphics[width=0.3\textwidth]{ala_figures_allodd/ala2_recon_corr_\atomnumber_2}
+        \includegraphics[width=0.3\textwidth]{ala_figures_allodd/ala2_recon_corr_\atomnumber_3}\\
+      }
+\end{document} 
