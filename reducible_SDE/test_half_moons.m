@@ -12,10 +12,10 @@ a3 = 1e-1;
 a4 = 1e-1;
 
 % initial conditions
-data0 = [0; 0];
+data0 = [0; 1];
 
 % time to integrate
-tmax = 5e3;
+tmax = 4e3;
 
 %% do simulations
 
@@ -23,7 +23,7 @@ drift = @(t, x) [a1; a3*(1-x(2))];
 diffn = @(t, x) [a2 0; 0 a4];
     
 dt = 2;
-nsteps_per_step = 100;
+nsteps_per_step = 1000;
 
 SDE = sde(drift, diffn, 'StartState', data0);
 nPeriods = ceil(tmax / dt);
@@ -51,7 +51,7 @@ title('colored by time')
 neigs = 60;
 dim = 2;
 
-dt2_range = [1e-4 1e-2 1];
+dt2_range = [1e-4 1e-2 2];
 
 figure;
 plot_idx = 1;
@@ -63,7 +63,7 @@ lambda_ratio = [];
 
 for dt2=dt2_range
     knn_NIV = 50;
-    nsteps_per_step2 = max([1 round(dt2/1e-2)]);
+    nsteps_per_step2 = max([1 round(dt2/1e-3)]);
 
     data_snippets = zeros(2*knn_NIV+1, size(data, 2), size(data, 1));
     
