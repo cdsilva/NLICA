@@ -15,14 +15,14 @@ a4 = 1e-1;
 data0 = [0; 1];
 
 % time to integrate
-tmax = 4e3;
+tmax = 3e3;
 
 %% do simulations
 
 drift = @(t, x) [a1; a3*(1-x(2))];
 diffn = @(t, x) [a2 0; 0 a4];
     
-dt = 2;
+dt = 1;
 nsteps_per_step = 1000;
 
 SDE = sde(drift, diffn, 'StartState', data0);
@@ -51,7 +51,7 @@ title('colored by time')
 neigs = 60;
 dim = 2;
 
-dt2_range = [1e-4 1e-2 2];
+dt2_range = [1e-4 1e-2 1];
 
 figure;
 plot_idx = 1;
