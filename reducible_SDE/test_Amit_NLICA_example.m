@@ -84,7 +84,7 @@ y = f(x);
 
 xclouds = zeros(Nc, dim, N);
 
-drift = @(t, x) zeros(dim, 1);
+drift = @(t, x) [0; 0; (1-x(3))];
 diffn = @(t, x) [1 0 0; 0 1 0; 0 0 100];
     
 dt = dt/Nc;
