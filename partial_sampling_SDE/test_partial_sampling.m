@@ -160,10 +160,3 @@ plot(var_niv1, '.')
 figure;
 plot(V1(I, evec_idx),smooth(var_niv1(I), 25), '.')
 
-%% histogram
-
-figure;
-hist(V1(:,evec_idx),300)
-
-figure;
-plot(cumsum(

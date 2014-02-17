@@ -47,7 +47,7 @@ xlabel(slow_idx_label)
 ylabel(fast_idx_label)
 title('colored by time')
 
-return;
+%return;
 
 %% calculate NIV
 stride = 3;

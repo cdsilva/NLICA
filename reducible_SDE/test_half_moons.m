@@ -15,7 +15,11 @@ a4 = 1e-1;
 data0 = [0; 1];
 
 % time to integrate
+<<<<<<< Updated upstream
 tmax = 3e3;
+=======
+tmax = 2e3;
+>>>>>>> Stashed changes
 
 %% do simulations
 
@@ -32,7 +36,9 @@ nPeriods = ceil(tmax / dt);
 u = data(:,1);
 v = data(:,2);
 
-f = @(x) [x(:,2).*cos(x(:,1)+x(:,2)-1) x(:,2).*sin(x(:,1)+x(:,2)-1)];
+%f = @(x) [x(:,2).*cos(x(:,1)+x(:,2)-1) x(:,2).*sin(x(:,1)+x(:,2)-1)];
+f = @(x) x;
+
 fdata = f(data);
 x = fdata(:,1);
 y = fdata(:,2);
