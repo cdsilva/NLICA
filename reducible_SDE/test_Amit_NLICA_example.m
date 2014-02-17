@@ -89,9 +89,44 @@ diffn = @(t, x) [1 0 0; 0 1 0; 0 0 100];
     
 dt = dt/Nc;
 
+tscale = 1e-4;
 for i=1:N
-    SDE = sde(drift, diffn, 'StartState', x(i,:));
-    [xclouds(:,:,i), ~, ~] = SDE.simulate(Nc, 'DeltaTime', dt);
+    xclouds(:,:,i) = randn(Nc, dim);
+    for j=1:dim-1
+        xclouds(:,j,i) = xclouds(:,j,i)*tscale + x(i,j);
+    end
+    
+%     SDE = sde(drift, diffn, 'StartState', x(i,:));
+%     [xclouds(:,:,i), ~, ~] = SDE.simulate(Nc, 'DeltaTime', dt);
 end
 
+yclouds = zeros(size(xclouds));
+for i=1:N
+    yclouds(:,:,i) = f(xclouds(:,:,i));
+end
+
+% calculate inverse covariances
+%[inv_c, ~, ranks] = covariances2(yclouds, dim);
+inv_c = zeros(dim, dim, N);
+for i=1:N
+    inv_c(:,:,i) = pinv(cov(yclouds(:,:,i)));
+    
+    %[u, s, v] = svd(cov(yclouds(:,:,i)));
+    %inv_c(:,:,i) = u(:,1)*(1/s(1,1))*v(:,1)';
+    %inv_c(:,:,i) = [1 0 0; 0 1 0; 0 0 tscale];
+end
+
+% NIV
+if size(y,1) > 4000
+    disp('Too much data; NIV will fail')
+    return
+end
+neigs = 10;
+[V, D] = NIV(y, inv_c, 0, neigs, 0);
+
+figure;
+scatter(x(:,1),x(:,2),200,V(:,2),'.')
+
+figure;
+scatter(x(:,1),x(:,2),200,V(:,3),'.')
 
