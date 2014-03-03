@@ -4,11 +4,24 @@
 clear all
 close all
 
+res = '-r300';
+fmt = '-djpeg';
+
+rng(321);
+
 %% define parameters
+
+% number of data points
 N = 2000;
+
+% dimension
 dim = 2;
+
+% number of points in each cloud
 Nc = 200;
-dt = 0.01;
+
+% dt for clouds
+dt1 = 0.001;
 
 %% do simulations
 
@@ -19,16 +32,21 @@ y = f(x);
 
 %% plot results
 
-% plot variables, color by time
 figure;
 plot(x(:,1),x(:,2),'.')
+xlabel('x_1')
+ylabel('x_2')
+print('xdata', fmt, res)
 
 figure;
 plot(y(:,1),y(:,2),'.')
+xlabel('y_1')
+ylabel('y_2')
+print('ydata', fmt, res)
 
 %% calculate clouds
 
-xclouds = dt * randn(Nc, dim, N);
+xclouds = dt1 * randn(Nc, dim, N);
 for i=1:N
     xclouds(:,:,i) = repmat(x(i,:), Nc, 1) + xclouds(:,:,i);
 end
@@ -55,9 +73,15 @@ neigs = 10;
 
 figure;
 scatter(x(:,1),x(:,2),200,V(:,2),'.')
+xlabel('x_1')
+ylabel('x_2')
+print('xdata_colored_NIV1', fmt, res)
 
 figure;
 scatter(x(:,1),x(:,2),200,V(:,3),'.')
+xlabel('x_1')
+ylabel('x_2')
+print('xdata_colored_NIV2', fmt, res)
 
 %% dmaps
 W = squareform(pdist(y)).^2;
@@ -65,68 +89,75 @@ W = squareform(pdist(y)).^2;
 
 figure;
 scatter(x(:,1),x(:,2),200,V(:,2),'.')
+print('xdata_colored_DMAPS1', fmt, res)
 
 figure;
 scatter(x(:,1),x(:,2),200,V(:,3),'.')
+print('xdata_colored_DMAPS2', fmt, res)
 
 %% do simulation with noise
-
 dim = 3;
+dt2 = dt1 / 100;
 
-x = zeros(N, dim);
-x(:, 1:2) = rand(N, 2);
+z = [y zeros(N, 1)];
 
-f = @(x) [x(:,1)+x(:,2).^3 x(:,2)-x(:,1).^3 x(:,3)];
-
-y = f(x);
-
-%% do simulations
-
-xclouds = zeros(Nc, dim, N);
-
-drift = @(t, x) [0; 0; (1-x(3))];
-diffn = @(t, x) [1 0 0; 0 1 0; 0 0 100];
-    
-dt = dt/Nc;
-
-tscale = 1e-4;
+zclouds = dt2 * randn(Nc, dim, N);
 for i=1:N
-    xclouds(:,:,i) = randn(Nc, dim);
-    for j=1:dim-1
-        xclouds(:,j,i) = xclouds(:,j,i)*tscale + x(i,j);
-    end
-    
-%     SDE = sde(drift, diffn, 'StartState', x(i,:));
-%     [xclouds(:,:,i), ~, ~] = SDE.simulate(Nc, 'DeltaTime', dt);
+    zclouds(:,1:2,i) = zclouds(:,1:2,i) + yclouds(:,:,i);
 end
 
-yclouds = zeros(size(xclouds));
-for i=1:N
-    yclouds(:,:,i) = f(xclouds(:,:,i));
-end
 
 % calculate inverse covariances
-%[inv_c, ~, ranks] = covariances2(yclouds, dim);
-inv_c = zeros(dim, dim, N);
-for i=1:N
-    inv_c(:,:,i) = pinv(cov(yclouds(:,:,i)));
-    
-    %[u, s, v] = svd(cov(yclouds(:,:,i)));
-    %inv_c(:,:,i) = u(:,1)*(1/s(1,1))*v(:,1)';
-    %inv_c(:,:,i) = [1 0 0; 0 1 0; 0 0 tscale];
-end
+[inv_c, ~, ranks] = covariances2(zclouds, dim);
 
 % NIV
-if size(y,1) > 4000
+if size(z,1) > 4000
     disp('Too much data; NIV will fail')
     return
 end
-neigs = 10;
-[V, D] = NIV(y, inv_c, 0, neigs, 0);
+[V, D] = NIV(z, inv_c, 0, neigs, 0);
 
 figure;
 scatter(x(:,1),x(:,2),200,V(:,2),'.')
+xlabel('x_1')
+ylabel('x_2')
+print('xdata_noise1_colored_NIV1', fmt, res)
 
 figure;
 scatter(x(:,1),x(:,2),200,V(:,3),'.')
+xlabel('x_1')
+ylabel('x_2')
+print('xdata_noise1_colored_NIV2', fmt, res)
 
+%% do simulation with noise
+
+dt2 = dt1 * 100;
+
+z = [y zeros(N, 1)];
+
+zclouds = dt2 * randn(Nc, dim, N);
+for i=1:N
+    zclouds(:,1:2,i) = zclouds(:,1:2,i) + yclouds(:,:,i);
+end
+
+% calculate inverse covariances
+[inv_c, ~, ranks] = covariances2(zclouds, dim);
+
+% NIV
+if size(z,1) > 4000
+    disp('Too much data; NIV will fail')
+    return
+end
+[V, D] = NIV(z, inv_c, 0, neigs, 0);
+
+figure;
+scatter(x(:,1),x(:,2),200,V(:,2),'.')
+xlabel('x_1')
+ylabel('x_2')
+print('xdata_noise2_colored_NIV1', fmt, res)
+
+figure;
+scatter(x(:,1),x(:,2),200,V(:,3),'.')
+xlabel('x_1')
+ylabel('x_2')
+print('xdata_noise2_colored_NIV2', fmt, res)
