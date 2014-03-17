@@ -1,19 +1,19 @@
 clear all
 close all
 
-rng(321);
+rng(123);
 
 %% simulations
 
-% rate of switching velocity
-lambda = 1;
-% speed of particles
-s = 1;
-
 % % rate of switching velocity
-% lambda = 400;
+% lambda = 1;
 % % speed of particles
-% s = 20;
+% s = 1;
+
+% rate of switching velocity
+lambda = 400;
+% speed of particles
+s = 20;
 
 % number of particles
 N = 1000;
@@ -31,6 +31,7 @@ min_start = -10;
 max_start = 10;
 
 % histogram parameters
+%nbins = 128;
 nbins = 32;
 x_hist = linspace(min_start-s*tmax, max_start+s*tmax, nbins);
 hist_all = zeros(nbins, nsteps*nsim);
@@ -156,7 +157,7 @@ ylabel('$\phi_3$', 'interpreter','latex')
 h = colorbar;
 set(get(h,'xlabel'),'String', 't');
 %title(sprintf('EMD: colored by time, \\lambda= %d', lambda))
-print(sprintf('EMD_t_%d', lambda), '-r300','-djpeg')
+%print(sprintf('EMD_t_%d', lambda), '-r300','-djpeg')
 
 figure;
 scatter(V2(:,2),V2(:,3),200,all_p(idx), '.')
@@ -165,14 +166,15 @@ ylabel('$\phi_3$', 'interpreter','latex')
 h = colorbar;
 set(get(h,'xlabel'),'String', 'p');
 %title(sprintf('EMD: colored by p, \\lambda= %d', lambda))
-print(sprintf('EMD_p_%d', lambda), '-r300','-djpeg')
+%print(sprintf('EMD_p_%d', lambda), '-r300','-djpeg')
 
 %%
+
 figure;
 set(gcf,'PaperPositionMode','auto');
 scatter(V2(:,2),V2(:,3),200,all_time(idx), '.');
 ax = gca;
-axis_lim = [-0.4 0.4 -0.25 0.3];
+axis_lim = [-0.4 0.2 -0.35 0.3];
 axis(axis_lim)
 xlabel('$\phi_2$', 'interpreter','latex')
 ylabel('$\phi_3$', 'interpreter','latex')
@@ -183,20 +185,20 @@ hist_all2 = hist_all(:, idx);
 hold on
 i = zeros(4, 1);
 i(1) = find(all_time(idx) == min(all_time(idx)) & all_p(idx) == min(all_p(idx)));
-i(2) = find(all_time(idx) == min(all_time(idx)) & all_p(idx) == max(all_p(idx)));
-i(3) = find(all_time(idx) == max(all_time(idx)) & all_p(idx) == min(all_p(idx)));
+i(2) = find(all_time(idx) == max(all_time(idx)) & all_p(idx) == min(all_p(idx)));
+i(3) = find(all_time(idx) == min(all_time(idx)) & all_p(idx) == max(all_p(idx)));
 i(4) = find(all_time(idx) == max(all_time(idx)) & all_p(idx) == max(all_p(idx)));
 
 points_x = curr_ax(1) + (V2(i, 2) - axis_lim(1)) / (axis_lim(2)-axis_lim(1)) * curr_ax(3);
 points_y = curr_ax(2) + (V2(i, 3) - axis_lim(3)) / (axis_lim(4)-axis_lim(3)) * curr_ax(4);
 
-ax_pos = [.15 .15 .1 .1;
+ax_pos = [.2 .15 .1 .1;
     .65 .15 .1 .1;
-    .15 .8 .1 .1;
+    .2 .8 .1 .1;
     .65 .8 .1 .1];
-arrow_pos = [.15+.05 .15+.1;
+arrow_pos = [.2+.05 .15+.1;
     .65+.05 .15+.1;
-    .15+.05 .8;
+    .2+.05 .8;
     .65+.05 .8 ];
 
 for j=1:4
@@ -209,6 +211,7 @@ for j=1:4
     annotation('arrow', [points_x(j) arrow_pos(j, 1)], [points_y(j) arrow_pos(j, 2)])
 end
 print(sprintf('EMD_withhist_t_%d', lambda), '-r300','-djpeg')
+
 
 figure;
 set(gcf,'PaperPositionMode','auto');
@@ -231,5 +234,4 @@ for j=1:4
     annotation('arrow', [points_x(j) arrow_pos(j, 1)], [points_y(j) arrow_pos(j, 2)])
 end
 print(sprintf('EMD_withhist_p_%d', lambda), '-r300','-djpeg')
-
 
