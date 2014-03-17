@@ -34,17 +34,27 @@
 
 \begin{abstract}
 
-We have a simulation of the dynamical system that is governed basically by a single parameter,­ the rate of switching.
- %
- Depending of the value of this parameter, this system dynamics range between heat equation dynamics and wave equation dynamics. 
- %
- In the heat equation dynamics, the initial conditions play very little role and the system dynamics over time are dominant. 
- %
- In the wave equation dynamics, the initial conditions play a significant role and the dynamics over time are less important.
- %
-We demonstrate that an essential component of our analysis is working with the right observers (histograms/ensumble rather than a single position of a particle) and with the right metric between those observers (EMD).
+We simulate a stochastic system whose dynamics are governed by a single parameter (the rate of switching).
 %
-We demonstrate that we recover the right factors that control the dynamical system, depending on the mode (In heat eq. mode ­ first recover the temporal dynamics, second the initial conditions; In wave eq. mode ­ first recover the initial conditions, second the temporal dynamics). In particular, these two components have a completely different ``nature". For example, in this case, one parameter (initial condition) is governing the entire trajectory and the other parameter (dynamics) is governing the ``step­--by­--step" time evolution (within each trajectory).
+Depending of the value of this parameter, this system dynamics range between heat equation dynamics and wave equation dynamics. 
+%
+In the heat equation dynamics, the initial conditions play very little role and the system dynamics over time are dominant. 
+%
+In the wave equation dynamics, the initial conditions play a significant role and the dynamics over time are less important.
+%
+We use dimensionality reduction techniques to analyze the results of such simulations.
+%
+We demonstrate that an essential component of our analysis is working with the right observers (histograms/ensembles rather than the single position of a particle) and with the right metric between those observers (earth mover's distance rather than Euclidean distance).
+%
+We demonstrate that, depending on the ``mode'' of the dynamical system, we recover the right factors that control the dynamics.
+%
+In heat equation mode, we­ first recover the temporal dynamics, and second the initial conditions;
+in wave equation mode, we­ first recover the initial conditions, and second recover the temporal dynamics. 
+%
+Furthermore, these two components have a completely different ``nature". 
+%
+For example, in this case, one parameter (the initial condition) is governing the entire trajectory and the other parameter (time) is governing the ``step­--by­--step" evolution within each trajectory.
+
 \end{abstract}
 
 \keywords{diffusion maps, earth mover's distance, histograms}
