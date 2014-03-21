@@ -3,67 +3,76 @@ close all
 
 %% define parameters
 
-dim = 2;
+dim1 = 2;
+dim2 = 3;
 
-% initial conditions
-% data0 = [0; 0];
+s1 = 0.001;
+s2 = 0.1;
 
-% tmax = 2000;
+L1 = 1;
+L2 = 1;
 
-dt = 0.005;
-% nsteps_per_step = 100;
-% 
-% s1 = 100*(dt^2);
-% a = 0;
-% 
-% drift = @(t, x) a*ones(dim, 1);
-% diffn = @(t, x) s1*eye(dim);
-% 
-% SDE = sde(drift, diffn, 'StartState', data0);
-% nPeriods = ceil(tmax / dt);
-%[data, t, Z] = SDE.simulate(nPeriods, 'DeltaTime', dt, 'NSTEPS', nsteps_per_step);
+npoints = 1e5;
+subsample_int = 5;
 
-npoints = 1e6;
-
-data = randn(npoints, dim)*dt;
-data(:,1) = cumsum(data(:,1));
-data(:,2) = cumsum(data(:,2));
-
-for i=1:size(data, 1)
-    for j=1:2
-        if data(i, j) < 0
-            data(i:end, j) = -data(i:end, j);
-        elseif data(i, j) > 1
-            data(i:end, j) = 2-data(i:end, j);
+theta = randn(npoints, dim1)*s1;
+theta = cumsum(theta);
+for i=1:npoints
+    for j=1:dim1
+        if theta(i, j) < 0
+            theta(i:end, j) = -theta(i:end, j);
+        elseif theta(i, j) > L1
+            theta(i:end, j) = 2*L1-theta(i:end, j);
         end
     end
 end
 
+xi = randn(npoints, dim2)*s2;
+xi = cumsum(xi);
+for i=1:npoints
+    for j=1:dim2
+        if xi(i, j) < 0
+            xi(i:end, j) = -xi(i:end, j);
+        elseif xi(i, j) > L2
+            xi(i:end, j) = 2*L2-xi(i:end, j);
+        end
+    end
+end
+xi = xi - L2/2;
 
-u = data(:,1);
-v = data(:,2);
+theta = theta(1:subsample_int:end, :);
+xi = xi(1:subsample_int:end, :);
 
+
+figure;
+plot(theta(:,1), theta(:,2),'.')
+
+figure;
+plot3(xi(:,1),xi(:,2),xi(:,3),'.')
+
+figure;
+plot(theta(:,1)+xi(:,1),'-r')
+hold on
+plot(smooth(theta(:,1)+xi(:,1), 401), '-g')
+plot(theta(:,1))
+
+return
 %%
 alpha = 4;
 sin_scale = 0.2;
 f = @(x) [x(:,1)+x(:,2).^3 x(:,2)-x(:,1).^3 sin_scale*sin(alpha*(x(:,1)+x(:,2).^3))+sin_scale*sin(alpha*(x(:,2)-x(:,1).^3))];
 
 
-fdata = f(data);
-s2 = 0.001;
-fdata = fdata + s2*randn(size(fdata));
+x = f(theta) + xi;
 
-x = fdata(:,1);
-y = fdata(:,2);
-z = fdata(:, 3);
+figure; plot3(x(:,1), x(:,2), x(:,3), '.')
 
-figure; plot3(x, y, z, '.')
-
+return
 %%
 
 npoints_per_cov = 20;
 stride = 250;
-[inv_c, new_data, ranks] = covariances(fdata, npoints_per_cov, 2, stride);
+[inv_c, new_data, ranks] = covariances(x, npoints_per_cov, 2, stride);
 
 %%
 
