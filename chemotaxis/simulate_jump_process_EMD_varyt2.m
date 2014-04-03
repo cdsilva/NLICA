@@ -19,9 +19,10 @@ s = 10;
 N = 1000;
 
 %time step
-dt = 1;
+dt = 2;
 % maximum simulation time
-tmax = 10;
+tmax = 20;
+
 
 nsteps = floor(tmax / dt) + 1;
 
@@ -130,10 +131,10 @@ eps2 = median(W2(:));
 
 [V2, D2] = dmaps(W2, eps2, 10);
 
-if corr(V2(:,2), all_p(idx)') < 0
+if corr(V2(:,2), all_time(idx)') < 0
     V2(:,2) = -V2(:,2);
 end
-if corr(V2(:,3), all_time(idx)') < 0
+if corr(V2(:,3), all_p(idx)') < 0
     V2(:,3) = -V2(:,3);
 end
 
@@ -161,7 +162,7 @@ figure;
 set(gcf,'PaperPositionMode','auto');
 scatter(V2(:,2),V2(:,3),200,all_time(idx), '.');
 ax = gca;
-axis_lim = [-0.4 0.4 -0.25 0.3];
+axis_lim = [-0.25 0.2 -0.35 0.35];
 axis(axis_lim)
 xlabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
@@ -172,20 +173,20 @@ hist_all2 = hist_all(:, idx);
 hold on
 i = zeros(4, 1);
 i(1) = find(all_time(idx) == min(all_time(idx)) & all_p(idx) == min(all_p(idx)));
-i(2) = find(all_time(idx) == min(all_time(idx)) & all_p(idx) == max(all_p(idx)));
-i(3) = find(all_time(idx) == max(all_time(idx)) & all_p(idx) == min(all_p(idx)));
+i(2) = find(all_time(idx) == max(all_time(idx)) & all_p(idx) == min(all_p(idx)));
+i(3) = find(all_time(idx) == min(all_time(idx)) & all_p(idx) == max(all_p(idx)));
 i(4) = find(all_time(idx) == max(all_time(idx)) & all_p(idx) == max(all_p(idx)));
 
 points_x = curr_ax(1) + (V2(i, 2) - axis_lim(1)) / (axis_lim(2)-axis_lim(1)) * curr_ax(3);
 points_y = curr_ax(2) + (V2(i, 3) - axis_lim(3)) / (axis_lim(4)-axis_lim(3)) * curr_ax(4);
 
-ax_pos = [.15 .15 .1 .1;
+ax_pos = [.2 .15 .1 .1;
     .65 .15 .1 .1;
-    .15 .8 .1 .1;
+    .2 .8 .1 .1;
     .65 .8 .1 .1];
-arrow_pos = [.15+.05 .15+.1;
+arrow_pos = [.2+.05 .15+.1;
     .65+.05 .15+.1;
-    .15+.05 .8;
+    .2+.05 .8;
     .65+.05 .8 ];
 
 xx = linspace(min_start-s*tmax, max_start+s*tmax, 500);
@@ -228,4 +229,5 @@ for j=1:4
 end
 %print(sprintf('EMD2_withhist_p_%d', tmax), '-r300','-djpeg')
 saveas(gcf, sprintf('EMD2_withhist_p_%d', tmax), 'epsc')
+
 

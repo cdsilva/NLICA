@@ -91,7 +91,8 @@ ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
 %title('histograms: colored by time')
 h = colorbar;
 set(get(h,'xlabel'),'String', 't', 'fontsize', 20);
-print(sprintf('rawhist_t_%d', lambda), '-r300','-djpeg')
+%print(sprintf('rawhist_t_%d', lambda), '-r300','-djpeg')
+saveas(gcf, sprintf('rawhist_t_%d', lambda), 'epsc')
 
 figure;
 scatter(V(:,2),V(:,3),200,all_p(idx), '.')
@@ -100,7 +101,8 @@ ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
 %title('histograms: colored by p')
 h = colorbar;
 set(get(h,'xlabel'),'String', 'p', 'fontsize', 20);
-print(sprintf('rawhist_p_%d', lambda), '-r300','-djpeg')
+%print(sprintf('rawhist_p_%d', lambda), '-r300','-djpeg')
+saveas(gcf, sprintf('rawhist_p_%d', lambda), 'epsc')
 
 %% compute EMD between histograms
 
@@ -113,8 +115,8 @@ D_for_emd = pdist2(x_hist', x_hist');
 for i1=1:nsteps*nsim
     for i2=1:i1-1
         
-        [emd_dist, ~]= emd_hat_gd_metric_mex(hist_all(:,i1), hist_all(:,i2), D_for_emd);
-        
+        %[emd_dist, ~]= emd_hat_gd_metric_mex(hist_all(:,i1), hist_all(:,i2), D_for_emd);
+        emd_dist = sum(abs(cumsum(hist_all(:,i1)) - cumsum(hist_all(:,i2))));
         
         W2(i1, i2) = emd_dist^2;
         W2(i2, i1) = W2(i1, i2);
@@ -131,23 +133,13 @@ eps2 = median(W2(:));
 
 [V2, D2] = dmaps(W2, eps2, 10);
 
-if lambda <= 1
-    if corr(V2(:,2), all_p(idx)') < 0
-        V2(:,2) = -V2(:,2);
-    end
-    if corr(V2(:,3), all_time(idx)') < 0
-        V2(:,3) = -V2(:,3);
-    end
-end
-if lambda > 1
+
     if corr(V2(:,2), all_time(idx)') < 0
         V2(:,2) = -V2(:,2);
     end
     if corr(V2(:,3), all_p(idx)') < 0
         V2(:,3) = -V2(:,3);
     end
-end
-
 
 %%
 figure;
@@ -201,16 +193,21 @@ arrow_pos = [.2+.05 .15+.1;
     .2+.05 .8;
     .65+.05 .8 ];
 
+xx = linspace(min_start-s*tmax, max_start+s*tmax, 500);
+
 for j=1:4
     axes('position',ax_pos(j, :));
-    bar(x_hist, hist_all2(:, i(j)))
+    yy = interp1(x_hist, hist_all2(:, i(j)),xx, 'pchip');
+    plot(xx, yy)
+    %bar(x_hist, hist_all2(:, i(j)))
     set(gca, 'xtick', [])
     set(gca, 'ytick', [])
 end
 for j=1:4
     annotation('arrow', [points_x(j) arrow_pos(j, 1)], [points_y(j) arrow_pos(j, 2)])
 end
-print(sprintf('EMD_withhist_t_%d', lambda), '-r300','-djpeg')
+%print(sprintf('EMD_withhist_t_%d', lambda), '-r300','-djpeg')
+saveas(gcf, sprintf('EMD_withhist_t_%d', lambda), 'epsc')
 
 
 figure;
@@ -226,12 +223,15 @@ hold on
 
 for j=1:4
     axes('position',ax_pos(j, :));
-    bar(x_hist, hist_all2(:, i(j)))
+    yy = interp1(x_hist, hist_all2(:, i(j)),xx, 'pchip');
+    plot(xx, yy)
+    %bar(x_hist, hist_all2(:, i(j)))
     set(gca, 'xtick', [])
     set(gca, 'ytick', [])
 end
 for j=1:4
     annotation('arrow', [points_x(j) arrow_pos(j, 1)], [points_y(j) arrow_pos(j, 2)])
 end
-print(sprintf('EMD_withhist_p_%d', lambda), '-r300','-djpeg')
+%print(sprintf('EMD_withhist_p_%d', lambda), '-r300','-djpeg')
+saveas(gcf, sprintf('EMD_withhist_p_%d', lambda), 'epsc')
 
