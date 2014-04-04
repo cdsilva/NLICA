@@ -3,6 +3,7 @@ close all
 
 rng(321);
 
+markersize = 500;
 %% simulations
 
 % rate of switching velocity
@@ -86,7 +87,7 @@ idx = (all_time > 1);
 % [V, D] = dmaps(W, eps, 10);
 %
 % figure;
-% scatter(V(:,2),V(:,3),200,all_time(idx), '.')
+% scatter(V(:,2),V(:,3),markersize,all_time(idx), '.')
 % xlabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 % ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
 % %title('histograms: colored by time')
@@ -94,7 +95,7 @@ idx = (all_time > 1);
 % set(get(h,'xlabel'),'String', 't', 'fontsize', 20);
 %
 % figure;
-% scatter(V(:,2),V(:,3),200,all_p(idx), '.')
+% scatter(V(:,2),V(:,3),markersize,all_p(idx), '.')
 % xlabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 % ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
 % %title('histograms: colored by p')
@@ -139,7 +140,7 @@ end
 
 %%
 figure;
-scatter(V2(:,2),V2(:,3),200,all_time(idx), '.')
+scatter(V2(:,2),V2(:,3),markersize,all_time(idx), '.')
 xlabel('$\phi_2$', 'interpreter','latex')
 ylabel('$\phi_3$', 'interpreter','latex')
 h = colorbar;
@@ -148,7 +149,7 @@ set(get(h,'xlabel'),'String', 't');
 %print(sprintf('EMD2_t_%d', tmax), '-r300','-djpeg')
 
 figure;
-scatter(V2(:,2),V2(:,3),200,all_p(idx), '.')
+scatter(V2(:,2),V2(:,3),markersize,all_p(idx), '.')
 xlabel('$\phi_2$', 'interpreter','latex')
 ylabel('$\phi_3$', 'interpreter','latex')
 h = colorbar;
@@ -159,9 +160,9 @@ set(get(h,'xlabel'),'String', 'p');
 %%
 figure;
 set(gcf,'PaperPositionMode','auto');
-scatter(V2(:,2),V2(:,3),200,all_time(idx), '.');
+scatter(V2(:,2),V2(:,3),markersize,all_time(idx), '.');
 ax = gca;
-axis_lim = [-0.4 0.4 -0.25 0.3];
+axis_lim = [-0.4 0.4 -0.35 0.3];
 axis(axis_lim)
 xlabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
@@ -179,14 +180,14 @@ i(4) = find(all_time(idx) == max(all_time(idx)) & all_p(idx) == max(all_p(idx)))
 points_x = curr_ax(1) + (V2(i, 2) - axis_lim(1)) / (axis_lim(2)-axis_lim(1)) * curr_ax(3);
 points_y = curr_ax(2) + (V2(i, 3) - axis_lim(3)) / (axis_lim(4)-axis_lim(3)) * curr_ax(4);
 
-ax_pos = [.15 .15 .1 .1;
-    .65 .15 .1 .1;
-    .15 .8 .1 .1;
-    .65 .8 .1 .1];
-arrow_pos = [.15+.05 .15+.1;
-    .65+.05 .15+.1;
-    .15+.05 .8;
-    .65+.05 .8 ];
+ax_size = 0.15;
+ax_pos = [.15 .15 ax_size ax_size;
+    .6 .15 ax_size ax_size;
+    .15 .75 ax_size ax_size;
+    .6 .75 ax_size ax_size];
+arrow_pos = ax_pos(:, 1:2);
+arrow_pos(:,1) = arrow_pos(:,1) + ax_size/2;
+arrow_pos(1:2,2) = arrow_pos(1:2,2) + ax_size;
 
 xx = linspace(min_start-s*tmax, max_start+s*tmax, 500);
 
@@ -206,7 +207,7 @@ saveas(gcf, sprintf('EMD2_withhist_t_%d', tmax), 'epsc')
 
 figure;
 set(gcf,'PaperPositionMode','auto');
-scatter(V2(:,2),V2(:,3),200,all_p(idx), '.');
+scatter(V2(:,2),V2(:,3),markersize,all_p(idx), '.');
 axis(axis_lim)
 xlabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
