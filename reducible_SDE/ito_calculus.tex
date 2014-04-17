@@ -1,0 +1,127 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath, amsfonts}
+
+\begin{document}
+
+\begin{equation}
+dx_t^j = \sum_i A_{ij} dt + \sum_i B_{ij} dW_t^i + \frac{1}{\epsilon} d\hat{W}_t^j
+\end{equation}
+
+Want to compute
+\begin{eqnarray}
+\hat{\mu}_t^j &=& \int_{t}^{t+\delta t} dx_{\tau}^j \\
+\hat{C}_t^{jk} &=& \int_{t}^{t+\delta t} d(x_{\tau}^j x_{\tau}^k) - \hat{\mu}_t^j \hat{\mu}_t^k
+\end{eqnarray}
+
+We have
+\begin{eqnarray}
+\hat{\mu}_t^j &=& \int_{t}^{t+\delta t} dx_{\tau}^j \\
+&=& \int_{t}^{t+\delta t} \sum_i A_{ij} dt + \sum_i B_{ij} dW_t^i + \frac{1}{\epsilon} d\hat{W}_t^j \\
+&=& \left[ \sum_i A_{ij} \delta t + \sum_i B_{ij} W_{\delta t}^i + \frac{1}{\epsilon} \hat{W}_{\delta t}^j \right]
+\end{eqnarray}
+
+For the covariance, we know
+\begin{equation}
+d(x_t^j x_t^k) = x_t^j dx_t^k + x_t^k dx_t^j + \sum_i B_{ij} B_{ik} dt + \frac{\delta_{jk}}{\epsilon^2} dt
+\end{equation}
+
+where
+\begin{equation}
+x_t^j = \sum_i A_{ij} t + \sum_i B_{ij} W_t^i + \frac{1}{\epsilon} \hat{W}_t^j
+\end{equation}
+
+Therefore, 
+\begin{eqnarray}
+x_t^j dx_t^k &=& 
+\left( \sum_i A_{ij} t 
++ \sum_i B_{ij} W_t^i 
++ \frac{1}{\epsilon} \hat{W}_t^j \right) \left( \sum_i A_{ik} dt 
++ \sum_i B_{ik} dW_t^i + \frac{1}{\epsilon} d\hat{W}_t^k \right) \\
+&=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) t dt \\
+&+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} t dW_t^i 
++ \left( \sum_i A_{ij} \right) \frac{1}{\epsilon} t d\hat{W}_t^k \\
+&+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} W_t^i dt 
++ \left( \sum_i B_{ij} W_t^i \right) \left( \sum_i B_{ik} dW_t^i \right) \\
+&+& \frac{1}{\epsilon} \left(\sum_i B_{ij} W_t^i \right) d\hat{W}_t^k 
++ \frac{1}{\epsilon} \left(\sum_i A_{ik} \right) \hat{W}_t^j dt \\
+&+& \frac{1}{\epsilon}\sum_i B_{ik} \hat{W}_t^j dW_t^i 
++ \frac{1}{\epsilon^2} \hat{W}_t^j d\hat{W}_t^k
+\end{eqnarray}
+
+
+We use the following relations
+\begin{eqnarray}
+\int_0^t W_\tau dW_\tau	&=& \frac{1}{2} W_t^2 - \frac{1}{2} t \\
+\int_0^t \tau dW_\tau &=& t W_t - \int_0^t W_\tau d \tau \\
+\int_0^t W_\tau d\tau &=& \mathcal{N} (0, t^3/3) \\
+\int_0^t W_\tau d \hat{W}_\tau &=& 0
+\end{eqnarray}
+
+and so
+\begin{eqnarray}
+\int_t^{t + \delta t} x_t^j dx_t^k &=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) \frac{\delta t^2}{2} \\
+&+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} \left(\delta t W_{\delta t}^i -\int_t^{t + \delta t} W_\tau^i d\tau \right) \\
+&+& \left( \sum_i A_{ij} \right) \frac{1}{\epsilon} \left(\delta t \hat{W}_{\delta t}^k -\int_t^{t + \delta t} \hat{W}_\tau^k d\tau \right) \\
+&+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} \left( \int_t^{t + \delta t} W_\tau^i d\tau \right) \\ 
+&+& \sum_i B_{ij} B_{ik} \left( \frac{1}{2} \left(W_{\delta t}^i\right)^2 - \frac{1}{2} \delta t \right)  \\
+&+& \frac{1}{\epsilon} \left(\sum_i A_{ik} \right) \int_t^{t + \delta t} \hat{W}_\tau^j d\tau \\
+&+& \frac{\delta_{jk}}{\epsilon^2} \left( \frac{1}{2} (\hat{W}_{\delta t}^k)^2 - \frac{1}{2} \delta t \right)
+\end{eqnarray}
+
+
+Therefore, 
+\begin{eqnarray}
+\int_t^{t + \delta t} d(x_t^j x_t^k) 
+&=& \int_t^{t + \delta t} x_t^j dx_t^k + x_t^k dx_t^j + \sum_i B_{ij} B_{ik} dt + \frac{\delta_{jk}}{\epsilon^2} dt \\
+&=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) \delta t^2 \\
+&+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} \left(\delta t W_{\delta t}^i -\int_t^{t + \delta t} W_\tau^i d\tau \right) \\
+&+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} \left(\delta t W_{\delta t}^i -\int_t^{t + \delta t} W_\tau^i d\tau \right) \\
+%\sum_i \left( \left( \sum_i A_{ij} \right) B_{ik} + \left( \sum_i A_{ik} \right) B_{ij} \right) \left(\delta t W_{\delta t}^i -\int_t^{t + \delta t} W_\tau^i d\tau \right) \\
+&+& \left( \sum_i A_{ij} \right) \frac{1}{\epsilon} \left(\delta t \hat{W}_{\delta t}^k -\int_t^{t + \delta t} \hat{W}_\tau^k d\tau \right)  \\
+&+& \left( \sum_i A_{ik} \right) \frac{1}{\epsilon} \left(\delta t \hat{W}_{\delta t}^j -\int_t^{t + \delta t} \hat{W}_\tau^j d\tau \right)  \\
+&+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} \left( \int_t^{t + \delta t} W_\tau^i d\tau \right) \\
+&+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} \left( \int_t^{t + \delta t} W_\tau^i d\tau \right) \\
+%&+& \sum_i \left( \left( \sum_i A_{ik} \right) B_{ij} + \left( \sum_i A_{ij} \right) B_{ik} \right) \left( \int_t^{t + \delta t} W_\tau^i d\tau \right) \\ 
+&+& \sum_i B_{ij} B_{ik} \left( \left(W_{\delta t}^i\right)^2 - \delta t \right)  \\
+&+& \frac{1}{\epsilon} \left(\sum_i A_{ik} \right) \int_t^{t + \delta t} \hat{W}_\tau^j d\tau 
++ \frac{1}{\epsilon} \left(\sum_i A_{ij} \right) \int_t^{t + \delta t} \hat{W}_\tau^k d\tau \\
+&+& \frac{\delta_{jk}}{\epsilon^2} \left((\hat{W}_{\delta t}^k)^2 - \delta t \right) 
++ \sum_i B_{ij} B_{ik} \delta t + \frac{\delta_{jk}}{\epsilon^2} \delta t \\
+&=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) \delta t^2 \\
+&+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} \delta t W_{\delta t}^i \\
+&+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} \delta t W_{\delta t}^i \\
+%&+& \sum_i \left( \left( \sum_i A_{ij} \right) B_{ik} + \left( \sum_i A_{ik} \right) B_{ij} \right) \delta t W_{\delta t}^i \\
+&+& \left( \sum_i A_{ij} \right) \frac{1}{\epsilon} \delta t \hat{W}_{\delta t}^k  
++ \left( \sum_i A_{ik} \right) \frac{1}{\epsilon} \delta t \hat{W}_{\delta t}^j  \\
+&+& \sum_i B_{ij} B_{ik} \left(W_{\delta t}^i\right)^2  
++ \frac{\delta_{jk}}{\epsilon^2} (\hat{W}_{\delta t}^k)^2
+\end{eqnarray}
+
+
+\begin{eqnarray}
+\hat{\mu}_t^j \hat{\mu}_t^k &=& \left[ \sum_i A_{ij} \delta t + \sum_i B_{ij} W_{\delta t}^i + \frac{1}{\epsilon} \hat{W}_{\delta t}^j \right] \left[ \sum_i A_{ik} \delta t + \sum_i B_{ik} W_{\delta t}^i + \frac{1}{\epsilon} \hat{W}_{\delta t}^k \right] \\
+&=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) \delta t^2
++ \left( \sum_i A_{ij} \right) \delta t \left( \sum_i B_{ik} W_{\delta t}^i \right) \\
+&+& \left( \sum_i A_{ij} \right) \delta t \frac{1}{\epsilon} \hat{W}_{\delta t}^k
++ \left( \sum_i B_{ij} W_{\delta t}^i \right) \left( \sum_i A_{ik} \right) \delta t \\
+&+& \left( \sum_i B_{ij} W_{\delta t}^i \right) \left( \sum_i B_{ik} W_{\delta t}^i \right)
++ \left( \sum_i B_{ij} W_{\delta t}^i \right) \frac{1}{\epsilon} \hat{W}_{\delta t}^k \\
+&+& \frac{1}{\epsilon} \hat{W}_{\delta t}^j \left( \sum_i A_{ik} \delta t \right) 
++ \frac{1}{\epsilon} \hat{W}_{\delta t}^j \left( \sum_i B_{ik} W_{\delta t}^i \right) 
++ \frac{1}{\epsilon^2} \hat{W}_{\delta t}^j \hat{W}_{\delta t}^k
+\end{eqnarray}
+
+\begin{eqnarray}
+\int_t^{t + \delta t} d(x_t^j x_t^k)  - \hat{\mu}_t^j \hat{\mu}_t^k 
+&=& \sum_i B_{ij} B_{ik} \left(W_{\delta t}^i\right)^2  
++ \frac{\delta_{jk}}{\epsilon^2} (\hat{W}_{\delta t}^k)^2 \\
+&-& \left( \sum_i B_{ij} W_{\delta t}^i \right) \left( \sum_i B_{ik} W_{\delta t}^i \right) \\
+&-& \left( \sum_i B_{ij} W_{\delta t}^i \right) \frac{1}{\epsilon} \hat{W}_{\delta t}^k \\
+&-& \frac{1}{\epsilon} \hat{W}_{\delta t}^j \left( \sum_i B_{ik} W_{\delta t}^i \right) 
+- \frac{1}{\epsilon^2} \hat{W}_{\delta t}^j \hat{W}_{\delta t}^k \\
+&=& \left[\sum_i B_{ij} B_{ik} \left(W_{\delta t}^i\right)^2 - \left( \sum_i B_{ij} W_{\delta t}^i \right) \left( \sum_i B_{ik} W_{\delta t}^i \right) \right] \\
+&-& \frac{1}{\epsilon} \left[\hat{W}_{\delta t}^j \left( \sum_i B_{ik} W_{\delta t}^i \right) + \hat{W}_{\delta t}^k \left( \sum_i B_{ij} W_{\delta t}^i \right) \right] \\
+&+& \frac{1}{\epsilon^2} \left[ \delta_{jk} (\hat{W}_{\delta t}^k)^2 - \hat{W}_{\delta t}^j \hat{W}_{\delta t}^k \right]
+\end{eqnarray}
+\end{document}
