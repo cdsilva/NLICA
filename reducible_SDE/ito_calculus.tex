@@ -4,40 +4,69 @@
 
 \begin{document}
 
-\begin{equation}
+\section{Model}
+
+We assume we have the following SDE model:
+\begin{equation} \label{eq:SDE}
 dx_t^j = \sum_i A_{ij} dt + \sum_i B_{ij} dW_t^i + \frac{1}{\epsilon} d\hat{W}_t^j
 \end{equation}
 
-Want to compute
+Note: in the case of NLICA, the governing SDE is
+\begin{equation} \label{eq:NLICA_SDE}
+dy^j = \sum_{i=1}^n \left(\frac{1}{2} (b^i)^2 f_{ii}^j + a^i f_i^j\right) dt + \sum_{i=1}^n b^i f_i^j dw^i
+\end{equation}
+and the terms in \eqref{eq:SDE} and \eqref{eq:NLICA_SDE} are related by 
 \begin{eqnarray}
-\hat{\mu}_t^j &=& \int_{t}^{t+\delta t} dx_{\tau}^j \\
-\hat{C}_t^{jk} &=& \int_{t}^{t+\delta t} d(x_{\tau}^j x_{\tau}^k) - \hat{\mu}_t^j \hat{\mu}_t^k
+x_t^i &\leftrightarrow &  y_j\\
+A_{ij} &\leftrightarrow &  \left(\frac{1}{2} (b^i)^2 f_{ii}^j + a^i f_i^j\right)\\
+B_{ij} &\leftrightarrow & b^i f_i^j 
+\end{eqnarray}
+where $\frac{1}{\epsilon} d\hat{W}_t^j$ is an additional (ambient) noise term.
+
+We want to compute
+\begin{equation}
+\hat{C}_t^{jk} = \int_{t}^{t+\delta t} d(x_{\tau}^j x_{\tau}^k) - \hat{\mu}_t^j \hat{\mu}_t^k
+\end{equation}
+where
+\begin{equation}
+\hat{\mu}_t^j = \int_{t}^{t+\delta t} dx_{\tau}^j 
+\end{equation}
+
+We will use the following relations
+\begin{eqnarray}
+\int_0^t W_\tau dW_\tau	&=& \frac{1}{2} W_t^2 - \frac{1}{2} t \\
+\int_0^t \tau dW_\tau &=& t W_t - \int_0^t W_\tau d \tau \\
+%\int_0^t W_\tau d\tau &=& \mathcal{N} (0, t^3/3) \\
+\int_0^t W_\tau d \hat{W}_\tau &=& 0
 \end{eqnarray}
 
-We have
+\section{Calculation of $\hat{\mu}_t^j$}
+
 \begin{eqnarray}
 \hat{\mu}_t^j &=& \int_{t}^{t+\delta t} dx_{\tau}^j \\
 &=& \int_{t}^{t+\delta t} \sum_i A_{ij} dt + \sum_i B_{ij} dW_t^i + \frac{1}{\epsilon} d\hat{W}_t^j \\
 &=& \left[ \sum_i A_{ij} \delta t + \sum_i B_{ij} W_{\delta t}^i + \frac{1}{\epsilon} \hat{W}_{\delta t}^j \right]
 \end{eqnarray}
 
-For the covariance, we know
+\section{Calculation of $\hat{C}_t^{jk}$}
+We know that
 \begin{equation}
 d(x_t^j x_t^k) = x_t^j dx_t^k + x_t^k dx_t^j + \sum_i B_{ij} B_{ik} dt + \frac{\delta_{jk}}{\epsilon^2} dt
 \end{equation}
-
+%
 where
+%
 \begin{equation}
 x_t^j = \sum_i A_{ij} t + \sum_i B_{ij} W_t^i + \frac{1}{\epsilon} \hat{W}_t^j
 \end{equation}
 
 Therefore, 
 \begin{eqnarray}
-x_t^j dx_t^k &=& 
-\left( \sum_i A_{ij} t 
-+ \sum_i B_{ij} W_t^i 
-+ \frac{1}{\epsilon} \hat{W}_t^j \right) \left( \sum_i A_{ik} dt 
-+ \sum_i B_{ik} dW_t^i + \frac{1}{\epsilon} d\hat{W}_t^k \right) \\
+x_t^j dx_t^k 
+%&=& \left( \sum_i A_{ij} t 
+%+ \sum_i B_{ij} W_t^i 
+%+ \frac{1}{\epsilon} \hat{W}_t^j \right) \left( \sum_i A_{ik} dt 
+%+ \sum_i B_{ik} dW_t^i + \frac{1}{\epsilon} d\hat{W}_t^k \right) \\
 &=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) t dt \\
 &+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} t dW_t^i 
 + \left( \sum_i A_{ij} \right) \frac{1}{\epsilon} t d\hat{W}_t^k \\
@@ -50,13 +79,7 @@ x_t^j dx_t^k &=&
 \end{eqnarray}
 
 
-We use the following relations
-\begin{eqnarray}
-\int_0^t W_\tau dW_\tau	&=& \frac{1}{2} W_t^2 - \frac{1}{2} t \\
-\int_0^t \tau dW_\tau &=& t W_t - \int_0^t W_\tau d \tau \\
-\int_0^t W_\tau d\tau &=& \mathcal{N} (0, t^3/3) \\
-\int_0^t W_\tau d \hat{W}_\tau &=& 0
-\end{eqnarray}
+
 
 and so
 \begin{eqnarray}
@@ -77,12 +100,10 @@ Therefore,
 &=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) \delta t^2 \\
 &+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} \left(\delta t W_{\delta t}^i -\int_t^{t + \delta t} W_\tau^i d\tau \right) \\
 &+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} \left(\delta t W_{\delta t}^i -\int_t^{t + \delta t} W_\tau^i d\tau \right) \\
-%\sum_i \left( \left( \sum_i A_{ij} \right) B_{ik} + \left( \sum_i A_{ik} \right) B_{ij} \right) \left(\delta t W_{\delta t}^i -\int_t^{t + \delta t} W_\tau^i d\tau \right) \\
 &+& \left( \sum_i A_{ij} \right) \frac{1}{\epsilon} \left(\delta t \hat{W}_{\delta t}^k -\int_t^{t + \delta t} \hat{W}_\tau^k d\tau \right)  \\
 &+& \left( \sum_i A_{ik} \right) \frac{1}{\epsilon} \left(\delta t \hat{W}_{\delta t}^j -\int_t^{t + \delta t} \hat{W}_\tau^j d\tau \right)  \\
 &+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} \left( \int_t^{t + \delta t} W_\tau^i d\tau \right) \\
 &+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} \left( \int_t^{t + \delta t} W_\tau^i d\tau \right) \\
-%&+& \sum_i \left( \left( \sum_i A_{ik} \right) B_{ij} + \left( \sum_i A_{ij} \right) B_{ik} \right) \left( \int_t^{t + \delta t} W_\tau^i d\tau \right) \\ 
 &+& \sum_i B_{ij} B_{ik} \left( \left(W_{\delta t}^i\right)^2 - \delta t \right)  \\
 &+& \frac{1}{\epsilon} \left(\sum_i A_{ik} \right) \int_t^{t + \delta t} \hat{W}_\tau^j d\tau 
 + \frac{1}{\epsilon} \left(\sum_i A_{ij} \right) \int_t^{t + \delta t} \hat{W}_\tau^k d\tau \\
@@ -91,7 +112,6 @@ Therefore,
 &=& \left( \sum_i A_{ij} \right) \left( \sum_i A_{ik} \right) \delta t^2 \\
 &+& \left( \sum_i A_{ij} \right) \sum_i B_{ik} \delta t W_{\delta t}^i \\
 &+& \left( \sum_i A_{ik} \right) \sum_i B_{ij} \delta t W_{\delta t}^i \\
-%&+& \sum_i \left( \left( \sum_i A_{ij} \right) B_{ik} + \left( \sum_i A_{ik} \right) B_{ij} \right) \delta t W_{\delta t}^i \\
 &+& \left( \sum_i A_{ij} \right) \frac{1}{\epsilon} \delta t \hat{W}_{\delta t}^k  
 + \left( \sum_i A_{ik} \right) \frac{1}{\epsilon} \delta t \hat{W}_{\delta t}^j  \\
 &+& \sum_i B_{ij} B_{ik} \left(W_{\delta t}^i\right)^2  
@@ -111,17 +131,37 @@ Therefore,
 + \frac{1}{\epsilon} \hat{W}_{\delta t}^j \left( \sum_i B_{ik} W_{\delta t}^i \right) 
 + \frac{1}{\epsilon^2} \hat{W}_{\delta t}^j \hat{W}_{\delta t}^k
 \end{eqnarray}
-
+%
 \begin{eqnarray}
-\int_t^{t + \delta t} d(x_t^j x_t^k)  - \hat{\mu}_t^j \hat{\mu}_t^k 
+\hat{C}_{t}^{jk} 
+&=& \int_t^{t + \delta t} d(x_t^j x_t^k)  - \hat{\mu}_t^j \hat{\mu}_t^k \\
 &=& \sum_i B_{ij} B_{ik} \left(W_{\delta t}^i\right)^2  
 + \frac{\delta_{jk}}{\epsilon^2} (\hat{W}_{\delta t}^k)^2 \\
 &-& \left( \sum_i B_{ij} W_{\delta t}^i \right) \left( \sum_i B_{ik} W_{\delta t}^i \right) \\
 &-& \left( \sum_i B_{ij} W_{\delta t}^i \right) \frac{1}{\epsilon} \hat{W}_{\delta t}^k \\
 &-& \frac{1}{\epsilon} \hat{W}_{\delta t}^j \left( \sum_i B_{ik} W_{\delta t}^i \right) 
-- \frac{1}{\epsilon^2} \hat{W}_{\delta t}^j \hat{W}_{\delta t}^k \\
+- \frac{1}{\epsilon^2} \hat{W}_{\delta t}^j \hat{W}_{\delta t}^k 
+\end{eqnarray}
+%
+Canceling terms, we get:
+\begin{eqnarray}
+\hat{C}_{t}^{jk} 
 &=& \left[\sum_i B_{ij} B_{ik} \left(W_{\delta t}^i\right)^2 - \left( \sum_i B_{ij} W_{\delta t}^i \right) \left( \sum_i B_{ik} W_{\delta t}^i \right) \right] \\
 &-& \frac{1}{\epsilon} \left[\hat{W}_{\delta t}^j \left( \sum_i B_{ik} W_{\delta t}^i \right) + \hat{W}_{\delta t}^k \left( \sum_i B_{ij} W_{\delta t}^i \right) \right] \\
 &+& \frac{1}{\epsilon^2} \left[ \delta_{jk} (\hat{W}_{\delta t}^k)^2 - \hat{W}_{\delta t}^j \hat{W}_{\delta t}^k \right]
 \end{eqnarray}
+
+There are three distinct terms:
+\begin{enumerate}
+\item A term for the intrinsic noise
+\item A term for the correlatoin between the intrinsic and ambient space noise
+\item A term for the ambient space noise
+\end{enumerate}
+
+Note that, in expectation, we get what we expect: the second term is 0, and we get a sum of covariances from the intrinsic and ambient noises.
+
+
+
+
+
 \end{document}
