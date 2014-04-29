@@ -141,8 +141,8 @@ end
 %%
 figure;
 scatter(V2(:,2),V2(:,3),markersize,all_time(idx), '.')
-xlabel('$\phi_2$', 'interpreter','latex')
-ylabel('$\phi_3$', 'interpreter','latex')
+xlabel('$\phi_1$', 'interpreter','latex')
+ylabel('$\phi_2$', 'interpreter','latex')
 h = colorbar;
 set(get(h,'xlabel'),'String', 't');
 %title(sprintf('EMD: colored by time, \\lambda= %d', lambda))
@@ -150,8 +150,8 @@ set(get(h,'xlabel'),'String', 't');
 
 figure;
 scatter(V2(:,2),V2(:,3),markersize,all_p(idx), '.')
-xlabel('$\phi_2$', 'interpreter','latex')
-ylabel('$\phi_3$', 'interpreter','latex')
+xlabel('$\phi_1$', 'interpreter','latex')
+ylabel('$\phi_2$', 'interpreter','latex')
 h = colorbar;
 set(get(h,'xlabel'),'String', 'p');
 %title(sprintf('EMD: colored by p, \\lambda= %d', lambda))
@@ -164,8 +164,8 @@ scatter(V2(:,2),V2(:,3),markersize,all_time(idx), '.');
 ax = gca;
 axis_lim = [-0.4 0.4 -0.35 0.3];
 axis(axis_lim)
-xlabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
-ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
+xlabel('$\phi_1$', 'interpreter','latex', 'fontsize', 20)
+ylabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 h = colorbar;
 set(get(h,'xlabel'),'String', 't', 'fontsize', 20);
 curr_ax = get(ax, 'position');
@@ -209,8 +209,8 @@ figure;
 set(gcf,'PaperPositionMode','auto');
 scatter(V2(:,2),V2(:,3),markersize,all_p(idx), '.');
 axis(axis_lim)
-xlabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
-ylabel('$\phi_3$', 'interpreter','latex', 'fontsize', 20)
+xlabel('$\phi_1$', 'interpreter','latex', 'fontsize', 20)
+ylabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 h = colorbar;
 set(get(h,'xlabel'),'String', 'p', 'fontsize', 20);
 curr_ax = get(ax, 'position');
