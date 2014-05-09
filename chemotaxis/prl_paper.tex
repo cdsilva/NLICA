@@ -40,7 +40,8 @@ In our model, depending on the value of a single parameter, the system dynamics 
 %
 We demonstrate that diffusion maps with the appropriate observers and metric can recover the two macroscopic system variables (initial condition and time) from data collected at the microscale in a variable- and equation-free manner. 
 %
-Furthermore, the order in which these variables are recovered is indicative of the system dynamics over the timescales of interest.
+Furthermore, the order in which these variables are recovered is indicative of the system dynamics over the timescales of interest, 
+and the eigenvalue spectrum indicates where the switch in system dynamics occurs.
 %
 %We demonstrate that an essential component of our analysis is working with the right observers (histograms/ensembles, rather than the single position of a particle) and with the right metric between those observers (earth mover's distance, rather than Euclidean distance).
 %
@@ -66,7 +67,7 @@ For example, fluid flow, which can be described via the position and velocity of
 %
 However, in general, this mapping from microscale to macroscale is not always obvious.
 %
-We would like to {\em automatically} uncover the macroscale behavior from data collected at the microscale without knowing or assuming any microscopic or macroscopic model a priori.
+We would like to {\em automatically} uncover the macroscale behavior from data collected at the microscale without knowing or assuming any microscopic or macroscopic model {\em a priori}.
 %
 TODO: write where this has been done in other places, context, etc.
 
@@ -96,7 +97,7 @@ We will present the stochastic microscopic model, and show how, for this example
 %
 We will then use diffusion maps to analyze the microscopic simulation results, and show that using the appropriate metric for our data is essential to uncovering a meaningful description of our data.
 %
-Furthermore, we will show that diffusion maps can inform us as to the relative importance of system variables in different parameter regimes.
+Furthermore, we will show that diffusion maps can inform us as to the relative importance of system variables in different parameter regimes, and allow us to detect changes in macroscopic dynamical behavior.
 
 %\section{Problem formulation}
 
@@ -185,7 +186,7 @@ When $\lambda \rightarrow \infty$, \eqref{eq:second_order_pde} approaches the he
 2 \frac{\partial \rho}{\partial t} = D \frac{\partial ^2 \rho}{\partial x^2}.
 \end{equation}
 %
-This analysis implies that the initial distribution of the moving direction of the particles (given by $p$ in our microscopic simulations) plays a very different role depending on the value of $\lambda$.
+This analysis shows that the initial distribution of the moving direction of the particles (given by $p$ in our microscopic simulations) plays a very different role depending on the value of $\lambda$.
 %
 When $\lambda \rightarrow 0$, the dynamics are described by two wave equations, and the initial distribution persists throughout the trajectory.
 %
@@ -194,7 +195,35 @@ When $\lambda \rightarrow \infty$, the dynamics are described by one heat equati
 For this particular system, we can deduce this behavior from the macroscopic PDEs which describe the system dynamics.
 %
 However, we would like to demonstrate that, in general, these PDEs are not necessary for us to uncover which system variables are important to describe the macroscopic dynamics.
- 
+
+
+\begin{figure*}[t!]
+\def\figwidth{6.4cm}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{EMD_withhist_p_1}
+\caption{}
+\label{subfig:small_lambda_p}
+\end{subfigure}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{EMD_withhist_t_1}
+\caption{}
+\label{subfig:small_lambda_t}
+\end{subfigure}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{EMD_withhist_p_400}
+\caption{}
+\label{subfig:large_lambda_p}
+\end{subfigure}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{EMD_withhist_t_400}
+\caption{}
+\label{subfig:large_lambda_t}
+\end{subfigure}
+\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a,b) $\lambda=1$, $s=1$, and (c,d) $\lambda=400$, $s=20$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time. Representative histograms are shown for selected data points.}
+\label{fig:dmaps_embed_emd}
+\end{figure*}
+
+
 
 %\section{Methods and Analysis}
 
@@ -225,11 +254,13 @@ We compute the eigenvalues $\mu_0, \mu_1, \dots, \mu_{m-1}$ and eigenvectors $\p
 %
 Note that the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$), which implies $\mu_0 = 1$ and $\phi_0$ is a constant vector.
 %
-The next few eigenvectors give us the embedding coordinates for our data;
-$\phi_{j}(i)$ gives us the $j^{th}$ embedding coordinate for $z(i)$ and
-$\mu_j$ gives a measure of the ``importance'' of coordinate $\phi_j$.
+The next few eigenvectors give us the embedding coordinates for our data, such that
+$\phi_{j}(i)$ gives us the $j^{th}$ embedding coordinate for $z(i)$.
+%
+$\mu_j$ gives a measure of the ``importance'' of coordinate $\phi_j$,
+and we can quantify how important $\phi_1$ is relative to $\phi_2$ by comparing $\mu_1$ and $\mu_2$.
 
-We first need to address what are the appropriate observers or measurements for our system.
+In order to use DMAPS to analyze our simulation results, we first need to address what are the appropriate observers or measurements for our system.
 %
 Because the particles are indistinguishable, vectors containing the particle positions are not appropriate to analyze, as we would then be assigning indices or labels to the particles and swapping two particles would change the data.
 %
@@ -243,27 +274,7 @@ The histograms serve as an empirical estimate of the probability density at each
 
 %\subsection{Earth mover's distance}
 
-\begin{figure}[t]
-\begin{subfigure}{0.2\textwidth}
-\includegraphics[width=\textwidth]{rawhist_p_1}
-\caption{}
-\end{subfigure}
-\begin{subfigure}{0.2\textwidth}
-\includegraphics[width=\textwidth]{rawhist_t_1}
-\caption{}
-\end{subfigure}
-\begin{subfigure}{0.2\textwidth}
-\includegraphics[width=\textwidth]{rawhist_p_400}
-\caption{}
-\end{subfigure}
-\begin{subfigure}{0.2\textwidth}
-\includegraphics[width=\textwidth]{rawhist_t_400}
-\caption{}
-\end{subfigure}
-\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a,b) $\lambda=1$, $s=1$, and (c,d) $\lambda=400$, $s=20$. The distances used in the diffusion maps kernel are the Euclidean distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time.}
-\label{fig:dmaps_embed_noemd}
-\end{figure}
-%TODO: for all figures - fix the labels of the axes - phi_2 vs. phi_1.
+
 
 The second point we need to address is choosing appropriate distance metric between data points in \eqref{eq:W}.
 %
@@ -275,7 +286,7 @@ However, the Euclidean distance only considers the density at each bin and does 
 %however, for histograms which approximate a probability density, the Euclidean distance can often be misleading.
 %
 %For example, the distance between two uniform distributions with finite, non-overlapping support will always be the same, {\em independent} of the distance between the support intervals.
-
+%
 To overcome this critical shortcoming, we propose to use the earth mover's distance (EMD) \cite{rubner2000earth} as our metric between histograms.
 %
 Conceptually, EMD measures how much ``work'' it takes to transform one probability density into another.
@@ -302,6 +313,8 @@ This can be estimated using histograms,
 where $z(i), z(j) \in \mathbb{R}^n$ are two histograms defined on (equally-spaced) bins in $\mathbb{R}$. 
 %\section{Results}
 
+
+
 %We simulate this stochastic velocity jump process for $N=1000$ particles, and $p \in [0.1, 0.9]$.
 %%
 %We simulate the process for $t \in [0, 10]$, and record the positions of each particle at uniform/equal time intervals.
@@ -319,114 +332,137 @@ where $z(i), z(j) \in \mathbb{R}^n$ are two histograms defined on (equally-space
 %%
 %This is due to our poor choice of metric, which does not accurrately describe the distances between histograms.
 
-\begin{figure}[t]
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD_withhist_p_1}
-\caption{}
-\label{subfig:small_lambda_p}
-\end{subfigure}
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD_withhist_t_1}
-\caption{}
-\label{subfig:small_lambda_t}
-\end{subfigure}
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD_withhist_p_400}
-\caption{}
-\label{subfig:large_lambda_p}
-\end{subfigure}
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD_withhist_t_400}
-\caption{}
-\label{subfig:large_lambda_t}
-\end{subfigure}
-\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a,b) $\lambda=1$, $s=1$, and (c,d) $\lambda=400$, $s=20$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time. Representative histograms are shown for selected data points.}
-\label{fig:dmaps_embed_emd}
-\end{figure}
-
-We simulate the dynamics of this stochastic system to obtain our microscopic data to which we apply diffusion maps based on histograms and the EMD.
+We simulate the dynamics of this stochastic system to obtain microscopic data to which we apply diffusion maps based on histograms and the EMD.
 %
-We consider two sets of simulations;
+We consider two sets of simulations:
 in one set (small $\lambda$), $\lambda = 1$ and $s=1$, and in the other set (large $\lambda$), $\lambda = 400$, and $s=20$.
 %
 For each set, we run many simulations, each with $N=1000$ particles.
 %
-We vary the initial condition of each simulation such that $0.1 \le p  \le 0.9$, and allow each simulation to evolve for $10$ time units.
+We vary the initial conditions such that $0.1 \le p  \le 0.9$, and allow each simulation to evolve for $10$ time units.
 %
 We discard the initial portion of each simulation trajectory corresponding to $t < 1$, as this is very noisy and corresponds to initial relaxation of the system.
 
-In Figure \ref{fig:dmaps_embed_noemd}, we have computed the diffusion maps embeddings of our two sets of simulation data, used the standard Euclidean distance between the histograms to compute the distances in \eqref{eq:W}.
-%
-The embeddings are not particularly informative and do not capture the underlying system dynamics; there is no strong correlation of the embedding coordinates with $p$ or $t$. 
-%
-This is due to our poor choice of metric, which does not accurately describe the distances between histograms.
+\begin{figure}[t] 
+\includegraphics[width=8cm]{detect_change_eigenvalues}
+\caption{The first two eigenvalues from DMAPS as a function of $\lambda$. Note that the convergence of the eigenvalues indicates switching of the dynamical ``mode'' of the system.}
+\label{fig:detect_change}
+\end{figure}
 
-In Figure \ref{fig:dmaps_embed_emd}, we have used the earth mover's distance to compute the distances between histograms.
+Figure \ref{fig:dmaps_embed_emd} shows the diffusion maps embedding of our data.
 %
 The two system variables, $p$ and $t$, are well-correlated with the first two diffusion maps coordinates, $\phi_1$ and $\phi_2$. 
 %
 However, the ``more important'' coordinate, $\phi_1$, is correlated with $p$ for the small $\lambda$ case (Figure~\ref{subfig:small_lambda_p}), and correlated with $t$ for the large $\lambda$ case (Figure~\ref{subfig:large_lambda_t}); 
 this is consistent with the macroscopic PDE description.
 %
-Furthermore, in the small $\lambda$ regime (wave equation), shown in Figures \ref{subfig:small_lambda_p} and \ref{subfig:small_lambda_t}, the points corresponding to small times are more clustered than the points corresponding to large times.
+Furthermore, in the small $\lambda$ regime (wave equation), shown in Figures \ref{subfig:small_lambda_p} and \ref{subfig:small_lambda_t}, the points corresponding to small times are more tightly clustered than the points corresponding to large times.
 %
-This is not surprising; at small times, the particles are more condensed around $x=0$, and it is more difficult to distinguish the particles moving to the left from the particles moving to the right. 
+This is not surprising: at small times, the particles are more condensed around $x=0$, and it is more difficult to distinguish the particles moving to the left from the particles moving to the right. 
 %
-On the other hand, for large time, once the particles evolve from the origin, this separation is clear.  
+On the other hand, at large times, once the particles evolve from the origin, this separation is clear.  
 %
-For the large $\lambda$ case (heat equation), shown in Figures \ref{subfig:large_lambda_p} and \ref{subfig:large_lambda_t}, we observe that for small time the initial distribution $p$ is well organized in the embedding in Figure \ref{subfig:large_lambda_p}, since for small time the distribution of the particles is skewed and the initial velocity plays a role in this regime. 
+For the large $\lambda$ case (heat equation), shown in Figures \ref{subfig:large_lambda_p} and \ref{subfig:large_lambda_t}, we observe that for small time the initial distribution $p$ is well organized in the embedding in Figure \ref{subfig:large_lambda_p}, the distribution of the particles is initially skewed and the initial velocity plays a role. 
 %
-On the other hand, for large time, we observe that the initial distribution $p$ is less organized in Figure \ref{subfig:large_lambda_p}, since the velocities have equilibrated and the initial distribution is less detectable in the particle density.
+On the other hand, for large times, we observe that the initial distribution $p$ is less organized in Figure \ref{subfig:large_lambda_p}, as the velocities have equilibrated and the initial distribution is less detectable in the particle density.
+
+%\begin{figure}[t]
+%\begin{subfigure}{0.45\columnwidth}
+%\includegraphics[width=\textwidth]{EMD2_withhist_p_10}
+%\caption{}
+%\end{subfigure}
+%\begin{subfigure}{0.45\columnwidth}
+%\includegraphics[width=\textwidth]{EMD2_withhist_t_10}
+%\caption{}
+%\end{subfigure}
+%\begin{subfigure}{0.45\columnwidth}
+%\includegraphics[width=\textwidth]{EMD2_withhist_p_20}
+%\caption{}
+%\end{subfigure}
+%\begin{subfigure}{0.45\columnwidth}
+%\includegraphics[width=\textwidth]{EMD2_withhist_t_20}
+%\caption{}
+%\end{subfigure}
+%\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with $\lambda=100$, $s=10$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time. The particles are allowed to evolve for (a, b) 10 time units, and (c, d) 20 time units.  Representative histograms are shown for selected data points.} 
+%\label{fig:dmaps_embed_varyt}
+%\end{figure}
+
+The crossover from ``wave-like'' to ``heat-like'' behavior can be seen in the DMAPS eigenvalues: a large gap between the first two eigenvalues indicates that one system variable is significantly more important and that we are in one of the asymptotic regimes.
+%
+Figure~\ref{fig:detect_change} shows the top two DMAPS eigenvalues, $\mu_1$ and $\mu_2$, as a function of $\lambda$. 
+%
+Each data point is averaged over 10 data sets, with error bars indicating one standard deviation. 
+%
+For small $\lambda$ (the wave-equation regime), the two eigenvalues are well-separated, as the first mode (which parameterizes $p$) is significantly more important than the second mode (which parameterizes $t$).
+%
+At intermediate $\lambda$ values, the eigenvalues come together as the system dynamics change and both $p$ and $t$ are of similar importance.
+%
+The eigenvalues then separate again at large $\lambda$ (the heat equation regime), where the $t$ effects dominate the dynamics.
+
+%We have illustrated that diffusion maps can elucidate the relative importance of different system variables as a function of $\lambda$.
+%%
+%For the plots shown in Figure~\ref{fig:dmaps_embed_emd}, we can easily see the crossover from the wave-equation regime, where $p$ is more important, to the heat-equation regime, where $t$ is more important. 
+%%
+%However, we would like to note that this crossover point depends not only on $\lambda$, but also on the timescale of observation.
+%%
+%We can see this from our PDE description in \eqref{eq:second_order_pde};
+%clearly, $\lambda$ is defined relative to $t$, and so we should not only consider $\lambda$ in our analysis, but also the timescale of observation.
+%%
+%We can also detect this using diffusion maps to analyze our microscopic simulations.
+%%
+%We chose an intermediate value of $\lambda$ ($\lambda=100$ and $s=10$), and allowed the system to evolve for 10 and 20 time units. 
+%%
+%The results are shown in Figure \ref{fig:dmaps_embed_varyt}.
+%%
+%When the system only evolves for 10 time units, the majority of the data still appears ``wave-like'', and so the dominant parameter, $\phi_1$, is correlated with $p$, the initial condition.
+%%
+%However, when the system evolves for 20 time units, the initial velocity distribution has had more time to equilibrate - the behavior is more diffusive and $\phi_1$ is now correlated with $t$. 
+%%
+%Therefore, we can also see the crossover from wave-like behavior to heat-like behavior as a function of the observation timescale using diffusion maps.
 
 \begin{figure}[t]
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD2_withhist_p_10}
+\def\figwidth{4.2cm}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{rawhist_p_1}
 \caption{}
 \end{subfigure}
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD2_withhist_t_10}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{rawhist_t_1}
 \caption{}
 \end{subfigure}
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD2_withhist_p_20}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{rawhist_p_400}
 \caption{}
 \end{subfigure}
-\begin{subfigure}{0.45\columnwidth}
-\includegraphics[width=\textwidth]{EMD2_withhist_t_20}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{rawhist_t_400}
 \caption{}
 \end{subfigure}
-\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with $\lambda=100$, $s=10$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time. The particles are allowed to evolve for (a, b) 10 time units, and (c, d) 20 time units.  Representative histograms are shown for selected data points.} 
-\label{fig:dmaps_embed_varyt}
+\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a,b) $\lambda=1$, $s=1$, and (c,d) $\lambda=400$, $s=20$. The distances used in the diffusion maps kernel are the Euclidean distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time.}
+\label{fig:dmaps_embed_noemd}
 \end{figure}
+%TODO: for all figures - fix the labels of the axes - phi_2 vs. phi_1.
 
-We have illustrated that diffusion maps can elucidate the relative importance of different system variables as a function of $\lambda$.
+To emphasize the importance of using the correct distance metric, we also computed the diffusion maps embeddings of our two sets of simulation data, used the standard Euclidean distance between the histograms to compute the distances in \eqref{eq:W}; the results are shown in Figure \ref{fig:dmaps_embed_noemd}.
 %
-For the plots shown in Figure~\ref{fig:dmaps_embed_emd}, we can easily see the crossover from the wave-equation regime, where $p$ is more important, to the heat-equation regime, where $t$ is more important. 
+The embeddings are not particularly informative and do not capture the underlying system dynamics; there is no strong correlation of the embedding coordinates with $p$ or $t$. 
 %
-However, we would like to note that this crossover point depends not only on $\lambda$, but also on the timescale of observation.
-%
-We can see this from our PDE description in \eqref{eq:second_order_pde};
-clearly, $\lambda$ is defined relative to $t$, and so we should not only consider $\lambda$ in our analysis, but also the timescale of observation.
-%
-We can also detect this using diffusion maps to analyze our microscopic simulations.
-%
-We chose an intermediate value of $\lambda$ ($\lambda=100$ and $s=10$), and allowed the system to evolve for 10 and 20 time units. 
-%
-The results are shown in Figure \ref{fig:dmaps_embed_varyt}.
-%
-When the system only evolves for 10 time units, the majority of the data still appears ``wave-like'', and so the dominant parameter, $\phi_1$, is correlated with $p$, the initial condition.
-%
-However, when the system evolves for 20 time units, the initial velocity distribution has had more time to equilibrate - the behavior is more diffusive and $\phi_1$ is now correlated with $t$. 
-%
-Therefore, we can also see the crossover from wave-like behavior to heat-like behavior as a function of the observation timescale using diffusion maps.
+This is due to our poor choice of metric, which does not accurately describe the distances between histograms.
 
-We have presented algorithms to automatically uncover the variables which govern the macroscopic behavior of a system from data sampled at the microscopic level.
+
+
+
+We have demonstrated how diffusion maps can automatically uncover the variables which govern the macroscopic behavior of a system from data sampled at the microscopic level.
+%
+Furthermore, the eigenvalue spectrum allows us to detect changes in the macroscopic system dynamics.
 %
 The essential components for our algorithms are choosing the correct observers and selecting the appropriate metric between these observers.
 %
 In our specific example, we used histograms of particle positions and the earth mover's distance between pairs of histograms.
 %
 With these two considerations, we used diffusion maps to uncover the two variables which characterize the system dynamics.
+%
+The eigenvalue spectrum can help us detect changes in the dynamical behavior.
 %
 Furthermore, these two variables have a completely different nature;
 one variable, $p$, characterizes the initial conditions of the system, whereas the other variable, $t$, describes the ``step-by-step'' evolution of the particles. 

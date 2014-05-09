@@ -6,7 +6,7 @@ rng(321);
 markersize = 500;
 
 %nsamples = 25;
-nsamples = 10;
+nsamples = 20;
 nreplicates = 10;
 
 D = 1;
@@ -23,17 +23,21 @@ for i=1:nsamples
     end
 end
 
+save('simulate_jump_process_EMD_detect_change_data')
+
 %%
 figure;
-errorbar(lambda, mean(D2), std(D2))
+set(gcf, 'papersize', [8.6 4.3], 'units','centimeters')
+set(gcf, 'paperposition', [0 0 8.6 4.3], 'units','centimeters')
+errorbar(lambda, mean(D2), std(D2), '.b', 'markersize', 14)
 hold on
-errorbar(lambda, mean(D3), std(D3))
+errorbar(lambda, mean(D3), std(D3), '.r', 'markersize', 14)
+xlabel('$\lambda$', 'interpreter','latex', 'fontsize', 20)
+ylabel('$\mu_k$', 'interpreter','latex', 'fontsize', 20)
+axis([-20 420 0.37 0.57])
+legend('k = 1','k = 2','location','northwest')
 
-% scatter(lambda, D2(2,:), markersize, 'b', '.')
-% hold on
-% scatter(lambda, D2(3,:), markersize, 'r', '.')
-% xlabel('\lambda')
-% ylabel('\mu_k')
-% legend('k=1','k=2','location','best')
-% 
+saveas(gcf, 'detect_change_eigenvalues', 'epsc')
+
+
 
