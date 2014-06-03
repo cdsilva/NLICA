@@ -34,14 +34,14 @@
 
 \begin{abstract}
 
-Using a stochastic model which arises in cellular chemotaxis, we illustrate how manifold learning techniques, such as diffusion maps, can be used to characterize the behavior of a dynamical system.
+Using a stochastic model of particle dynamics which arises in cellular chemotaxis, we illustrate how diffusion maps, a manifold learning technique, can be used to characterize the behavior of a dynamical system.
 %
-In our model, depending on the value of a single parameter, the system dynamics at the macroscale range from heat equation dynamics, where particles diffuse uniformly outwards, to wave equation dynamics, where particle propagate with a fixed speed. 
+In our model, depending on the value of a single parameter, the macroscopic system dynamics range from heat equation dynamics, where particles diffuse uniformly outwards, to wave equation dynamics, where particle propagate with a fixed speed. 
 %
-We demonstrate that diffusion maps with the appropriate observers and metric can recover the two macroscopic system variables (initial condition and time) from data collected at the microscale in a variable- and equation-free manner. 
+We demonstrate that diffusion maps with the appropriate observers and metric can recover the two governing macroscopic system variables (initial condition and time) from data collected at the microscale. % in a variable- and equation-free manner. 
 %
 Furthermore, the order in which these variables are recovered is indicative of the system dynamics over the timescales of interest, 
-and the eigenvalue spectrum indicates where the switch in system dynamics occurs.
+and the eigenvalue spectrum indicates where this switch in system dynamics occurs.
 %
 %We demonstrate that an essential component of our analysis is working with the right observers (histograms/ensembles, rather than the single position of a particle) and with the right metric between those observers (earth mover's distance, rather than Euclidean distance).
 %
@@ -63,21 +63,23 @@ and the eigenvalue spectrum indicates where the switch in system dynamics occurs
  
 Often, systems which are stochastic and noisy on the microscale exhibit smooth, coherent dynamics on the macroscale which are governed by only a few parameters.
 %
-For example, fluid flow, which can be described via the position and velocity of the fluid particles, is modeled at the macroscale using the Navier-Stokes equations.
+For example, fluid flow, which can be described via the position and velocity of every fluid particle, is modeled at the macroscale using the Navier-Stokes equations.
 %
 However, in general, this mapping from microscale to macroscale is not always obvious.
 %
-We would like to {\em automatically} uncover the macroscale behavior from data collected at the microscale without knowing or assuming any microscopic or macroscopic model {\em a priori}.
+We would like to {\em automatically} uncover the macroscale behavior from data collected at the microscale without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
 %
 TODO: write where this has been done in other places, context, etc.
 
-In this letter, we will present how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) the significance of the observers, especially in presence of noise and random dynamics, and (b) finding an appropriate metric of comparison. We will show that both are essential for our technique to successfully uncover the underlying dynamics of a given system.
+In this letter, we will present how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) choosing the appropriate observers, especially in presence of stochastic dynamics, and (b) selecting an appropriate metric for comparison. 
+%
+We will show that both are essential for the algorithm to successfully uncover the underlying system dynamics.
 
-We will illustrate our methodology through a model problem arising in studies of cellular chemotaxis \cite{othmer2000diffusion}.
+We will illustrate our methodology using a model problem which arises in studies of cellular chemotaxis \cite{othmer2000diffusion}.
 %
 In this example, the macroscopic dynamics vary depending on the value of a single system parameter.
 %
-We will demonstrate how we can use diffusion maps \cite{coifman2005geometric}, a manifold learning technique, to {\em automatically} detect changes in a system's macroscopic dynamics from microscale data.
+We will demonstrate how we can use diffusion maps \cite{coifman2005geometric}, a manifold learning technique, to {\em automatically} detect changes in the system's macroscopic dynamics from microscale data.
 %
 This case study exhibits several key points which allow us to demonstrate the strength of our approach.
 %
@@ -85,11 +87,11 @@ First, this system has random microscopic behavior with smooth macroscopic dynam
 %
 Second, it consists of an ensemble of individual particles. 
 %
-Third, it has an analytic macroscopic description, which serves as a ground truth and will be used to verify our results, which will be obtained in an unsupervised manner.
+Third, it has an analytic macroscopic description, which serves as a ground truth and will allow us to verify our results which are obtained in an unsupervised manner.
 %
-We will show that diffusion maps based on statistical observers and the appropriate metric between them uncovers a description of the microscopic data which is consistent with the macroscopic model.
+We will show that diffusion maps based on statistical observers and the appropriate metric uncovers a description of the microscopic data which is consistent with the macroscopic model.
 %
-Furthermore, diffusion maps will uncover changes in dynamical behavior as we vary system parameters. 
+Furthermore, diffusion maps will allow us to detect changes in dynamical behavior as we vary system parameters. 
 
 The remainder of this letter is organized as follows. We will begin by describing the chemotaxis problem.
 %
@@ -97,7 +99,7 @@ We will present the stochastic microscopic model, and show how, for this example
 %
 We will then use diffusion maps to analyze the microscopic simulation results, and show that using the appropriate metric for our data is essential to uncovering a meaningful description of our data.
 %
-Furthermore, we will show that diffusion maps can inform us as to the relative importance of system variables in different parameter regimes, and allow us to detect changes in macroscopic dynamical behavior.
+We will demonstrate that diffusion maps can inform us as to the relative importance of system variables in different parameter regimes, and allow us to detect changes in macroscopic dynamical behavior.
 
 %\section{Problem formulation}
 
@@ -109,7 +111,7 @@ These signals allow cells to accomplish tasks such as finding food and navigatin
 %
 Several models have been proposed to describe the dynamics of cellular movement and dispersal \cite{othmer1988models, codling2008random}.
 %
-We will examine one such model described by a velocity jump process \cite{othmer2000diffusion}.
+We will analyze one such model described by a velocity jump process \cite{othmer2000diffusion}.
 %
 In this model, each cell is initialized with a position and a velocity, and the dynamics of each cell are governed by a stochastic process.
 %
@@ -186,7 +188,9 @@ When $\lambda \rightarrow \infty$, \eqref{eq:second_order_pde} approaches the he
 2 \frac{\partial \rho}{\partial t} = D \frac{\partial ^2 \rho}{\partial x^2}.
 \end{equation}
 %
-This analysis shows that the initial distribution of the moving direction of the particles (given by $p$ in our microscopic simulations) plays a very different role depending on the value of $\lambda$.
+Two variables determine the macroscopic state of the system: the initial distribution, which is controlled by a single parameter $p$, and the time, $t$.
+%
+The above analysis shows that the initial distribution of the moving direction of the particles plays a very different role depending on the value of $\lambda$.
 %
 When $\lambda \rightarrow 0$, the dynamics are described by two wave equations, and the initial distribution persists throughout the trajectory.
 %
@@ -194,7 +198,7 @@ When $\lambda \rightarrow \infty$, the dynamics are described by one heat equati
 %
 For this particular system, we can deduce this behavior from the macroscopic PDEs which describe the system dynamics.
 %
-However, we would like to demonstrate that, in general, these PDEs are not necessary for us to uncover which system variables are important to describe the macroscopic dynamics.
+However, we will demonstrate that, in general, these PDEs are not necessary for us to uncover which system variables are important to describe the macroscopic dynamics.
 
 
 \begin{figure*}[t!]
@@ -229,7 +233,7 @@ However, we would like to demonstrate that, in general, these PDEs are not neces
 
 %\subsection{Diffusion maps}
 
-We use diffusion maps \cite{coifman2005geometric} to analyze the data from simulations of the described microscopic stochastic model.
+We will use diffusion maps \cite{coifman2005geometric} to analyze the data from simulations of the described microscopic stochastic model.
 %
 Our goal is to show that diffusion maps can organize the data obtained from the microscopic simulations, and that this organization is consistent with the two system variables, $p$ and $t$, that emerge from the PDE analysis.
 %
