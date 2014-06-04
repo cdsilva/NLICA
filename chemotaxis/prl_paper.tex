@@ -11,7 +11,7 @@
 \begin{document}
 
 
-\title{Recovering System Dynamics using Diffusion Maps: A Chemotaxis Case Study}
+\title{Characterizing System Dynamics using Diffusion Maps: A Chemotaxis Case Study}
 
 \author{Carmeline J. Dsilva}
 \email{cdsilva@princeton.edu}
@@ -41,7 +41,7 @@ In our model, depending on the value of a single parameter, the macroscopic syst
 We demonstrate that diffusion maps with the appropriate observers and metric can recover the two governing macroscopic system variables (initial condition and time) from data collected at the microscale. % in a variable- and equation-free manner. 
 %
 Furthermore, the order in which these variables are recovered is indicative of the system dynamics over the timescales of interest, 
-and the eigenvalue spectrum indicates where this switch in system dynamics occurs.
+and the eigenvalue spectrum indicates where this switch in dynamical behavior occurs.
 %
 %We demonstrate that an essential component of our analysis is working with the right observers (histograms/ensembles, rather than the single position of a particle) and with the right metric between those observers (earth mover's distance, rather than Euclidean distance).
 %
@@ -235,7 +235,7 @@ However, we will demonstrate that, in general, these PDEs are not necessary for 
 
 We will use diffusion maps \cite{coifman2005geometric} to analyze the data from simulations of the described microscopic stochastic model.
 %
-Our goal is to show that diffusion maps can organize the data obtained from the microscopic simulations, and that this organization is consistent with the two system variables, $p$ and $t$, that emerge from the PDE analysis.
+Our goal is to show that diffusion maps can organize the data obtained from the microscopic simulations, and that this organization is consistent with the two system variables, $p$ and $t$, that emerge from the macroscopic PDE analysis.
 %
 Diffusion maps, in general, is a nonlinear manifold learning technique that embeds (maps) the data into a lower dimensional space. Ideally, the dimension of the embedded samples is equal to the the intrinsic (true) dimension of the data, and the variables/coordinates of the embedded samples represent the governing variables of the system.
 %
@@ -262,7 +262,7 @@ The next few eigenvectors give us the embedding coordinates for our data, such t
 $\phi_{j}(i)$ gives us the $j^{th}$ embedding coordinate for $z(i)$.
 %
 $\mu_j$ gives a measure of the ``importance'' of coordinate $\phi_j$,
-and we can quantify how important $\phi_1$ is relative to $\phi_2$ by comparing $\mu_1$ and $\mu_2$.
+and we can quantify the relative importance of $\phi_1$ versus $\phi_2$ by comparing $\mu_1$ and $\mu_2$.
 
 In order to use DMAPS to analyze our simulation results, we first need to address what are the appropriate observers or measurements for our system.
 %
@@ -284,7 +284,7 @@ The second point we need to address is choosing appropriate distance metric betw
 %
 Often, one uses the Euclidean distance between data points.
 %
-However, the Euclidean distance only considers the density at each bin and does not take into account the distance {\em between} bins.
+However, the Euclidean distance between histograms only considers the density at each bin and does not take into account the distance {\em between} bins.
 %,such that two distributions whose supports are a short distance apart are closer (in norm) than two distributions whose supports are very far from each other.
 %
 %however, for histograms which approximate a probability density, the Euclidean distance can often be misleading.
@@ -349,7 +349,7 @@ We discard the initial portion of each simulation trajectory corresponding to $t
 
 \begin{figure}[t] 
 \includegraphics[width=8cm]{detect_change_eigenvalues}
-\caption{The first two eigenvalues from DMAPS as a function of $\lambda$. Note that the convergence of the eigenvalues indicates switching of the dynamical ``mode'' of the system.}
+\caption{The first two eigenvalues from DMAPS as a function of $\lambda$. The convergence of the eigenvalues at $\lambda \approx 125$ indicates switching of the dynamical ``mode'' of the system.}
 \label{fig:detect_change}
 \end{figure}
 
@@ -391,7 +391,7 @@ On the other hand, for large times, we observe that the initial distribution $p$
 %\label{fig:dmaps_embed_varyt}
 %\end{figure}
 
-The crossover from ``wave-like'' to ``heat-like'' behavior can be seen in the DMAPS eigenvalues: a large gap between the first two eigenvalues indicates that one system variable is significantly more important and that we are in one of the asymptotic regimes.
+The crossover from ``wave-like'' to ``heat-like'' behavior can be seen in the DMAPS eigenvalues: a large gap between the first two eigenvalues indicates that one DMAPS variable is significantly more important and that we are in one of the two asymptotic regimes.
 %
 Figure~\ref{fig:detect_change} shows the top two DMAPS eigenvalues, $\mu_1$ and $\mu_2$, as a function of $\lambda$. 
 %
@@ -477,6 +477,6 @@ This promotes the broad applicability of our methods to a wide variety of dynami
 %\section{Discussion}
 
 
-%\bibliography{../../references/references}
+\bibliography{../../references/references}
 
 \end{document}
