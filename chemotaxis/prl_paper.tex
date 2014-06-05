@@ -34,6 +34,8 @@
 
 \begin{abstract}
 
+TODO: rewrite according to the first 3 paragraphs of the introduction
+%
 Using a stochastic model of particle dynamics which arises in cellular chemotaxis, we illustrate how diffusion maps, a manifold learning technique, can be used to characterize the behavior of a dynamical system.
 %
 In our model, depending on the value of a single parameter, the macroscopic system dynamics range from heat equation dynamics, where particles diffuse uniformly outwards, to wave equation dynamics, where particle propagate with a fixed speed. 
@@ -73,7 +75,7 @@ TODO: write where this has been done in other places, context, etc.
 
 In this letter, we will present how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) choosing the appropriate observers, especially in presence of stochastic dynamics, and (b) selecting an appropriate metric for comparison. 
 %
-We will show that both are essential for the algorithm to successfully uncover the underlying system dynamics.
+We will show that both are essential for the algorithm to successfully uncover the underlying system dynamics TODO:refMallat. 
 
 We will illustrate our methodology using a model problem which arises in studies of cellular chemotaxis \cite{othmer2000diffusion}.
 %
@@ -89,17 +91,17 @@ Second, it consists of an ensemble of individual particles.
 %
 Third, it has an analytic macroscopic description, which serves as a ground truth and will allow us to verify our results which are obtained in an unsupervised manner.
 %
-We will show that diffusion maps based on statistical observers and the appropriate metric uncovers a description of the microscopic data which is consistent with the macroscopic model.
+We will show that diffusion maps based on statistical observers and with the appropriate affinity metric between these observers uncovers a description of the microscopic data which is consistent with the macroscopic model.
 %
-Furthermore, diffusion maps will allow us to detect changes in dynamical behavior as we vary system parameters. 
+Furthermore, diffusion maps will allow us to detect changes in dynamical behavior arising from the variation of the system parameters. 
 
 The remainder of this letter is organized as follows. We will begin by describing the chemotaxis problem.
 %
 We will present the stochastic microscopic model, and show how, for this example, the microscopic model gives rise to a compact macroscopic description governed by a single parameter.
 %
-We will then use diffusion maps to analyze the microscopic simulation results, and show that using the appropriate metric for our data is essential to uncovering a meaningful description of our data.
+We will then use diffusion maps to analyze the microscopic simulation results, and show that using the appropriate metric for the data is essential to uncovering a meaningful description of our data.
 %
-We will demonstrate that diffusion maps can inform us as to the relative importance of system variables in different parameter regimes, and allow us to detect changes in macroscopic dynamical behavior.
+We will demonstrate that diffusion maps can identify the relative importance of system variables in different parameter regimes, and allow us to detect changes in macroscopic dynamical behavior.
 
 %\section{Problem formulation}
 
@@ -121,20 +123,20 @@ At random times, a cell will ``turn around'' and switch its velocity (this turni
 
 %\subsection{Stochastic particles}
 
-We have a collection of $N$ particles whose states are defined by their positions and velocities. 
+Consider a collection of $N$ particles whose states are defined by their positions and velocities. 
 %
-Let $x_i(t)$ and $v_i(t)$ denote the position and velocity, respectively, of particle $i$ at time $t$.
+Let $x_i(t)$ and $v_i(t)$ denote the position and velocity of particle $i$ at time $t$, respectively.
 %
 The velocity of each particle is either $\pm s$, where $s$ is a (fixed) speed. 
 %
 We initialize the particles such that
-\begin{equation}
+\begin{equation}\label{eqn:system}
 \begin{aligned}
 x_i(0) & = 0 \\
 \mathbb{P} \{ v_i(0) = +s \} & = p
 \end{aligned}
 \end{equation}
-where $p$ is some probability.
+where $p$ is an initial probability.
 %
 The velocity of each particle randomly switches between $\pm s$ following an (independent) Poisson process with rate $\lambda$.
 %
@@ -142,7 +144,7 @@ The velocity of each particle randomly switches between $\pm s$ following an (in
 
 %Let $X_{p, \lambda, s}(t)$ denote the vector of positions of the particles at time $t$ with initial right probability $p$, switching rate $\lambda$, and speed $s$.
 
-For this specific example, we can write down explicitly the macroscopic equation that governs the overall system behavior.
+For this specific example, we can explicitly write the macroscopic equation that governs the overall system behavior.
 %
 For a large collection of particles ($N \rightarrow \infty$), the system can be described by the probability density of the particles.
 %
@@ -165,7 +167,7 @@ We assume that $s^2/\lambda = D$ is constant, so that the dynamics of the probab
 
 %\subsection{Asymptotic mode analysis}  \label{subsec:mode_analysis}
 
-We will consider two regimes of simulation.
+We consider two asymptotic regimes of simulation.
 %
 When $\lambda \rightarrow 0$, the right-hand side of \eqref{eqn:coupled_pdes} tends to 0, and \eqref{eqn:coupled_pdes} becomes two uncoupled wave equations,
 \begin{equation}
@@ -198,7 +200,7 @@ When $\lambda \rightarrow \infty$, the dynamics are described by one heat equati
 %
 For this particular system, we can deduce this behavior from the macroscopic PDEs which describe the system dynamics.
 %
-However, we will demonstrate that, in general, these PDEs are not necessary for us to uncover which system variables are important to describe the macroscopic dynamics.
+However, in general, these PDEs are not necessarily known and there is a need to uncover the system variables, which govern the macroscopic dynamics.
 
 
 \begin{figure*}[t!]
@@ -233,15 +235,18 @@ However, we will demonstrate that, in general, these PDEs are not necessary for 
 
 %\subsection{Diffusion maps}
 
-We will use diffusion maps \cite{coifman2005geometric} to analyze the data from simulations of the described microscopic stochastic model.
+We use diffusion maps \cite{coifman2005geometric} to analyze the simulation data of the described microscopic stochastic model.
 %
-Our goal is to show that diffusion maps can organize the data obtained from the microscopic simulations, and that this organization is consistent with the two system variables, $p$ and $t$, that emerge from the macroscopic PDE analysis.
+Our goal is to organize the data obtained from the microscopic simulations consistently with the two system variables, $p$ and $t$, that emerge from the macroscopic PDE analysis.
 %
 Diffusion maps, in general, is a nonlinear manifold learning technique that embeds (maps) the data into a lower dimensional space. Ideally, the dimension of the embedded samples is equal to the the intrinsic (true) dimension of the data, and the variables/coordinates of the embedded samples represent the governing variables of the system.
 %
-In our case, although the data is very high-dimensional (e.g., the positions of all $N$ particles), for a fixed value of $\lambda$, there are only two important variables ($p$ and $t$) that determine the current (macroscopic) mode of the system; thus, our microscopic data {\em should} be two-dimensional and described by $p$ and $t$.
+In our case, although the data is very high-dimensional (e.g., the positions of all $N$ particles), for a fixed value of $\lambda$, there are only two important variables ($p$ and $t$) that determine the current (macroscopic) mode of the system; thus, the microscopic description of the data {\em should} be two-dimensional and described by $p$ and $t$.
 %
-Let $z(t) \in \mathbb{R}^n$ denote an $n$-dimensional observation of the system at time $t$. Assume we are given $m$ observations $z(1), \dots, z(m)$, which are assumed to lie on a $d$-dimensional, nonlinear manifold, with $d \ll n$. Our goal is to uncover a $d$-dimensional parameterization of the $m$ observations that respects the underlying manifold geometry.
+Let $z(t) \in \mathbb{R}^n$ denote an $n$-dimensional observation of the system at time $t$. Assume we are given $m$ observations $z(1), \dots, z(m)$, which are assumed to lie on a $d$-dimensional, nonlinear manifold, with $d \ll n$. 
+%
+TODO: add a couple of sentences to relate the notion of manifolds and parameterization to the dynamical system setup. Possibly use PCA reference.
+Our goal is to uncover a $d$-dimensional parameterization of the $m$ observations that respects the underlying manifold geometry.
 %
 We first construct the matrix $W \in \mathbb{R}^{m \times m}$, with
 \begin{equation} \label{eq:W}
@@ -258,33 +263,33 @@ We compute the eigenvalues $\mu_0, \mu_1, \dots, \mu_{m-1}$ and eigenvectors $\p
 %
 Note that the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$), which implies $\mu_0 = 1$ and $\phi_0$ is a constant vector.
 %
-The next few eigenvectors give us the embedding coordinates for our data, such that
-$\phi_{j}(i)$ gives us the $j^{th}$ embedding coordinate for $z(i)$.
+The next few eigenvectors are viewed as the embedding coordinates for the data, such that
+$\phi_{j}(i)$ is the $j^{th}$ embedding coordinate for $z(i)$.
 %
-$\mu_j$ gives a measure of the ``importance'' of coordinate $\phi_j$,
-and we can quantify the relative importance of $\phi_1$ versus $\phi_2$ by comparing $\mu_1$ and $\mu_2$.
+The eigenvalue $\mu_j$ represents a measure of the ``importance'' of coordinate $\phi_j$,
+and hence, the relative importance of $\phi_1$ versus $\phi_2$ can be quantified by comparing $\mu_1$ and $\mu_2$.
 
-In order to use DMAPS to analyze our simulation results, we first need to address what are the appropriate observers or measurements for our system.
+TODO: rewrite - emphasize more the idea and what we propose (right from the beginning) instead of writing as a procedure.
+
+In order to properly analyze the simulation results, we first need to identify and compute the appropriate observers for the system.
 %
 Because the particles are indistinguishable, vectors containing the particle positions are not appropriate to analyze, as we would then be assigning indices or labels to the particles and swapping two particles would change the data.
 %
-Instead, we use histograms of the particle positions as our observables, so that $z(i) \in \mathbb{R}^n$ will be the histogram of $x_1(i), x_2(i), \dots, x_N(i)$ into $n$ bins (for our simulations, we take $n=32$).
+Instead, we propose to use histograms of the particle positions as the observables TODO:refPNAS. Let $z(i) \in \mathbb{R}^n$ be the histogram of $x_1(i), x_2(i), \dots, x_N(i)$ into $n$ bins (for our simulations, we set $n=32$).
 %
 Clearly, histograms are invariant to the labeling or indexing of the particles.
 %
-For this particular example, using histograms is consistent with our macroscopic PDE description, which is written in terms of the probability density of the particles.
+For this particular example, using histograms is consistent with the macroscopic PDE description, which is written in terms of the probability density of the particles.
 %
 The histograms serve as an empirical estimate of the probability density at each time point.
 
 %\subsection{Earth mover's distance}
 
-
-
-The second point we need to address is choosing appropriate distance metric between data points in \eqref{eq:W}.
+Once the proper observers are determined, there is a need to define an appropriate distance metric between observations in \eqref{eq:W}.
 %
-Often, one uses the Euclidean distance between data points.
+Traditionally, the Euclidean distance between data samples is used.
 %
-However, the Euclidean distance between histograms only considers the density at each bin and does not take into account the distance {\em between} bins.
+However, the Euclidean distance between histograms only accounts for the density at each bin and does not take into account the distance {\em between} bins.
 %,such that two distributions whose supports are a short distance apart are closer (in norm) than two distributions whose supports are very far from each other.
 %
 %however, for histograms which approximate a probability density, the Euclidean distance can often be misleading.
@@ -336,33 +341,34 @@ where $z(i), z(j) \in \mathbb{R}^n$ are two histograms defined on (equally-space
 %%
 %This is due to our poor choice of metric, which does not accurrately describe the distances between histograms.
 
-We simulate the dynamics of this stochastic system to obtain microscopic data to which we apply diffusion maps based on histograms and the EMD.
+We simulate the dynamics of the studies stochastic system \eqref{eqn:system} to obtain microscopic data to which we apply diffusion maps based on histograms and the EMD.
 %
-We consider two sets of simulations:
+We consider two sets of simulations: TODO: associate the sets to the asymptotic regimes.
 in one set (small $\lambda$), $\lambda = 1$ and $s=1$, and in the other set (large $\lambda$), $\lambda = 400$, and $s=20$.
 %
 For each set, we run many simulations, each with $N=1000$ particles.
 %
 We vary the initial conditions such that $0.1 \le p  \le 0.9$, and allow each simulation to evolve for $10$ time units.
 %
-We discard the initial portion of each simulation trajectory corresponding to $t < 1$, as this is very noisy and corresponds to initial relaxation of the system.
+We discard the initial portion of each simulation trajectory corresponding to $t < 1$, as it tends to be very noisy and corresponds to initial relaxation of the system.
 
-\begin{figure}[t] 
-\includegraphics[width=8cm]{detect_change_eigenvalues}
-\caption{The first two eigenvalues from DMAPS as a function of $\lambda$. The convergence of the eigenvalues at $\lambda \approx 125$ indicates switching of the dynamical ``mode'' of the system.}
-\label{fig:detect_change}
-\end{figure}
+%\begin{figure}[t] 
+%\includegraphics[width=8cm]{detect_change_eigenvalues}
+%\caption{The first two eigenvalues from DMAPS as a function of $\lambda$. The convergence of the eigenvalues at $\lambda \approx 125$ indicates switching of the dynamical ``mode'' of the system.}
+%\label{fig:detect_change}
+%\end{figure}
 
-Figure \ref{fig:dmaps_embed_emd} shows the diffusion maps embedding of our data.
+Figure \ref{fig:dmaps_embed_emd} shows the diffusion maps embedding of the data.
 %
 The two system variables, $p$ and $t$, are well-correlated with the first two diffusion maps coordinates, $\phi_1$ and $\phi_2$. 
 %
+TODO: give the values of the corresponding eigenvalues.
 However, the ``more important'' coordinate, $\phi_1$, is correlated with $p$ for the small $\lambda$ case (Figure~\ref{subfig:small_lambda_p}), and correlated with $t$ for the large $\lambda$ case (Figure~\ref{subfig:large_lambda_t}); 
 this is consistent with the macroscopic PDE description.
 %
 Furthermore, in the small $\lambda$ regime (wave equation), shown in Figures \ref{subfig:small_lambda_p} and \ref{subfig:small_lambda_t}, the points corresponding to small times are more tightly clustered than the points corresponding to large times.
 %
-This is not surprising: at small times, the particles are more condensed around $x=0$, and it is more difficult to distinguish the particles moving to the left from the particles moving to the right. 
+This is consistent with the model: at small times, the particles are more condensed around $x=0$, and it is more difficult to distinguish the particles moving to the left from the particles moving to the right. 
 %
 On the other hand, at large times, once the particles evolve from the origin, this separation is clear.  
 %
@@ -391,6 +397,7 @@ On the other hand, for large times, we observe that the initial distribution $p$
 %\label{fig:dmaps_embed_varyt}
 %\end{figure}
 
+TODO: describe as a new experiment with a new data set. The goal of this experiment is to show implicit data-driven phase shift detection.
 The crossover from ``wave-like'' to ``heat-like'' behavior can be seen in the DMAPS eigenvalues: a large gap between the first two eigenvalues indicates that one DMAPS variable is significantly more important and that we are in one of the two asymptotic regimes.
 %
 Figure~\ref{fig:detect_change} shows the top two DMAPS eigenvalues, $\mu_1$ and $\mu_2$, as a function of $\lambda$. 
@@ -447,11 +454,12 @@ The eigenvalues then separate again at large $\lambda$ (the heat equation regime
 \end{figure}
 %TODO: for all figures - fix the labels of the axes - phi_2 vs. phi_1.
 
+TODO: just report the results of figure 3 + replace figure 3 with two scatter plots (for example, phi1 vs. p with and without EMD).
 To emphasize the importance of using the correct distance metric, we also computed the diffusion maps embeddings of our two sets of simulation data, used the standard Euclidean distance between the histograms to compute the distances in \eqref{eq:W}; the results are shown in Figure \ref{fig:dmaps_embed_noemd}.
 %
 The embeddings are not particularly informative and do not capture the underlying system dynamics; there is no strong correlation of the embedding coordinates with $p$ or $t$. 
 %
-This is due to our poor choice of metric, which does not accurately describe the distances between histograms.
+This is due to the inappropriate metric, which does not accurately describe the distances between histograms.
 
 
 
