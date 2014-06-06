@@ -34,32 +34,15 @@
 
 \begin{abstract}
 
-Many dynamical systems are governed by stochastic, noisy dynamics at the microscale which give rise to smooth, coherent dynamics at the macroscale.
+Many dynamical systems are governed by stochastic, noisy motions at the microscale which give rise to smooth, coherent dynamics at the macroscale.
 %
-The relationship between the microscopic and macroscopic dynamics is often not immediately 
-
-
-
-TODO: rewrite according to the first 3 paragraphs of the introduction
+The relationship between the microscopic and macroscopic dynamics is often not immediately obvious and either requires some modeling assumptions or extensive observation of the system.
 %
-Using a stochastic model of particle dynamics which arises in cellular chemotaxis, we illustrate how diffusion maps, a manifold learning technique, can be used to characterize the behavior of a dynamical system.
+We demonstrate how extracting macroscopic dynamics from microscale data can be accomplished automatically using data-driven algorithms. 
 %
-In our model, depending on the value of a single parameter, the macroscopic system dynamics range from heat equation dynamics, where particles diffuse uniformly outwards, to wave equation dynamics, where particle propagate with a fixed speed. 
+These algorithms need no {\em a priori} knowledge about the appropriate macroscopic model, but instead, only require the definition of the appropriate observers and metric in order to recover the governing variables.
 %
-We demonstrate that diffusion maps with the appropriate observers and metric can recover the two governing macroscopic system variables (initial condition and time) from data collected at the microscale. % in a variable- and equation-free manner. 
-%
-Furthermore, the order in which these variables are recovered is indicative of the system dynamics over the timescales of interest, 
-and the eigenvalue spectrum indicates where this switch in dynamical behavior occurs.
-%
-%We demonstrate that an essential component of our analysis is working with the right observers (histograms/ensembles, rather than the single position of a particle) and with the right metric between those observers (earth mover's distance, rather than Euclidean distance).
-%
-%In heat equation mode, we find that time is more important than the initial conditions, as the particles quickly equilibrate.
-%
-%In wave equation mode, we find that the initial conditions are more important, as the initial distribution simply propagates in time.
-%	
-%Furthermore, these two components have a completely different ``nature". 
-%
-%One parameter (the initial condition) is governing the entire trajectory and the other parameter (time) is governing the ``step­--by­--step" evolution within each trajectory.
+We illustrate these ideas using a model which arises in studies of cellular chemotaxis.
 
 \end{abstract}
 
