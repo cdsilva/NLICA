@@ -94,7 +94,7 @@ ylabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 h = colorbar;
 set(get(h,'xlabel'),'String', 't', 'fontsize', 20);
 %print(sprintf('rawhist_t_%d', lambda), '-r300','-djpeg')
-saveas(gcf, sprintf('rawhist_t_%d', lambda), 'epsc')
+% saveas(gcf, sprintf('rawhist_t_%d', lambda), 'epsc')
 
 figure;
 scatter(V(:,2),V(:,3),markersize,all_p(idx), '.')
@@ -104,7 +104,11 @@ ylabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 h = colorbar;
 set(get(h,'xlabel'),'String', 'p', 'fontsize', 20);
 %print(sprintf('rawhist_p_%d', lambda), '-r300','-djpeg')
-saveas(gcf, sprintf('rawhist_p_%d', lambda), 'epsc')
+% saveas(gcf, sprintf('rawhist_p_%d', lambda), 'epsc')
+
+corr(V(:,2),all_time(idx)')
+
+corr(V(:,3),all_p(idx)')
 
 %% compute EMD between histograms
 
@@ -162,6 +166,11 @@ set(get(h,'xlabel'),'String', 'p');
 %title(sprintf('EMD: colored by p, \\lambda= %d', lambda))
 %print(sprintf('EMD_p_%d', lambda), '-r300','-djpeg')
 
+corr(V2(:,2),all_time(idx)')
+
+corr(V2(:,3),all_p(idx)')
+
+return
 %%
 
 num_hist = 6;
