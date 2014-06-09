@@ -130,7 +130,7 @@ corr(V1_dmaps(:,2), V2_dmaps(:,2))
 
 %%
 
-[V1_niv, D1_niv] = NIV(new_data1, inv_c1, 0, 10, 0);
+[V1_niv, D1_niv, eps] = NIV(new_data1, inv_c1, 0, 10, 0);
 
 
 figure;
@@ -139,7 +139,7 @@ axis equal
 
 %%
 
-[V2_niv, D2_niv] = NIV(new_data2, inv_c2, 0, 10, 0);
+[V2_niv, D2_niv, eps] = NIV(new_data2, inv_c2, 1e6, 10, 0);
 
 figure;
 scatter(new_data2(:,1),new_data2(:,2),50,V2_niv(:,2))
