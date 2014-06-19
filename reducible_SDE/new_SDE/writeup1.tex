@@ -1,0 +1,153 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\section{Multiscale SDEs}
+
+Consider the SDEs
+\begin{eqnarray}
+dx &=& adt + dW_1\\
+dy &=& -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+\end{eqnarray}
+
+So $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$
+
+Let $y = \frac{z}{\sqrt{\epsilon}}$. Then
+\begin{eqnarray}
+dx &=& adt + dW_1\\
+dz &=& -\frac{z}{\epsilon} dt +  dW_2
+\end{eqnarray}
+
+Therefore, now $z$ is a stochastic variable whose diffusion is unity, and whose equilibrium measure is $\mathcal{O}(\epsilon)$. 
+%
+Therefore, when $\epsilon \ll 1$, we have that $z \ll x$, and so we will recover $x$ only.
+
+This falls into a more general form of SDE
+\begin{equation}
+dX = f(X) dt + dW
+\end{equation}
+
+
+\section{Covariance Estimation}
+
+Given $X$ governed by the above SDE, we can sample ``bursts'' around a point $X_0$ in order to estimate the covariance. 
+
+These clouds will be distributed 
+
+\begin{equation}
+X \sim \mathcal{N}\left( X_0, \delta t I \right)
+\end{equation}
+
+Then
+$$\int_{-\infty}^{\infty} d\mu(X) = \begin{bmatrix} 1 \\ 1\end{bmatrix}$$
+$$\int_{-\infty}^{\infty} X d\mu(X) = \begin{bmatrix} x_0 \\ z_0\end{bmatrix}$$
+$$\int_{-\infty}^{\infty} X X^T d\mu(X) - \left( \int_{-\infty}^{\infty} X d\mu(X) \right) \left( \int_{-\infty}^{\infty} X d\mu(X) \right)^T = \begin{bmatrix} \delta t & 0 \\ 0 & 
+\delta t/\epsilon \end{bmatrix}$$
+
+
+We now consider a function $\mathbf{f}(X)$.
+%
+By Taylor expansion around $X=X_0$,
+$$f^i(X) = f^i(X_0) + J^i(0) \cdot (X-X_0) + \frac{1}{2} (X-X_0)^T H^i(0) (X-X_0) + \dots$$
+where $J^i$ is the Jacobian and $H^i$ is the Hessian. 
+
+We can then approximate the first- and second-order moments 
+\begin{eqnarray}
+\int_{-\infty}^{\infty} f^i(X) d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(0) \cdot (X-X_0) +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] d\mu(X) \\
+&=&\int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i_1(0) (x-x_0) + J^i_2(0) (z-z_0)  \right. \\
+&& \left. + \frac{1}{2} \left( H^i_{11} (x-x_0)^2 + (H^i_{12} + H^i_{21}) (x-x_0) (z-z_0) + H^i_{22} (z-z_0)^2 \right)  \right] d\mu(X) \\
+&=& f^i(X_0) + \frac{\delta t}{2} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) 
+\end{eqnarray}
+
+\begin{eqnarray}
+&&\int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) \\
+&\approx &
+\int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(X_0) \cdot (X-X_0) +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] \\
+&& \left[ f^j(X_0) + J^j(X_0) \cdot (X-X_0) +\frac{1}{2} (X-X_0)^T H^j(X_0) (X-X_0) \right] d\mu(X) \\
+&=& \int_{-\infty}^{\infty} \left[ f^i(X_0) f^j(X_0) + f^i(X_0) J^j(X_0) \cdot (X-X_0) \right. \\
+&& + f^j(X_0) J^i(X_0) \cdot (X-X_0) \\
+&& + \left( J^i(X_0) \cdot (X-X_0) \right) \left( J^j(X_0) \cdot (X-X_0) \right) \\
+&& + f^i(X_0) \frac{1}{2} (X-X_0)^T H^j(X_0) (X-X_0) \\
+&& \left. + f^j(X_0) \frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] d \mu(X) \\
+&=& \int_{-\infty}^{\infty} \left[ f^i(X_0) f^j(X_0) + f^i(X_0) J^j(X_0) \cdot (X-X_0) \right. \\
+&& + f^j(X_0) J^i(X_0) \cdot (X-X_0) \\
+&& + \left( J^i_1(X_0)(x-x_0) + J^i_2(X_0) (z-z_0) \right) \left( J^j_1(X_0)(x-x_0) + J^j_2(X_0) (z-z_0) \right) \\
+&& + f^i(X_0) \frac{1}{2} (X-X_0)^T H^j(X_0) (X-X_0) \\
+&& \left. + f^j(X_0) \frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] d \mu(X)\\
+&=& f^i(X_0) f^j(X_0) + \delta t \left( J_1^i(X_0) J_1^j(X_0) + \frac{J_2^i(X_0) J_2^j(X_0)}{\epsilon}  \right) \\
+&& + \frac{\delta t}{2}  \left( f^i(X_0) \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right) + f^j(X_0) \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \right)
+\end{eqnarray}
+
+%\begin{eqnarray}
+%\int_{-\infty}^{\infty} f^i(X)^2 d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(X_0) \cdot X +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right]^2 d\mu(X) \\
+%&=& \int_{-\infty}^{\infty} \left[ f^i(X_0)^2 + 2 f^i(X_0) J^i(X_0) \cdot (X-X_0) + \left( J^i(X_0) \cdot (X-X_0) \right)^2 \right. \\
+%&& \left. + f^i(X_0) (X-X_0)^T H^i(X_0) (X-X_0)   \right] d\mu(X) \\
+%&=& \int_{-\infty}^{\infty} \left[ f^i(X_0)^2 + 2 f^i(X_0) J^i(X_0) \cdot (X-X_0) \right. \\
+%&& + \left( {J^i_1}^2 (x-x_0)^2 + 2 J^i_1 J^i_2 (x-x_0)(z-z_0) + {J^i_2}^2 (z-z_0)^2 \right) \\
+%&& \left. + f^i(X_0) (X-X_0)^T H^i(X_0) (X-X_0)   \right] d\mu(X) \\ 
+%&=& {f^i(X_0)}^2 + \delta t \left( {J^i_1}^2 + \frac{{J^i_2}^2}{\epsilon} \right) + f^i(X_0) \delta t \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)
+%\end{eqnarray}
+
+We then write
+%\begin{eqnarray}
+%\hat{C}^{ii} &=& \int_{-\infty}^{\infty} f^i(X)^2 d\mu(X) - \left(\int_{-\infty}^{\infty} f^i(X) d\mu(X) \right) ^2 \\
+%&\approx & \left[  f^i(X_0)^2 + \delta t \left( {J^i_1}^2 + \frac{{J^i_2}^2}{\epsilon} \right) + f^i(X_0) \delta t \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \right] \\
+%&& - \left[ f^i(X_0) + \frac{\delta t}{2} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)  \right]^2 \\
+%&=& \delta t \left( {J^i_1}^2 + \frac{{J^i_2}^2}{\epsilon} \right) - \frac{\delta t^2}{4} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)^2
+%\end{eqnarray}
+
+\begin{eqnarray}
+\hat{C}^{ij} &=& \int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) - \left(\int_{-\infty}^{\infty} f^i(X) d\mu(X) \right) \left(\int_{-\infty}^{\infty} f^j(X) d\mu(X) \right) \\
+&\approx & \left[  f^i(X_0) f^j(X_0) + \delta t \left( J_1^i(X_0) J_1^j(X_0) + \frac{J_2^i(X_0) J_2^j(X_0)}{\epsilon}  \right) \right .\\
+&& \left. + \frac{\delta t}{2}  \left( f^i(X_0) \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right) + f^j(X_0) \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \right) \right] \\
+&& - \left[ f^i(X_0) + \frac{\delta t}{2} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)  \right] 
+\left[ f^j(X_0) + \frac{\delta t}{2} \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right) \right] \\
+&=& \delta t \left( J_1^i(X_0) J_1^j(X_0) + \frac{J_2^i(X_0) J_2^j(X_0)}{\epsilon}  \right) \\
+&& - \frac{\delta t^2}{4} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right)
+\end{eqnarray}
+
+
+
+
+%and the variance is 
+%$\int_{-\infty}^{\infty} X^2 d\mu(X) - \left( \int_{-\infty}^{\infty} X d\mu(X) \right)^2$.
+%
+%We now consider a function of the random variable $f(X)$.
+%%
+%By Taylor expansion around $x=0$,
+%$$f(x) = f(0) + f^\prime (0) x + \frac{f^{\prime \prime} (0)}{2} x^2 + \dots$$
+%
+%We can then approximate the first- and second-order moments 
+%\begin{eqnarray}
+%\int_{-\infty}^{\infty} f(X) d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f(0) + f^\prime (0) X + \frac{f^{\prime \prime} (0)}{2} X^2  \right] d\mu(X) \\
+%&=& f(0) +  \frac{f^{\prime \prime} (0)}{2} \sigma^2
+%\end{eqnarray}
+%
+%\begin{eqnarray}
+%\int_{-\infty}^{\infty} f(X)^2 d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f(0) + f^\prime (0) X + \frac{f^{\prime \prime} (0)}{2} X^2  \right]^2 d\mu(X) \\
+%&=& \int_{-\infty}^{\infty} \left[ f(0)^2 + 2 f(0) f^\prime (0) X + (f^\prime(0))^2 X^2+ f(0) f^{\prime \prime} (0) X^2  \right] d\mu(X) \\
+%&=& f(0)^2 + (f^\prime(0))^2 \sigma^2 + f(0) f^{\prime \prime} (0) \sigma^2
+%\end{eqnarray}
+%
+%Therefore, our estimate of the covariance is 
+%\begin{eqnarray}
+%\hat{C} &=& \int_{-\infty}^{\infty} f(X)^2 d\mu(X) - \left(\int_{-\infty}^{\infty} f(X) d\mu(X) \right) \\
+%&=& \left[f(0)^2 + (f^\prime(0))^2 \sigma^2 + f(0) f^{\prime \prime} (0) \sigma^2 \right] - \left[ f(0) +  \frac{f^{\prime \prime} (0)}{2} \sigma^2 \right]^2 \\
+%&=& f(0)^2 + (f^\prime(0))^2 \sigma^2 + f(0) f^{\prime \prime} (0) \sigma^2  -  f(0)^2 - f(0) f^{\prime \prime}(0) \sigma^2 -  \frac{(f^{\prime \prime} (0))^2}{4} \sigma^4 \\
+%&=& (f^\prime(0))^2 \sigma^2 -  \frac{(f^{\prime \prime} (0))^2}{4} \sigma^4
+%\end{eqnarray}
+
+In this equation, we see what we expect (a linear function of the variance, due to the gradient of $f$) and a second term arising from the curvature of $f$.
+%
+The importance of this second term increases as the curvature increases, and when the variance of the underlying process increases. 
+
+
+\begin{itemize}
+\item Make 2D with fast-slow
+\item Use $dt$ rather than $\sigma$ for variance
+\item Add into Mahalanobis distance approximation
+\item Add second order term in Mahalanobis distance
+\end{itemize}
+\end{document}
