@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 
 \usepackage{amsmath}
+\usepackage[margin=1in]{geometry}
 
 \begin{document}
 
@@ -41,30 +42,31 @@ X \sim \mathcal{N}\left( X_0, \delta t I \right)
 \end{equation}
 
 Then
-$$\int_{-\infty}^{\infty} d\mu(X) = \begin{bmatrix} 1 \\ 1\end{bmatrix}$$
-$$\int_{-\infty}^{\infty} X d\mu(X) = \begin{bmatrix} x_0 \\ z_0\end{bmatrix}$$
-$$\int_{-\infty}^{\infty} X X^T d\mu(X) - \left( \int_{-\infty}^{\infty} X d\mu(X) \right) \left( \int_{-\infty}^{\infty} X d\mu(X) \right)^T = \begin{bmatrix} \delta t & 0 \\ 0 & 
-\delta t/\epsilon \end{bmatrix}$$
+$$\int_{-\infty}^{\infty} d\mu(X) = \begin{bmatrix} 1 \\ \vdots \\ 1\end{bmatrix}$$
+$$\int_{-\infty}^{\infty} X d\mu(X) = X_0$$
+$$\int_{-\infty}^{\infty} X X^T d\mu(X) - \left( \int_{-\infty}^{\infty} X d\mu(X) \right) \left( \int_{-\infty}^{\infty} X d\mu(X) \right)^T = \delta t I$$
 
 
 We now consider a function $\mathbf{f}(X)$.
 %
 By Taylor expansion around $X=X_0$,
-$$f^i(X) = f^i(X_0) + J^i(0) \cdot (X-X_0) + \frac{1}{2} (X-X_0)^T H^i(0) (X-X_0) + \dots$$
+$$f^i(X) = f^i(X_0) + J^i(X_0) \cdot (X-X_0) + \frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) + \dots$$
 where $J^i$ is the Jacobian and $H^i$ is the Hessian. 
 
 We can then approximate the first- and second-order moments 
 \begin{eqnarray}
-\int_{-\infty}^{\infty} f^i(X) d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(0) \cdot (X-X_0) +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] d\mu(X) \\
-&=&\int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i_1(0) (x-x_0) + J^i_2(0) (z-z_0)  \right. \\
-&& \left. + \frac{1}{2} \left( H^i_{11} (x-x_0)^2 + (H^i_{12} + H^i_{21}) (x-x_0) (z-z_0) + H^i_{22} (z-z_0)^2 \right)  \right] d\mu(X) \\
-&=& f^i(X_0) + \frac{\delta t}{2} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) 
+&&\int_{-\infty}^{\infty} f^i(X) d\mu(X) \\
+&\approx &
+ \int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(X_0) \cdot (X-X_0) +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] d\mu(X) \\
+&=&\int_{-\infty}^{\infty} \left[ f^i(X_0) + \sum_k J^i_k(X_0) (X^k-X_0^k)  \right. \\
+&& \left. + \frac{1}{2} \sum_k \sum_l H^i_{kl}(X_0) (X^k-X_0^k) (X^l-X_0^l) \right] d\mu(X) \\
+&=& f^i(X_0) + \frac{1}{2} \sum_k H^i_{kk}(X_0) \delta t
 \end{eqnarray}
 
 \begin{eqnarray}
 &&\int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) \\
 &\approx &
-\int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(X_0) \cdot (X-X_0) +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] \\
+\int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(X_0) \cdot (X(j)-X_0(j)) +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] \\
 && \left[ f^j(X_0) + J^j(X_0) \cdot (X-X_0) +\frac{1}{2} (X-X_0)^T H^j(X_0) (X-X_0) \right] d\mu(X) \\
 &=& \int_{-\infty}^{\infty} \left[ f^i(X_0) f^j(X_0) + f^i(X_0) J^j(X_0) \cdot (X-X_0) \right. \\
 && + f^j(X_0) J^i(X_0) \cdot (X-X_0) \\
@@ -73,75 +75,106 @@ We can then approximate the first- and second-order moments
 && \left. + f^j(X_0) \frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] d \mu(X) \\
 &=& \int_{-\infty}^{\infty} \left[ f^i(X_0) f^j(X_0) + f^i(X_0) J^j(X_0) \cdot (X-X_0) \right. \\
 && + f^j(X_0) J^i(X_0) \cdot (X-X_0) \\
-&& + \left( J^i_1(X_0)(x-x_0) + J^i_2(X_0) (z-z_0) \right) \left( J^j_1(X_0)(x-x_0) + J^j_2(X_0) (z-z_0) \right) \\
+&& + \left( \sum_k J_k^i(X_0) (X^k - X_0^k) \right) \left( \sum_k J_k^j(X_0) (X^k - X_0^k) \right) \\
 && + f^i(X_0) \frac{1}{2} (X-X_0)^T H^j(X_0) (X-X_0) \\
 && \left. + f^j(X_0) \frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right] d \mu(X)\\
-&=& f^i(X_0) f^j(X_0) + \delta t \left( J_1^i(X_0) J_1^j(X_0) + \frac{J_2^i(X_0) J_2^j(X_0)}{\epsilon}  \right) \\
-&& + \frac{\delta t}{2}  \left( f^i(X_0) \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right) + f^j(X_0) \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \right)
+&=& f^i(X_0) f^j(X_0) + \delta t \sum_k J_k^i(X_0) J_k^j(X_0)  \\
+&& + f^i(X_0) \frac{1}{2} \sum_k H^j_{kk}(X_0) \delta t + f^j(X_0)\frac{1}{2} \sum_k H^i_{kk}(X_0) \delta t
 \end{eqnarray}
-
-%\begin{eqnarray}
-%\int_{-\infty}^{\infty} f^i(X)^2 d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f^i(X_0) + J^i(X_0) \cdot X +\frac{1}{2} (X-X_0)^T H^i(X_0) (X-X_0) \right]^2 d\mu(X) \\
-%&=& \int_{-\infty}^{\infty} \left[ f^i(X_0)^2 + 2 f^i(X_0) J^i(X_0) \cdot (X-X_0) + \left( J^i(X_0) \cdot (X-X_0) \right)^2 \right. \\
-%&& \left. + f^i(X_0) (X-X_0)^T H^i(X_0) (X-X_0)   \right] d\mu(X) \\
-%&=& \int_{-\infty}^{\infty} \left[ f^i(X_0)^2 + 2 f^i(X_0) J^i(X_0) \cdot (X-X_0) \right. \\
-%&& + \left( {J^i_1}^2 (x-x_0)^2 + 2 J^i_1 J^i_2 (x-x_0)(z-z_0) + {J^i_2}^2 (z-z_0)^2 \right) \\
-%&& \left. + f^i(X_0) (X-X_0)^T H^i(X_0) (X-X_0)   \right] d\mu(X) \\ 
-%&=& {f^i(X_0)}^2 + \delta t \left( {J^i_1}^2 + \frac{{J^i_2}^2}{\epsilon} \right) + f^i(X_0) \delta t \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)
-%\end{eqnarray}
 
 We then write
-%\begin{eqnarray}
-%\hat{C}^{ii} &=& \int_{-\infty}^{\infty} f^i(X)^2 d\mu(X) - \left(\int_{-\infty}^{\infty} f^i(X) d\mu(X) \right) ^2 \\
-%&\approx & \left[  f^i(X_0)^2 + \delta t \left( {J^i_1}^2 + \frac{{J^i_2}^2}{\epsilon} \right) + f^i(X_0) \delta t \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \right] \\
-%&& - \left[ f^i(X_0) + \frac{\delta t}{2} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)  \right]^2 \\
-%&=& \delta t \left( {J^i_1}^2 + \frac{{J^i_2}^2}{\epsilon} \right) - \frac{\delta t^2}{4} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)^2
-%\end{eqnarray}
-
 \begin{eqnarray}
-\hat{C}^{ij} &=& \int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) - \left(\int_{-\infty}^{\infty} f^i(X) d\mu(X) \right) \left(\int_{-\infty}^{\infty} f^j(X) d\mu(X) \right) \\
-&\approx & \left[  f^i(X_0) f^j(X_0) + \delta t \left( J_1^i(X_0) J_1^j(X_0) + \frac{J_2^i(X_0) J_2^j(X_0)}{\epsilon}  \right) \right .\\
-&& \left. + \frac{\delta t}{2}  \left( f^i(X_0) \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right) + f^j(X_0) \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \right) \right] \\
-&& - \left[ f^i(X_0) + \frac{\delta t}{2} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right)  \right] 
-\left[ f^j(X_0) + \frac{\delta t}{2} \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right) \right] \\
-&=& \delta t \left( J_1^i(X_0) J_1^j(X_0) + \frac{J_2^i(X_0) J_2^j(X_0)}{\epsilon}  \right) \\
-&& - \frac{\delta t^2}{4} \left( H^i_{11} + \frac{H^i_{22}}{\epsilon} \right) \left( H^j_{11} + \frac{H^j_{22}}{\epsilon} \right)
+&& \hat{C}^{ij} = \\ 
+&& \int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) - \left(\int_{-\infty}^{\infty} f^i(X) d\mu(X) \right) \left(\int_{-\infty}^{\infty} f^j(X) d\mu(X) \right) \\
+&=& \left( f^i(X_0) f^j(X_0) + \delta t \sum_k J_k^i(X_0) J_k^j(X_0) \right. \\
+&& \left. + f^i(X_0) \frac{1}{2} \sum_k H^j_{kk}(X_0) \delta t + f^j(X_0)\frac{1}{2} \sum_k H^i_{kk}(X_0) \delta t \right) \\
+&& - \left(f^i(X_0) + \frac{1}{2} \sum_k H^i_{kk}(X_0) \delta t \right)
+\left(f^j(X_0) + \frac{1}{2} \sum_k H^j_{kk}(X_0) \delta t \right) \\
+&=& \delta t \sum_k J_k^i(X_0) J_k^j(X_0) - \frac{\delta t^2}{4} \left( \sum_k H^i_{kk}(X_0) \right) \left( \sum_k H^j_{kk}(X_0) \right)
 \end{eqnarray}
 
-
-
-
-%and the variance is 
-%$\int_{-\infty}^{\infty} X^2 d\mu(X) - \left( \int_{-\infty}^{\infty} X d\mu(X) \right)^2$.
-%
-%We now consider a function of the random variable $f(X)$.
-%%
-%By Taylor expansion around $x=0$,
-%$$f(x) = f(0) + f^\prime (0) x + \frac{f^{\prime \prime} (0)}{2} x^2 + \dots$$
-%
-%We can then approximate the first- and second-order moments 
-%\begin{eqnarray}
-%\int_{-\infty}^{\infty} f(X) d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f(0) + f^\prime (0) X + \frac{f^{\prime \prime} (0)}{2} X^2  \right] d\mu(X) \\
-%&=& f(0) +  \frac{f^{\prime \prime} (0)}{2} \sigma^2
-%\end{eqnarray}
-%
-%\begin{eqnarray}
-%\int_{-\infty}^{\infty} f(X)^2 d\mu(X) &\approx & \int_{-\infty}^{\infty} \left[ f(0) + f^\prime (0) X + \frac{f^{\prime \prime} (0)}{2} X^2  \right]^2 d\mu(X) \\
-%&=& \int_{-\infty}^{\infty} \left[ f(0)^2 + 2 f(0) f^\prime (0) X + (f^\prime(0))^2 X^2+ f(0) f^{\prime \prime} (0) X^2  \right] d\mu(X) \\
-%&=& f(0)^2 + (f^\prime(0))^2 \sigma^2 + f(0) f^{\prime \prime} (0) \sigma^2
-%\end{eqnarray}
-%
-%Therefore, our estimate of the covariance is 
-%\begin{eqnarray}
-%\hat{C} &=& \int_{-\infty}^{\infty} f(X)^2 d\mu(X) - \left(\int_{-\infty}^{\infty} f(X) d\mu(X) \right) \\
-%&=& \left[f(0)^2 + (f^\prime(0))^2 \sigma^2 + f(0) f^{\prime \prime} (0) \sigma^2 \right] - \left[ f(0) +  \frac{f^{\prime \prime} (0)}{2} \sigma^2 \right]^2 \\
-%&=& f(0)^2 + (f^\prime(0))^2 \sigma^2 + f(0) f^{\prime \prime} (0) \sigma^2  -  f(0)^2 - f(0) f^{\prime \prime}(0) \sigma^2 -  \frac{(f^{\prime \prime} (0))^2}{4} \sigma^4 \\
-%&=& (f^\prime(0))^2 \sigma^2 -  \frac{(f^{\prime \prime} (0))^2}{4} \sigma^4
-%\end{eqnarray}
 
 In this equation, we see what we expect (a linear function of the variance, due to the gradient of $f$) and a second term arising from the curvature of $f$.
 %
 The importance of this second term increases as the curvature increases, and when the variance of the underlying process increases. 
+
+
+For the specific case of our fast-slow SDEs:
+$$f^1(X) = X(1)$$
+$$f^2(X) = \frac{X(2)}{\sqrt{\epsilon}}$$
+and so the covariance estimation is exact (provided we do not see the drift).
+
+When we apply a nonlinear function, i.e., 
+$$f^1(X) = \frac{X(2)}{\sqrt{\epsilon}} \cos \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right)$$
+$$f^2(X) = \frac{X(2)}{\sqrt{\epsilon}} \sin \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right)$$
+
+\begin{eqnarray}
+H_{11}^1 &=& 
+-\frac{X(2)}{\sqrt{\epsilon}} \cos \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right) \\
+H_{22}^1 &=&
+-\frac{X(2)}{\epsilon^{3/2}} \cos \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right) - \left( \frac{1}{\epsilon} + \frac{1}{\epsilon^{3/2}} \right) \sin \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right) 
+\end{eqnarray}
+
+TODO: finish nonlinear case/example
+
+
+\section{Mahalanobis Distance}
+
+
+We now approximate the distances $\| X_2 - X_1 \|$.
+%
+Let $g = f^{-1}$. 
+%
+Then
+%
+\begin{eqnarray}
+X_2^i &=& X_1^i + \sum_j g_j^i (f(X_1)) (f^j(X_2) - f^j(X_1) ) \\
+&&+ \frac{1}{2} \sum_{kl}  g^i_{kl} (f(X_1)) (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) \\
+&&+ \frac{1}{6} \sum_{klm}  g^i_{klm} (f(X_1)) (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&&+ \mathcal{O}( \|f(X_2) - f(X_1)\|^4 )
+\end{eqnarray}
+
+Then computing the distance
+\begin{eqnarray}
+&&\| X_2 - X_1 \|^2 \\
+&=&  \sum_i (X_2^i - X_1^i)^2 \\
+&=& \sum_i  \left( \sum_j g_j^i (f(X_1)) (f^j(X_2) - f^j(X_1) )  \right. \\
+&&+ \frac{1}{2} \sum_{kl}  g^i_{kl} (f(X_1)) (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) \\
+&&+ \frac{1}{6} \sum_{klm}  g^i_{klm} (f(X_1)) (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&&+ \left .\mathcal{O}( \| f(X_2) - f(X_1)\|^4 ) \right)^2 \\
+&=& \sum_{ijk} g_j^i (f(X_1)) g_k^i (f(X_1)) (f^j(X_2) - f^j(X_1) ) (f^k(X_2) - f^k(X_1) ) \\
+&& + \sum_{ijkl} g_j^i (f(X_1)) g^i_{kl} (f(X_1)) (f^j(X_2) - f^j(X_1) )  (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) \\
+&& + \frac{1}{4} \sum_{ijklm}  g^i_{jk} (f(X_1)) g^i_{lm} (f(X_1)) (f^j(X_2) - f^j(X_1)) (f^k(X_2) - f^k(X_1)) (f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&& + \frac{1}{3} \sum_{ijklm}  g^i_{j} (f(X_1)) g^i_{klm} (f(X_1)) (f^j(X_2) - f^j(X_1)) (f^k(X_2) - f^k(X_1)) (f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&& + \mathcal{O} (\|f(X_1) - f(X_2) \|^5 )
+\end{eqnarray}
+
+Expanding around $X_2$ yields
+\begin{eqnarray}
+&&\| X_2 - X_1 \|^2 \\
+&=&  \sum_i (X_2^i - X_1^i)^2 \\
+&=& \sum_{ijk} g_j^i (f(X_2)) g_k^i (f(X_2)) (f^j(X_2) - f^j(X_1) ) (f^k(X_2) - f^k(X_1) ) \\
+&& - \sum_{ijkl} g_j^i (f(X_2)) g^i_{kl} (f(X_2)) (f^j(X_2) - f^j(X_1) )  (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) \\
+&& + \frac{1}{4} \sum_{ijklm}  g^i_{jk} (f(X_2)) g^i_{lm} (f(X_2)) (f^j(X_2) - f^j(X_1)) (f^k(X_2) - f^k(X_1)) (f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&& + \frac{1}{3} \sum_{ijklm}  g^i_{j} (f(X_2)) g^i_{klm} (f(X_2)) (f^j(X_2) - f^j(X_1)) (f^k(X_2) - f^k(X_1)) (f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&& + \mathcal{O} (\|f(X_1) - f(X_2) \|^5 )
+\end{eqnarray}
+
+Averaging the two expansions yields
+\begin{eqnarray}
+&&\| X_2 - X_1 \|^2 \\
+&=&  \sum_i (X_2^i - X_1^i)^2 \\
+&=& \frac{1}{2} \sum_{ijk} \left( g_j^i (f(X_1)) g_k^i (f(X_1)) + g_j^i (f(X_2)) g_k^i (f(X_2))\right)   (f^j(X_2) - f^j(X_1) ) (f^k(X_2) - f^k(X_1) ) \\
+&& + \frac{1}{2} \sum_{ijkl} \left( g_j^i (f(X_1)) g^i_{kl} (f(X_1)) - g_j^i (f(X_2)) g^i_{kl} \right) (f(X_2)) (f^j(X_2) - f^j(X_1) )  (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) \\
+&& + \frac{1}{8} \sum_{ijklm}  \left( g^i_{jk} (f(X_1)) g^i_{lm} (f(X_1)) + g^i_{jk} (f(X_2)) g^i_{lm} (f(X_2)) \right) (f^j(X_2) - f^j(X_1)) (f^k(X_2) - f^k(X_1)) (f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&& + \frac{1}{6} \sum_{ijklm} \left( g^i_{j} (f(X_1)) g^i_{klm} (f(X_1)) + g^i_{j} (f(X_2)) g^i_{klm} (f(X_2)) \right) (f^j(X_2) - f^j(X_1)) (f^k(X_2) - f^k(X_1)) (f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&& + \mathcal{O} (\|f(X_1) - f(X_2) \|^6 ) \\
+&=& \frac{1}{2} \sum_{ijk}\left( g_j^i (f(X_1)) g_k^i (f(X_1)) + g_j^i (f(X_2)) g_k^i (f(X_2))\right)  (f^j(X_2) - f^j(X_1) ) (f^k(X_2) - f^k(X_1) ) \\
+&& + \frac{1}{2} \sum_{ijkl} \left( g_j^i (f(X_1)) g^i_{kl} (f(X_1)) - g_j^i (f(X_2)) g^i_{kl} \right) (f(X_2)) (f^j(X_2) - f^j(X_1) )  (f^k(X_2) - f^k(X_1))(f^l(X_2) - f^l(X_1)) \\
+&& +  \sum_{ijklm}  \left( \frac{1}{8} \left( g^i_{jk} (f(X_1)) g^i_{lm} (f(X_1)) + g^i_{jk} (f(X_2)) g^i_{lm} (f(X_2)) \right) + \frac{1}{6} \left( g^i_{j} (f(X_1)) g^i_{klm} (f(X_1)) + g^i_{j} (f(X_2)) g^i_{klm} (f(X_2)) \right) \right) (f^j(X_2) - f^j(X_1)) (f^k(X_2) - f^k(X_1)) (f^l(X_2) - f^l(X_1)) (f^m(X_2) - f^m(X_1)) \\
+&& + \mathcal{O} (\|f(X_1) - f(X_2) \|^6 )
+\end{eqnarray}
+
 
 
 \begin{itemize}
