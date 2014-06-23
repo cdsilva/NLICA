@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 
 \usepackage{amsmath}
+\usepackage{amsfonts}
 \usepackage[margin=1in]{geometry}
 
 \begin{document}
@@ -29,7 +30,7 @@ This falls into a more general form of SDE
 \begin{equation}
 dx_i = f(X) dt + dW_i
 \end{equation}
-and we will let $X = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}$
+and we will let $X = \begin{bmatrix} X^1 \\ X^2 \\ \vdots \\ X^n \end{bmatrix}$
 
 \section{Covariance Estimation}
 
@@ -47,7 +48,9 @@ $$\int_{-\infty}^{\infty} X d\mu(X) = X_0$$
 $$\int_{-\infty}^{\infty} X X^T d\mu(X) - \left( \int_{-\infty}^{\infty} X d\mu(X) \right) \left( \int_{-\infty}^{\infty} X d\mu(X) \right)^T = \delta t I$$
 
 
-We now consider a function $\mathbf{f}(X)$.
+We now consider a function $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^m$.
+%
+Let $f^i(X)$ denote the $i^{th}$ entry of $\mathbf{f}$, and let $f^i_j(X) = \frac{\partial f^i}{\partial X^j}$.
 %
 By Taylor expansion around $X=X_0$,
 \begin{eqnarray}
@@ -56,11 +59,175 @@ f^i(X_0)
 + \sum_k f^i_k(X_0)  (X^k-X^k_0) 
 +\frac{1}{2} \sum_{k,l}  f^i_{kl} (X_0) (X^k-X_0^k) (X^l-X_0^l) \\
 && + \frac{1}{6} \sum_{k,l,m} f^i_{klm} (X_0) (X^k-X_0^k) (X^l-X_0^l) (X^m-X_0^m) \\
-&& + \frac{1}{24} \sum_{k,l,m,n} f^i_{klmn} (X_0) (X^k-X_0^k) (X^l-X_0^l) (X^m-X_0^m) (X^n-X_0^n)
-+ \mathcal{O}\left( \| X- X_0 \|^5 \right)
+&& + \frac{1}{24} \sum_{k,l,m,n} f^i_{klmn} (X_0) (X^k-X_0^k) (X^l-X_0^l) (X^m-X_0^m) (X^n-X_0^n) \\
+&&+ \mathcal{O}\left( \| X- X_0 \|^5 \right)
 \end{eqnarray}
 
 We can then approximate the first- and second-order moments 
+\begin{equation}
+\int_{-\infty}^{\infty} f^i(X) d\mu(X) = 
+f^i(X_0) 
++ \frac{1}{2} \sum_k f^i_{kk}(X_0) \delta t 
++ \frac{\delta t^2}{8} \sum_{k} f^i_{kkkk} (X_0) 
++ \mathcal{O} (\delta t^3 )
+\end{equation}
+
+\begin{eqnarray}
+\int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) 
+&= &
+f^i(X_0) f^j(X_0) 
++ \delta t \sum_k f^i_k(X_0)  f^j_k(X_0) \\
+&&  + \frac{f^i(X_0) \delta t}{2} \sum_{k} f^j_{kk}(X_0)
++ \frac{f^j(X_0) \delta t}{2} \sum_{k} f^i_{kk}(X_0)  \\
+&&+ \frac{f^i(X_0) \delta t^2}{8} \sum_{k} f^j_{kkkk} (X_0) 
++ \frac{f^j(X_0) \delta t^2}{8} \sum_{k} f^i_{kkkk} (X_0)\\
+&& + \frac{\delta t^2}{2} \sum_k f^i_k(X_0) f^j_{kkk} (X_0)  
++ \frac{\delta t^2}{2} \sum_k f^i_{kkk} (X_0)  f^j_k(X_0) \\
+&&+  \frac{3  \delta t^2}{4} \sum_{k} f^i_{kk}(X_0) f^j_{kk}(X_0) 
++ \mathcal{O}\left( \delta t^3 \right) 
+\end{eqnarray}
+
+We then estimate the covariance as
+\begin{eqnarray}
+\hat{C}^{ij} &=& 
+\int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) - \left(\int_{-\infty}^{\infty} f^i(X) d\mu(X) \right) \left(\int_{-\infty}^{\infty} f^j(X) d\mu(X) \right) \\
+&=&
+\delta t \sum_k f^i_k(X_0)  f^j_k(X_0) 
++ \frac{\delta t^2}{2} \sum_k f^i_k(X_0) f^j_{kkk} (X_0)  
+ + \frac{\delta t^2}{2} \sum_k f^i_{kkk} (X_0) f^j_k(X_0) \\
+&&+  \frac{3 \delta t^2}{4} \sum_{k} f^i_{kk}(X_0) f^j_{kk}(X_0) 
+- \frac{\delta t^2}{4} \left( \sum_k f^i_{kk}(X_0) \right) \left( \sum_k f^j_{kk}(X_0) \right) 
+ + \mathcal{O}\left( \delta t^3 \right) \\
+\end{eqnarray}
+
+Let 
+\begin{equation}
+J_1(X_0) = \begin{bmatrix}
+f_1^1 & f_2^1 & \dots & f_n^1 \\
+\vdots & \vdots & \cdots & \vdots \\
+f_1^m & f_2^m & \dots & f_n^m
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+J_2(X_0) = \begin{bmatrix}
+f_{11}^1 & f_{22}^1 & \dots & f_{nn}^1 \\
+\vdots & \vdots & \cdots & \vdots \\
+f_{11}^m & f_{22}^m & \dots & f_{nn}^m
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+J_3(X_0) = \begin{bmatrix}
+f_{111}^1 & f_{222}^1 & \dots & f_{nnn}^1 \\
+\vdots & \vdots & \cdots & \vdots \\
+f_{111}^m & f_{222}^m & \dots & f_{nnn}^m
+\end{bmatrix}
+\end{equation}
+
+Then
+\begin{eqnarray}
+\hat{C}(X_0) &=& \delta t J_1 J_1^T 
++ \frac{\delta t^2}{2} \left[ J_1 J_3^T + J_3 J_1^T  
++ \frac{3}{2} J_2 J_2^T 
+-\frac{1 }{2} J_2 1 1^T J_2^T \right]
++ \mathcal{O} (\delta t^3) \\
+&=& \delta t J_1 J_1^T 
++ \frac{\delta t^2}{2} U \Sigma V
++ \mathcal{O} (\delta t^3)
+\end{eqnarray}
+%
+where $U \Sigma V = J_1 J_3^T + J_3 J_1^T + \frac{3}{2} J_2 J_2^T -\frac{1 }{2} J_2 1 1^T J_2^T $.
+%
+In this equation, we see what we expect (a linear function of the variance, due to the gradient of $f$) and a second (higher-order) term arising from the curvature and third derivative of $f$.
+%
+The importance of this second term increases as the curvature increases, as well as when $\delta t$ increases. 
+
+By the Woodbury matrix identity
+\begin{eqnarray}
+\hat{C}^{-1}(X_0) &\approx & 
+\left( \delta t J_1 J_1^T + \frac{\delta t^2}{2}  U \Sigma V \right)^{-1} \\
+&=& \left( \delta t J_1 J_1^T \right)^{-1} - 
+\left( \delta t J_1 J_1^T \right)^{-1} \frac{\delta t^2}{2} U \left(\Sigma^{-1} + \frac{\delta t^2}{2} V \left( \delta t J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( \delta t J_1 J_1^T \right)^{-1} \\
+&=& \frac{1}{\delta t} \left( J J^T \right)^{-1}
+- \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}  \\
+&=& \frac{1}{\delta t} \left( J J^T \right)^{-1} - A
+\end{eqnarray}
+%
+where $A = \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}$ and is a function of the first-, second-, and third-order derivatives of $\mathbf{f}$.
+
+\section{Mahalanobis Distance}
+
+
+We now approximate the distances $\| X_2 - X_1 \|$.
+%
+Let $g = f^{-1}: \mathbb{R}^m \mapsto \mathbb{R}^n$, and let $Y_1 = f(X_1)$, and $Y_2 = f(X_2)$.
+%
+Again, we let $g_j^i = \frac{\partial g^i}{\partial Y^j}$.
+%
+Then, Taylor expansion around $Y_1$ gives
+%
+\begin{eqnarray}
+X_2^i &=& X_1^i + \sum_j g_j^i (Y_1) (Y^j_2 - Y^j_1 ) 
++ \frac{1}{2} \sum_{kl}  g^i_{kl} (Y_1) (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \\
+&&+ \frac{1}{6} \sum_{klm}  g^i_{klm} (Y_1) (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) 
++ \mathcal{O}( \|Y_2 - Y_1\|^4 )
+\end{eqnarray}
+%
+We can obtain a similar expression for expansion around $Y_2$.
+%
+We then compute $\| X_2 - X_1\|$ using both expansions, and average, to obtain
+%
+\begin{eqnarray}
+&&\| X_2 - X_1 \|^2 \\
+&=& \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \\
+&& + \frac{1}{2} \sum_{ijkl} \left( g_j^i (Y_1) g^i_{kl} (Y_1) - g_j^i (Y_2) g^i_{kl} (Y_2) \right) (Y^j_2 - Y^j_1 )  (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \\
+&& + \frac{1}{8} \sum_{ijklm}  \left( g^i_{jk} (Y_1) g^i_{lm} (Y_1) + g^i_{jk} (Y_2) g^i_{lm} (Y_2)  \right) (Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \\
+&& + \frac{1}{6} \sum_{ijklm}  \left( g^i_{j} (Y_1) g^i_{klm} (Y_1) + g^i_{j} (Y_2) g^i_{klm} (Y_2)  \right)(Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
+\end{eqnarray}
+
+Let 
+$$K_1 = \sup_{i,j} |g_j^i|$$
+$$K_2 = \sup_{i,j,k} |g_{jk}^i|$$
+$$K_3 = \sup_{i,j,k,l} |g_{jkl}^i|$$
+
+Then
+\begin{eqnarray}
+&&\| X_2 - X_1 \|^2 \\
+&\le&  \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+&& + n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
+\end{eqnarray}
+
+Our {\em estimate} of the distance is 
+\begin{eqnarray}
+&&\| X_2 - X_1 \|^2 \\
+&=& \frac{\delta t}{2} (Y_2 - Y_1)^T (\hat{C}^{-1} (Y_1) + \hat{C}^{-1}(Y_2)) (Y_2 - Y_1)\\
+&\approx & \frac{1}{2} (Y_2 - Y_1)^T \left( \left( (J J^T)^{-1}(Y_1)- \delta t A(Y_1) \right)  + \left((J J^T)^{-1}(Y_2)- \delta t A(Y_2) \right) \right) (Y_2 - Y_1)
+\end{eqnarray}
+
+We therefore have two errors
+\begin{itemize}
+\item The error from the {\em estimation} of the covariance.
+%
+This is
+$$\mathcal{O} \left( \delta t \| Y_2 - Y_1 \|^2 \sup_{Y, i} |\lambda_i(A(Y))| \right)$$
+%
+where $A$ is a function of the derivatives of $\mathbf{f}$, and $\lambda_i(A(Y))$ are the eigenvalues of $A(Y))$.
+
+\item The errors from the truncation of the Taylor expansion for the Mahalanobis distance, which is 
+$$\mathcal{O} \left(  n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \right)$$
+\end{itemize}
+
+
+\appendix
+
+\section{Algebra}
+
+\subsection{Covariance estimation}
+
+First order moment
 \begin{eqnarray}
 &&\int_{-\infty}^{\infty} f^i(X) d\mu(X) \\
 &= & \int_{-\infty}^{\infty} \left[ f^i(X_0) + \sum_k f^i_k(X_0) (X^k-X_0^k)  + \frac{1}{2} \sum_{k,l} f^i_{kl}(X_0) (X^k-X_0^k) (X^l-X_0^l)  \right. \\
@@ -70,6 +237,7 @@ We can then approximate the first- and second-order moments
 &=& f^i(X_0) + \frac{1}{2} \sum_k f^i_{kk}(X_0) \delta t + \frac{\delta t^2}{8} \sum_{k} f^i_{kkkk} (X_0) + \mathcal{O} (\delta t^3 )
 \end{eqnarray}
 
+Second order moment
 \begin{eqnarray}
 &&\int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) \\
 &= &
@@ -103,21 +271,20 @@ f^i(X_0) f^j(X_0) \right. \\
 &&\left. + \mathcal{O}\left( \| X- X_0 \|^5 \right) \right] d\mu(X) \\
  \end{eqnarray}
  
- \begin{eqnarray}
- &=& 
-f^i(X_0) f^j(X_0) \\
-&& + \delta t \sum_k f^i_k(X_0)  f^j_k(X_0) \\
+\begin{eqnarray}
+&=& 
+f^i(X_0) f^j(X_0)  + \delta t \sum_k f^i_k(X_0)  f^j_k(X_0) \\
 &&  + \frac{f^i(X_0) \delta t}{2} \sum_{k} f^j_{kk}(X_0)
 + \frac{f^j(X_0) \delta t}{2} \sum_{k} f^i_{kk}(X_0)  \\
-&&+ \frac{f^i(X_0) \delta t^2}{8} \sum_{k} f^j_{kkkk} (X_0) \\
-&& + \frac{f^j(X_0) \delta t^2}{8} \sum_{k} f^i_{kkkk} (X_0)\\
-&& + \frac{\delta t^2}{2} \sum_k f^i_k(X_0) f^j_{kkk} (X_0)  \\
-&& + \frac{\delta t^2}{2}  f^i_{kkk} (X_0) \sum_k f^j_k(X_0) \\
-&&+  \frac{3  \delta t^2}{4} \sum_{k} f^i_{kk}(X_0) f^j_{kk}(X_0) \\
-&& + \mathcal{O}\left( \delta t^3 \right) 
+&&+ \frac{f^i(X_0) \delta t^2}{8} \sum_{k} f^j_{kkkk} (X_0) 
+ + \frac{f^j(X_0) \delta t^2}{8} \sum_{k} f^i_{kkkk} (X_0)\\
+&& + \frac{\delta t^2}{2} \sum_k f^i_k(X_0) f^j_{kkk} (X_0)  
+ + \frac{\delta t^2}{2} \sum_k  f^i_{kkk} (X_0) f^j_k(X_0) \\
+&&+  \frac{3  \delta t^2}{4} \sum_{k} f^i_{kk}(X_0) f^j_{kk}(X_0) 
+ + \mathcal{O}\left( \delta t^3 \right) 
 \end{eqnarray}
 
-We then write
+Covariance
 \begin{eqnarray}
 && \hat{C}^{ij} = \\ 
 && \int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) - \left(\int_{-\infty}^{\infty} f^i(X) d\mu(X) \right) \left(\int_{-\infty}^{\infty} f^j(X) d\mu(X) \right) \\
@@ -139,93 +306,11 @@ We then write
  + \frac{\delta t^2}{2} \sum_k f^i_{kkk} (X_0) f^j_k(X_0) \\
 &&+  \frac{3 \delta t^2}{4} \sum_{k} f^i_{kk}(X_0) f^j_{kk}(X_0) 
 - \frac{\delta t^2}{4} \left( \sum_k f^i_{kk}(X_0) \right) \left( \sum_k f^j_{kk}(X_0) \right) 
- + \mathcal{O}\left( \delta t^3 \right) \\
+ + \mathcal{O}\left( \delta t^3 \right) 
 \end{eqnarray}
 
-%&=& \left( f^i(X_0) f^j(X_0) + \delta t \sum_k f_k^i(X_0) f_k^j(X_0) \right. \\
-%&& \left. +  \frac{f^i(X_0) \delta t}{2} \sum_k f^j_{kk}(X_0) + \frac{f^j(X_0) \delta t}{2} \sum_k f^i_{kk}(X_0) \right) \\
-%&& - \left(f^i(X_0) + \frac{ \delta t}{2} \sum_k f^i_{kk}(X_0) \right)
-%\left(f^j(X_0) + \frac{ \delta t}{2} \sum_k f^j_{kk}(X_0)  \right) \\
-%&=& \delta t \sum_k f_k^i(X_0) f_k^j(X_0) - \frac{\delta t^2}{4} \left( \sum_k f^i_{kk}(X_0) \right) \left( \sum_k f^j_{kk}(X_0) \right)
-%\end{eqnarray}
+\subsection{Distance estimation}
 
-Let 
-\begin{equation}
-J_1(X_0) = \begin{bmatrix}
-f_1^1 & f_2^1 & \dots & f_n^1 \\
-\vdots & \vdots & \cdots & \vdots \\
-f_1^m & f_2^m & \dots & f_n^m
-\end{bmatrix}
-\end{equation}
-
-\begin{equation}
-J_2(X_0) = \begin{bmatrix}
-f_{11}^1 & f_{22}^1 & \dots & f_{nn}^1 \\
-\vdots & \vdots & \cdots & \vdots \\
-f_{11}^m & f_{22}^m & \dots & f_{nn}^m
-\end{bmatrix}
-\end{equation}
-
-\begin{equation}
-J_3(X_0) = \begin{bmatrix}
-f_{111}^1 & f_{222}^1 & \dots & f_{nnn}^1 \\
-\vdots & \vdots & \cdots & \vdots \\
-f_{111}^m & f_{222}^m & \dots & f_{nnn}^m
-\end{bmatrix}
-\end{equation}
-
-Then
-\begin{equation}
-C(X_0) = \delta t J_1 J_1^T 
-+ \frac{\delta t}{2} \left( J_1 J_3^T + J_3 J_1^T \right) 
-+ \frac{3 \delta t}{4} J_2 J_2^T 
--\frac{\delta t^2}{4} J_2 1 1^T J_2^T
-+ \mathcal{O} (\delta t^3)
-\end{equation}
- 
- STOPPED HERE!!
- 
-In this equation, we see what we expect (a linear function of the variance, due to the gradient of $f$) and a second term arising from the curvature of $f$.
-%
-The importance of this second term increases as the curvature increases, and when the variance of the underlying process increases. 
-
- By the Sherman-Morrison formula,
- \begin{eqnarray}
- C^{-1}(X_0) &=&  
- \left(\delta t J J^T \right)^{-1} - \frac{ \left(\delta t J J^T \right)^{-1} \frac{\delta t^2}{4} H H^T \left(\delta t J J^T \right)^{-1} }{1+ \frac{\delta t^2}{4} H^T \left(\delta t J J^T \right)^{-1} H} \\
- &=& \frac{1}{\delta t} \left(J J^T \right)^{-1} \left[ I - \delta t \frac{ H H^T \left(J J^T \right)^{-1} }{4+ \delta t H^T \left( J J^T \right)^{-1} H } \right]  \\
- &=& \frac{1}{\delta t} \left(J J^T \right)^{-1} \left( I - A  \right)
- \end{eqnarray}
-where $A = \delta t \frac{ H H^T \left(J J^T \right)^{-1} }{4+ \delta t H^T \left( J J^T \right)^{-1} H }$
-
-For the specific case of our fast-slow SDEs:
-$$f^1(X) = X(1)$$
-$$f^2(X) = \frac{X(2)}{\sqrt{\epsilon}}$$
-and so the covariance estimation is exact (provided we do not see the drift).
-
-When we apply a nonlinear function, i.e., 
-$$f^1(X) = \frac{X(2)}{\sqrt{\epsilon}} \cos \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right)$$
-$$f^2(X) = \frac{X(2)}{\sqrt{\epsilon}} \sin \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right)$$
-
-\begin{eqnarray}
-H_{11}^1 &=& 
--\frac{X(2)}{\sqrt{\epsilon}} \cos \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right) \\
-H_{22}^1 &=&
--\frac{X(2)}{\epsilon^{3/2}} \cos \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right) - \left( \frac{1}{\epsilon} + \frac{1}{\epsilon^{3/2}} \right) \sin \left(X(1)+\frac{X(2)}{\sqrt{\epsilon}} \right) 
-\end{eqnarray}
-
-TODO: finish nonlinear case/example
-
-
-\section{Mahalanobis Distance}
-
-
-We now approximate the distances $\| X_2 - X_1 \|$.
-%
-Let $g = f^{-1}$, and let $Y_1 = f(X_1)$, and $Y_2 = f(X_2)$
-%
-Then
-%
 \begin{eqnarray}
 X_2^i &=& X_1^i + \sum_j g_j^i (Y_1) (Y^j_2 - Y^j_1 ) 
 + \frac{1}{2} \sum_{kl}  g^i_{kl} (Y_1) (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \\
@@ -275,20 +360,61 @@ Averaging the two expansions yields
 && + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
 \end{eqnarray}
 
-If we substitute our expression for our {\em estimate} of $C^{-1} = (J J^T) ^{-1}$, we obtain
+To bound the distances,
+
 \begin{eqnarray}
-&&\| X_2 - X_1 \|^2 \\
-&\approx&  \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) (I-A(Y_1))+ (J J^T)^{-1}(Y_2) (I-A(Y_2))) (Y_2 - Y_1 ) \\
-&& + \frac{1}{2} \sum_{ijkl} \left( g_j^i (Y_1) g^i_{kl} (Y_1) - g_j^i (Y_2) g^i_{kl} (Y_2) \right) (Y^j_2 - Y^j_1 )  (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \\
-&& + \frac{1}{8} \sum_{ijklm}  \left( g^i_{jk} (Y_1) g^i_{lm} (Y_1) + g^i_{jk} (Y_2) g^i_{lm} (Y_2)  \right) (Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \\
-&& + \frac{1}{6} \sum_{ijklm}  \left( g^i_{j} (Y_1) g^i_{klm} (Y_1) + g^i_{j} (Y_2) g^i_{klm} (Y_2)  \right)(Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \\
+&& \| X_2 - X_1 \|^2 \\
+& \le & \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+&& + \left|\frac{1}{2} \sum_{ijkl} \left( g_j^i (Y_1) g^i_{kl} (Y_1) - g_j^i (Y_2) g^i_{kl} (Y_2) \right) (Y^j_2 - Y^j_1 )  (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \right| \\
+&& + \left| \frac{1}{8} \sum_{ijklm}  \left( g^i_{jk} (Y_1) g^i_{lm} (Y_1) + g^i_{jk} (Y_2) g^i_{lm} (Y_2)  \right) (Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \right| \\
+&& + \left| \frac{1}{6} \sum_{ijklm}  \left( g^i_{j} (Y_1) g^i_{klm} (Y_1) + g^i_{j} (Y_2) g^i_{klm} (Y_2)  \right)(Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \right| \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) \\
+&\le & \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+&& + \left|\frac{1}{2} \sum_{ijkl} g_j^i (Y_1) \left(  g^i_{kl} (Y_1) - g^i_{kl} (Y_2) \right) (Y^j_2 - Y^j_1 )  (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \right| \\
+&& + \left|\frac{1}{2} \sum_{ijkl}  g^i_{kl} (Y_2) \left( g_j^i (Y_1) - g_j^i (Y_2) \right) (Y^j_2 - Y^j_1 )  (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \right| \\
+&& + \left| \frac{1}{8} \sum_{ijklm}  \left( g^i_{jk} (Y_1) g^i_{lm} (Y_1) + g^i_{jk} (Y_2) g^i_{lm} (Y_2)  \right) (Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \right| \\
+&& + \left| \frac{1}{6} \sum_{ijklm}  \left( g^i_{j} (Y_1) g^i_{klm} (Y_1) + g^i_{j} (Y_2) g^i_{klm} (Y_2)  \right)(Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \right| \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) \\
+&\le & \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+&& + \left|\frac{1}{2} \sum_{jkl} n K_1 K_2 \| Y_2 - Y_1 \| (Y^j_2 - Y^j_1 )  (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \right| \\
+&& + \left|\frac{1}{2} \sum_{jkl} n K_2 K_1 \| Y_2 - Y_1 \| (Y^j_2 - Y^j_1 )  (Y^k_2 - Y^k_1)(Y^l_2 - Y^l_1) \right| \\
+&& + \left| \frac{1}{8} \sum_{jklm}  2 n K_2^2 (Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \right| \\
+&& + \left| \frac{1}{6} \sum_{jklm}  2 n K_1 K_3 (Y^j_2 - Y^j_1) (Y^k_2 - Y^k_1) (Y^l_2 - Y^l_1) (Y^m_2 - Y^m_1) \right| \\
 && + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
 \end{eqnarray}
 
-\begin{itemize}
-\item Make 2D with fast-slow
-\item Use $dt$ rather than $\sigma$ for variance
-\item Add into Mahalanobis distance approximation
-\item Add second order term in Mahalanobis distance
-\end{itemize}
+\begin{eqnarray}
+&= & \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+&& + \left|\frac{1}{2}  n K_1 K_2 \| Y_2 - Y_1 \| \left( \sum_j (Y^j_2 - Y^j_1 ) \right)^3 \right| \\
+&& + \left|\frac{1}{2} n K_2 K_1 \| Y_2 - Y_1 \| \left( \sum_j (Y^j_2 - Y^j_1 ) \right)^3 \right| \\
+&& + \left| \frac{1}{8} 2 n K_2^2 \left( \sum_j (Y^j_2 - Y^j_1 ) \right)^4 \right| \\
+&& + \left| \frac{1}{6}   2 n K_1 K_3 \left( \sum_j (Y^j_2 - Y^j_1 ) \right)^4 \right| \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) \\ 
+&= & \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+&& + \left| n K_1 K_2 \| Y_2 - Y_1 \| ^4 \right| \\
+&& + \left| \frac{ n K_2^2}{4}  \| Y_2 - Y_1 \| ^4 \right| \\
+&& + \left| \frac{n K_1 K_3}{3}   \| Y_2 - Y_1 \| ^4 \right| \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) \\
+&=& \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+&& + n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
+\end{eqnarray}
+
+\begin{eqnarray}
+&&\| X_2 - X_1 \|^2 \\
+&<& \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \\
+&& + \frac{1}{2} \|Y_2 - Y_1 \|^3 \sum_{ijkl} \left( g_j^i (Y_1) g^i_{kl} (Y_1) - g_j^i (Y_2) g^i_{kl} (Y_2) \right) \\
+&& + \frac{1}{8} \|Y_2 - Y_1 \|^4 \sum_{ijklm}  \left( g^i_{jk} (Y_1) g^i_{lm} (Y_1) + g^i_{jk} (Y_2) g^i_{lm} (Y_2)  \right) \\
+&& + \frac{1}{6} \|Y_2 - Y_1 \|^4 \sum_{ijklm}  \left( g^i_{j} (Y_1) g^i_{klm} (Y_1) + g^i_{j} (Y_2) g^i_{klm} (Y_2)  \right) \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) \\
+&<& \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \\
+&& + \frac{1}{2} \|Y_2 - Y_1 \|^3 m^4 \left( K_1 K_2 \|Y_2 - Y_1\| + K_2 K_1 \|Y_2 - Y_1 \| \right) \\
+&& + \frac{1}{8} \|Y_2 - Y_1 \|^4 m^5 \left( K_2 K_2 + K_2 K_2  \right) \\
+&& + \frac{1}{6} \|Y_2 - Y_1 \|^4 m^5  \left( K_1 K_3 + K_1 K_3  \right) \\
+&& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) \\
+&=& \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \\
+&&+ \left( m^4 K_1 K_2 + \frac{m^5 K_2^2}{4} + \frac{m^5 K_1 K_3}{3} \right) \|Y_2 - Y_1 \|^4 
++ \mathcal{O} (\|Y_1 - Y_2 \|^6 )
+\end{eqnarray}
+
 \end{document}
