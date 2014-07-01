@@ -3,7 +3,8 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage[margin=1in]{geometry}
-
+\usepackage{graphicx}
+\usepackage{epstopdf}
 \begin{document}
 
 \section{Multiscale SDEs}
@@ -28,7 +29,7 @@ Therefore, when $\epsilon \ll 1$, we have that $z \ll x$, and so we will recover
 
 This falls into a more general form of SDE
 \begin{equation}
-dx_i = f(X) dt + dW_i
+dx_i = a(X) dt + dW_i
 \end{equation}
 and we will let $X = \begin{bmatrix} X^1 \\ X^2 \\ \vdots \\ X^n \end{bmatrix}$
 
@@ -63,29 +64,7 @@ f^i(X_0)
 &&+ \mathcal{O}\left( \| X- X_0 \|^5 \right)
 \end{eqnarray}
 
-We can then approximate the first- and second-order moments 
-\begin{equation}
-\int_{-\infty}^{\infty} f^i(X) d\mu(X) = 
-f^i(X_0) 
-+ \frac{1}{2} \sum_k f^i_{kk}(X_0) \delta t 
-+ \frac{\delta t^2}{8} \sum_{k} f^i_{kkkk} (X_0) 
-+ \mathcal{O} (\delta t^3 )
-\end{equation}
 
-\begin{eqnarray}
-\int_{-\infty}^{\infty} f^i(X) f^j(X) d\mu(X) 
-&= &
-f^i(X_0) f^j(X_0) 
-+ \delta t \sum_k f^i_k(X_0)  f^j_k(X_0) \\
-&&  + \frac{f^i(X_0) \delta t}{2} \sum_{k} f^j_{kk}(X_0)
-+ \frac{f^j(X_0) \delta t}{2} \sum_{k} f^i_{kk}(X_0)  \\
-&&+ \frac{f^i(X_0) \delta t^2}{8} \sum_{k} f^j_{kkkk} (X_0) 
-+ \frac{f^j(X_0) \delta t^2}{8} \sum_{k} f^i_{kkkk} (X_0)\\
-&& + \frac{\delta t^2}{2} \sum_k f^i_k(X_0) f^j_{kkk} (X_0)  
-+ \frac{\delta t^2}{2} \sum_k f^i_{kkk} (X_0)  f^j_k(X_0) \\
-&&+  \frac{3  \delta t^2}{4} \sum_{k} f^i_{kk}(X_0) f^j_{kk}(X_0) 
-+ \mathcal{O}\left( \delta t^3 \right) 
-\end{eqnarray}
 
 We then estimate the covariance as
 \begin{eqnarray}
@@ -131,30 +110,32 @@ Then
 + \frac{\delta t^2}{2} \left[ J_1 J_3^T + J_3 J_1^T  
 + \frac{3}{2} J_2 J_2^T 
 -\frac{1 }{2} J_2 1 1^T J_2^T \right]
-+ \mathcal{O} (\delta t^3) \\
-&=& \delta t J_1 J_1^T 
-+ \frac{\delta t^2}{2} U \Sigma V
-+ \mathcal{O} (\delta t^3)
++ \mathcal{O} (\delta t^3) %\\
+%&=& \delta t J_1 J_1^T 
+%+ \frac{\delta t^2}{2} U \Sigma V
+%+ \mathcal{O} (\delta t^3)
 \end{eqnarray}
-%
-where $U \Sigma V = J_1 J_3^T + J_3 J_1^T + \frac{3}{2} J_2 J_2^T -\frac{1 }{2} J_2 1 1^T J_2^T $.
 %
 In this equation, we see what we expect (a linear function of the variance, due to the gradient of $f$) and a second (higher-order) term arising from the curvature and third derivative of $f$.
 %
 The importance of this second term increases as the curvature increases, as well as when $\delta t$ increases. 
 
-By the Woodbury matrix identity
-\begin{eqnarray}
-\hat{C}^{-1}(X_0) &\approx & 
-\left( \delta t J_1 J_1^T + \frac{\delta t^2}{2}  U \Sigma V \right)^{-1} \\
-&=& \left( \delta t J_1 J_1^T \right)^{-1} - 
-\left( \delta t J_1 J_1^T \right)^{-1} \frac{\delta t^2}{2} U \left(\Sigma^{-1} + \frac{\delta t^2}{2} V \left( \delta t J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( \delta t J_1 J_1^T \right)^{-1} \\
-&=& \frac{1}{\delta t} \left( J J^T \right)^{-1}
-- \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}  \\
-&=& \frac{1}{\delta t} \left( J J^T \right)^{-1} - A
-\end{eqnarray}
+
+
+Then
+\begin{equation}
+\hat{C}^{-1}(X_0) \approx \frac{1}{\delta t} \left( J J^T \right)^{-1} - A
+\end{equation}
 %
-where $A = \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}$ and is a function of the first-, second-, and third-order derivatives of $\mathbf{f}$.
+where 
+\begin{equation}
+A = \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}
+\end{equation}
+and
+\begin{equation}
+U \Sigma V = J_1 J_3^T + J_3 J_1^T + \frac{3}{2} J_2 J_2^T -\frac{1 }{2} J_2 1 1^T J_2^T 
+\end{equation}
+$A$ is a function of the first-, second-, and third-order derivatives of $\mathbf{f}$.
 
 \section{Mahalanobis Distance}
 
@@ -188,11 +169,11 @@ We then compute $\| X_2 - X_1\|$ using both expansions, and average, to obtain
 \end{eqnarray}
 
 Let 
-$$K_1 = \sup_{i,j} |g_j^i|$$
-$$K_2 = \sup_{i,j,k} |g_{jk}^i|$$
-$$K_3 = \sup_{i,j,k,l} |g_{jkl}^i|$$
+$$K_1 = \sup_{i,j,Y} |g_j^i(Y)|$$
+$$K_2 = \sup_{i,j,k,Y} |g_{jk}^i(Y)|$$
+$$K_3 = \sup_{i,j,k,l,Y} |g_{jkl}^i(Y)|$$
 
-Then
+Then, the error from Taylor expansion 
 \begin{eqnarray}
 &&\| X_2 - X_1 \|^2 \\
 &\le&  \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
@@ -204,7 +185,8 @@ Our {\em estimate} of the distance is
 \begin{eqnarray}
 &&\| X_2 - X_1 \|^2 \\
 &=& \frac{\delta t}{2} (Y_2 - Y_1)^T (\hat{C}^{-1} (Y_1) + \hat{C}^{-1}(Y_2)) (Y_2 - Y_1)\\
-&\approx & \frac{1}{2} (Y_2 - Y_1)^T \left( \left( (J J^T)^{-1}(Y_1)- \delta t A(Y_1) \right)  + \left((J J^T)^{-1}(Y_2)- \delta t A(Y_2) \right) \right) (Y_2 - Y_1)
+&\approx & \frac{1}{2} (Y_2 - Y_1)^T \left((J J^T)^{-1}(Y_1)  + (J J^T)^{-1}(Y_2) \right) (Y_2 - Y_1) \\
+&& - \frac{\delta t}{2} (Y_2 - Y_1)^T \left( A(Y_1) + A(Y_2) \right) (Y_2 - Y_1)
 \end{eqnarray}
 
 We therefore have two errors
@@ -220,187 +202,126 @@ where $A$ is a function of the derivatives of $\mathbf{f}$, and $\lambda_i(A(Y))
 $$\mathcal{O} \left(  n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \right)$$
 \end{itemize}
 
-We want to set the scale of the kernel such that both of these errors are smaller than 
+We want to set the scale of the kernel such that both of these errors are smaller than
 \begin{equation}
 (Y_2 - Y_1)^T (JJ^T)^{-1} (Y_2 - Y_1) 
 \end{equation}
 
 \section{Example}
 
+\subsection{Equations}
+
+Define the following two-dimensional system of SDEs
+\begin{eqnarray}
+dX(1) &=& 3 dt + dW_1 \\ 
+dX(2) &=& \frac{-X(2)}{\epsilon} dt + dW_2 
+\end{eqnarray}
+where $W_1, W_2$ are independent Brownian motions, and $\epsilon \ll 1$.
+
 Let
 \begin{eqnarray}
-f^1(X) &=& X^1 + \frac{\left( X^2 \right)^2}{\epsilon} \\
-f^2(X) &=& \frac{X^2}{\sqrt{\epsilon}}
+f^1(X) &=& X(1) + \frac{ X(2)^2}{\epsilon} \\
+f^2(X) &=& \frac{X(2)}{\sqrt{\epsilon}}
 \end{eqnarray}
+Therefore, $X(2)$ is now a ``fast'' variable, and we have further applied a nonlinear transformation to this fast-slow system. 
 
-The the inverse function is
+The inverse function $g = f^{-1}$ is
 \begin{eqnarray}
-g^1(Y) &=& Y^1 - \left( Y^2 \right)^2 \\
-g^2(Y) &=& Y^2 \sqrt{\epsilon}
+g^1(Y) &=& Y(1) - Y(2)^2 \\
+g^2(Y) &=& Y(2) \sqrt{\epsilon}
 \end{eqnarray}
 
-
-We then write
-\begin{equation}
-J_1 = \begin{bmatrix}
-1 & \frac{2X^2}{\epsilon} \\
-0 & \frac{1}{\sqrt{\epsilon}}
-\end{bmatrix}
-\end{equation}
-
-\begin{equation}
-J_2 = \begin{bmatrix}
-0 & \frac{2}{\epsilon} \\
-0 & 0
-\end{bmatrix}
-\end{equation}
-
-\begin{equation}
-J_3 = \begin{bmatrix}
-0 & 0 \\
-0 & 0
-\end{bmatrix}
-\end{equation}
-
-
-Then we compute
-\begin{eqnarray}
-U \Sigma V &=& 
-J_1 J_3^T + J_3 J_1^T + \frac{3}{2} J_2 J_2^T - \frac{1}{2} J_2 1 1^T J_2^T \\
-&=& \frac{3}{2} 
-\begin{bmatrix} 0 & \frac{2}{\epsilon} \\ 0 & 0 \end{bmatrix}
-\begin{bmatrix} 0 & 0 \\ \frac{2}{\epsilon} & 0 \end{bmatrix}
--\frac{1}{2}
-\begin{bmatrix} 0 & \frac{2}{\epsilon} \\ 0 & 0 \end{bmatrix}
-\begin{bmatrix} 1 \\ 1 \end{bmatrix}
-\begin{bmatrix} 1 & 1 \end{bmatrix}
-\begin{bmatrix} 0 & 0 \\ \frac{2}{\epsilon} & 0 \end{bmatrix} \\
-&=& \frac{3}{2}
-\begin{bmatrix} \frac{4}{\epsilon^2} & 0 \\ 0 & 0 \end{bmatrix}
--\frac{1}{2}
-\begin{bmatrix} \frac{4}{\epsilon^2} & 0 \\ 0 & 0 \end{bmatrix} \\
-&=& \begin{bmatrix} \frac{4}{\epsilon^2} & 0 \\ 0 & 0 \end{bmatrix}
-\end{eqnarray}
-
-And so 
-$U = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$, 
-$\Sigma = \begin{bmatrix} \frac{4}{\epsilon^2} \end{bmatrix}$, and
-$V = \begin{bmatrix} 1 & 0 \end{bmatrix}$.
-
-Therefore,
-
-\begin{equation}
-J_1 J_1^T =
-\begin{bmatrix} 1 & \frac{2X^2}{\epsilon} \\ 0 & \frac{1}{\sqrt{\epsilon}} \end{bmatrix} 
-\begin{bmatrix} 1 & 0 \\ \frac{2X^2}{\epsilon} & \frac{1}{\sqrt{\epsilon}} \end{bmatrix}
-= \begin{bmatrix}
-1+\frac{4 \left( X^2 \right)^2}{\epsilon^2} & \frac{2X^2}{\epsilon^{3/2}} \\
-\frac{2X^2}{\epsilon^{3/2}} & \frac{1}{\epsilon}
-\end{bmatrix}
-\end{equation}
-
-\begin{equation}
-\left( J_1 J_1^T \right)^{-1} = 
-\epsilon \begin{bmatrix}
-\frac{1}{\epsilon} & -\frac{2X^2}{\epsilon^{3/2}} \\
--\frac{2X^2}{\epsilon^{3/2}} & 1+\frac{4 \left( X^2 \right)^2}{\epsilon^2}
-\end{bmatrix}
-= \begin{bmatrix}
-1 & -\frac{2X^2}{\sqrt{\epsilon}} \\
--\frac{2X^2}{\sqrt{\epsilon}} & \epsilon+\frac{4 \left( X^2 \right)^2}{\epsilon}
-\end{bmatrix}
-\end{equation}
-
-We then compute the eigenvalues of $(J_1 J_1^T)^{-1}$
-\begin{equation}
-\left( J_1 J_1^T \right)^{-1} - \lambda I =
-\begin{bmatrix}
-1-\lambda & -\frac{2X^2}{\sqrt{\epsilon}} \\
--\frac{2X^2}{\sqrt{\epsilon}} & \epsilon+\frac{4 \left( X^2 \right)^2}{\epsilon}-\lambda
-\end{bmatrix}
-\end{equation}
-
-\begin{eqnarray}
-\det \left( \left( J_1 J_1^T \right)^{-1} - \lambda I \right) &=& 
-\left(1-\lambda \right) \left( \epsilon+\frac{4 \left( X^2 \right)^2}{\epsilon}-\lambda \right) - \frac{4 (X^2)^2 }{\epsilon} \\
-&=& \epsilon - \lambda  - \lambda \epsilon - \lambda \frac{4 \left( X^2 \right)^2}{\epsilon} + \lambda^2 \\
-&=& \lambda^2 - \lambda \left( 1 + \epsilon + \frac{4 \left( X^2 \right)^2}{\epsilon} \right) + \epsilon
-\end{eqnarray}
-
-\begin{equation}
-\lambda = \frac{1}{2} \left( 1 + \epsilon + \frac{4 \left( X^2 \right)^2}{\epsilon}  \pm \sqrt{\left( 1 + \epsilon + \frac{4 \left( X^2 \right)^2}{\epsilon} \right)^2 - 4 \epsilon}\right)
-\end{equation}
-
-Let $(X^2) ^2 \approx Var(X^2) = \epsilon/2$
-
-\begin{eqnarray}
-\lambda &=& 
-\frac{1}{2} \left( 1 + \epsilon + 2  \pm \sqrt{\left( 1 + \epsilon + 2 \right)^2 - 4 \epsilon}\right) \\
-&=& \frac{1}{2} \left( 2 + \epsilon \pm \sqrt{ 9 + 6 \epsilon + \epsilon^2 - 4 \epsilon}\right) \\
-&=& \frac{1}{2} \left( 2 + \epsilon \pm \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right)
-\end{eqnarray}
-
-\begin{eqnarray}
-A &=& 
-\frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1} \\
-&=& \frac{1}{2} 
-\begin{bmatrix} 1 & -\frac{2X^2}{\sqrt{\epsilon}} \\ -\frac{2X^2}{\sqrt{\epsilon}} & \epsilon+\frac{4 \left( X^2 \right)^2}{\epsilon} \end{bmatrix}
-\begin{bmatrix} 1 \\ 0 \end{bmatrix}
-\left( \frac{\epsilon^2}{4} + 
-\frac{\delta t}{2} 
-\begin{bmatrix} 1 & 0 \end{bmatrix}
-\begin{bmatrix} 1 & -\frac{2X^2}{\sqrt{\epsilon}} \\ -\frac{2X^2}{\sqrt{\epsilon}} & \epsilon+\frac{4 \left( X^2 \right)^2}{\epsilon} \end{bmatrix}
-\begin{bmatrix} 1 \\ 0 \end{bmatrix}
-\right)^{-1} \\
-&&\begin{bmatrix} 1 & 0 \end{bmatrix}
-\begin{bmatrix} 1 & -\frac{2X^2}{\sqrt{\epsilon}} \\ -\frac{2X^2}{\sqrt{\epsilon}} & \epsilon+\frac{4 \left( X^2 \right)^2}{\epsilon} \end{bmatrix} \\
-&=& \frac{1}{2} 
-\begin{bmatrix} 1 \\ -\frac{2X^2}{\sqrt{\epsilon}} \end{bmatrix}
-\left( \frac{\epsilon^2}{4} + 
-\frac{\delta t}{2} 
-\right)^{-1} 
-\begin{bmatrix} 1 & -\frac{2X^2}{\sqrt{\epsilon}} \end{bmatrix} \\
-&=& \left( \frac{\epsilon^2}{2} + 
-\delta t
-\right)^{-1} 
-\begin{bmatrix}
-1 & -\frac{2X^2}{\sqrt{\epsilon}} \\ -\frac{2X^2}{\sqrt{\epsilon}} & \frac{4\left(X^2 \right)^2}{\epsilon}
-\end{bmatrix}
-\end{eqnarray}
-
-Therefore, the eigenvalues of $A$ are $\lambda_i = \left( \frac{\epsilon^2}{2} +  \delta t \right)^{-1} \left( 1 + \frac{4\left(X^2 \right)^2}{\epsilon} \right), 0$
-
-For the derivatives of the inverse function $g(Y)$, we have
-\begin{eqnarray}
-K_1 &=& 2 Y^2 = 2 \\
-K_2 &=& 2 \\
-K_3 &=& 0
-\end{eqnarray}
-
+The three relevant quantities for NIVs are 
 \begin{itemize}
+\item The linearized approximation to the distance,
+%
+\begin{equation}
+(Y_2 - Y_1)^T (JJ^T)^{-1} (Y_2 - Y_1) 
+\approx \mathcal{O} \left(  \frac{1}{2} \left( 2 + \epsilon + \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right) \Delta Y^2\right) 
+\end{equation}
+where $\Delta Y =  \|Y_2 - Y_1\|$
+
 \item The error from the {\em estimation} of the covariance.
 %
 This is
-\begin{eqnarray}
+\begin{equation}
 \mathcal{O} \left( \delta t \| Y_2 - Y_1 \|^2 \sup_{Y, i} |\lambda_i(A(Y))| \right) 
-&=& \mathcal{O} \left( \delta t \| Y_2 - Y_1 \| ^2 \max_{X^2} \left( \frac{\epsilon^2}{2} +  \delta t \right)^{-1} \left( 1 + \frac{4\left(X^2 \right)^2}{\epsilon} \right) \right)  \\
-&=& \mathcal{O} \left( \frac{2 \delta t}{\epsilon^2 + 2 \delta t} \| Y_2 - Y_1 \| ^2 \left( 1 + \frac{4 \left( 9 Var(X^2) \right)}{\epsilon} \right) \right) \\
-&=& \mathcal{O} \left( \frac{2 \delta t}{\epsilon ^2 + 2 \delta t} \| Y_2 - Y_1 \| ^2 \left( 1 + \frac{4 \left( 9 \epsilon /2 \right)}{\epsilon} \right) \right) \\
-&=& \mathcal{O} \left( \frac{38 \delta t}{\epsilon ^2 + 2 \delta t} \| Y_2 - Y_1 \| ^2 \right)
-\end{eqnarray}
-where $\max_{X^2}  = 9 Var(X^2) = 9 (\epsilon/2)$
+= \mathcal{O} \left( \frac{38 \delta t}{\epsilon ^2 + 2 \delta t}\Delta Y^2 \right)
+\end{equation}
 
+\item The errors from the {\em truncation} of the Taylor expansion for the Mahalanobis distance, which is 
+\begin{equation}
+\mathcal{O} \left(  n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \right)
+= \mathcal{O} \left( 10 \Delta Y^4  \right) 
+\end{equation}
 
-\item The errors from the truncation of the Taylor expansion for the Mahalanobis distance, which is 
-$$\mathcal{O} \left(  n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \right)
-= \mathcal{O} \left( 10 \| Y_2 - Y_1 \| ^4  \right) $$
 \end{itemize}
 
-Therefore, we need the kernel to be smaller than 
+We want the two error terms to be small relative to the distance approximation. 
+%
+We therefore choose the scale of the diffusion maps kernel $\sigma_{kernel}$ such that
 \begin{equation}
-(Y_2 - Y_1)^T (JJ^T)^{-1} (Y_2 - Y_1) 
-\approx \mathcal{O} \left(  \frac{1}{2} \left( 2 + \epsilon \pm \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right) \|Y_2 - Y_1 \|^2\right) 
+\sigma_{kernel} = \mathcal{O} \left(  \frac{1}{2} \left( 2 + \epsilon + \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right) \Delta Y^2\right)
 \end{equation}
+%
+corresponding to a $\Delta Y$ where
+\begin{equation}
+  \frac{1}{2} \left( 2 + \epsilon + \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right) \Delta Y^2  
+\gg 
+\max \left\{  
+\frac{38 \delta t}{\epsilon ^2 + 2 \delta t} \Delta Y^2, 
+10 \Delta Y^4
+ \right\}
+\end{equation}
+
+\subsection{Results}
+
+We did five different simulations to look at the effects of $\epsilon$, $\sigma_{kernel}$, and $\delta t$ on the results.
+%
+We can see that we recover the correct variable (consistent with DMAPS) if the errors in the covariance estimation and the Taylor expansion are smaller than the linear approximation to the distance. 
+
+\begin{table}
+\begin{tabular}{r | c c c}
+Simulation number & $\epsilon$ & $\sigma_{kernel}$ & $\delta t$ \\
+\hline
+1 & $10^{-3}$ & $10^{-2}$ & $10^{-8}$ \\
+2 & $10^{-3}$ & $10^{2}$ & $10^{-8}$ \\
+3 & $10^{-3}$ & $10^{-2}$ & $10^{-5}$ \\
+4 & $10^{-4}$ & $10^{-2}$ & $10^{-10}$ \\
+5 & $10^{-4}$ & $10^{-2}$ & $10^{-5}$ 
+\end{tabular}
+\caption{Parameter values for different simulation experiments. }
+\end{table}
+
+
+\begin{figure}
+\includegraphics[width=0.22\textwidth]{orig_data_1}
+\includegraphics[width=0.22\textwidth]{function_data_1}
+\includegraphics[width=0.22\textwidth]{error_terms_1}
+\includegraphics[width=0.22\textwidth]{dmaps_corr_1} \\
+%
+\includegraphics[width=0.22\textwidth]{orig_data_2}
+\includegraphics[width=0.22\textwidth]{function_data_2}
+\includegraphics[width=0.22\textwidth]{error_terms_2}
+\includegraphics[width=0.22\textwidth]{dmaps_corr_2} \\
+%
+\includegraphics[width=0.22\textwidth]{orig_data_3}
+\includegraphics[width=0.22\textwidth]{function_data_3}
+\includegraphics[width=0.22\textwidth]{error_terms_3}
+\includegraphics[width=0.22\textwidth]{dmaps_corr_3} \\
+%
+\includegraphics[width=0.22\textwidth]{orig_data_4}
+\includegraphics[width=0.22\textwidth]{function_data_4}
+\includegraphics[width=0.22\textwidth]{error_terms_4}
+\includegraphics[width=0.22\textwidth]{dmaps_corr_4} \\
+%
+\includegraphics[width=0.22\textwidth]{orig_data_5}
+\includegraphics[width=0.22\textwidth]{function_data_5}
+\includegraphics[width=0.22\textwidth]{error_terms_5}
+\includegraphics[width=0.22\textwidth]{dmaps_corr_5}
+\caption{(First column) Original data $X$. (Second column) Transformed data $Y = f(X)$. (Third column) Relevant quantities as a function of $\Delta Y$. The blue curve is the linear approximation distance, the green curve is the error from covariance estimation, and the red curve is the error from Taylor expansion. The blue circle indicates the value of $\sigma_{kernel}$ used in the diffusion maps calculations. (Fourth column) The first NIV, obtained from the transformed data $Y$, versus the first DMAPS variable, obtained from the original data $X$. }
+\end{figure}
+
 
 \appendix
 
@@ -489,6 +410,23 @@ Covariance
 - \frac{\delta t^2}{4} \left( \sum_k f^i_{kk}(X_0) \right) \left( \sum_k f^j_{kk}(X_0) \right) 
  + \mathcal{O}\left( \delta t^3 \right) 
 \end{eqnarray}
+
+Inverse covariance (by the Woodbury matrix identity)
+\begin{eqnarray}
+\hat{C}^{-1}(X_0) &\approx & 
+\left( \delta t J_1 J_1^T + \frac{\delta t^2}{2}  U \Sigma V \right)^{-1} \\
+&=& \left( \delta t J_1 J_1^T \right)^{-1} - 
+\left( \delta t J_1 J_1^T \right)^{-1} \frac{\delta t^2}{2} U \left(\Sigma^{-1} + \frac{\delta t^2}{2} V \left( \delta t J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( \delta t J_1 J_1^T \right)^{-1} \\
+&=& \frac{1}{\delta t} \left( J J^T \right)^{-1}
+- \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}  \\
+&=& \frac{1}{\delta t} \left( J J^T \right)^{-1} - A
+\end{eqnarray}
+%
+where 
+\begin{equation}
+A = \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}
+\end{equation}
+ and is a function of the first-, second-, and third-order derivatives of $\mathbf{f}$.
 
 \subsection{Distance estimation}
 
@@ -597,5 +535,170 @@ To bound the distances,
 &&+ \left( m^4 K_1 K_2 + \frac{m^5 K_2^2}{4} + \frac{m^5 K_1 K_3}{3} \right) \|Y_2 - Y_1 \|^4 
 + \mathcal{O} (\|Y_1 - Y_2 \|^6 )
 \end{eqnarray}
+
+
+\subsection{Example}
+
+We then write
+\begin{equation}
+J_1 = \begin{bmatrix}
+1 & \frac{2X(2)}{\epsilon} \\
+0 & \frac{1}{\sqrt{\epsilon}}
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+J_2 = \begin{bmatrix}
+0 & \frac{2}{\epsilon} \\
+0 & 0
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+J_3 = \begin{bmatrix}
+0 & 0 \\
+0 & 0
+\end{bmatrix}
+\end{equation}
+
+
+Then we compute
+\begin{eqnarray}
+U \Sigma V &=& 
+J_1 J_3^T + J_3 J_1^T + \frac{3}{2} J_2 J_2^T - \frac{1}{2} J_2 1 1^T J_2^T \\
+&=& \frac{3}{2} 
+\begin{bmatrix} 0 & \frac{2}{\epsilon} \\ 0 & 0 \end{bmatrix}
+\begin{bmatrix} 0 & 0 \\ \frac{2}{\epsilon} & 0 \end{bmatrix}
+-\frac{1}{2}
+\begin{bmatrix} 0 & \frac{2}{\epsilon} \\ 0 & 0 \end{bmatrix}
+\begin{bmatrix} 1 \\ 1 \end{bmatrix}
+\begin{bmatrix} 1 & 1 \end{bmatrix}
+\begin{bmatrix} 0 & 0 \\ \frac{2}{\epsilon} & 0 \end{bmatrix} \\
+&=& \frac{3}{2}
+\begin{bmatrix} \frac{4}{\epsilon^2} & 0 \\ 0 & 0 \end{bmatrix}
+-\frac{1}{2}
+\begin{bmatrix} \frac{4}{\epsilon^2} & 0 \\ 0 & 0 \end{bmatrix} \\
+&=& \begin{bmatrix} \frac{4}{\epsilon^2} & 0 \\ 0 & 0 \end{bmatrix}
+\end{eqnarray}
+
+And so 
+$U = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$, 
+$\Sigma = \begin{bmatrix} \frac{4}{\epsilon^2} \end{bmatrix}$, and
+$V = \begin{bmatrix} 1 & 0 \end{bmatrix}$.
+
+Therefore,
+
+\begin{equation}
+J_1 J_1^T =
+\begin{bmatrix} 1 & \frac{2X(2)}{\epsilon} \\ 0 & \frac{1}{\sqrt{\epsilon}} \end{bmatrix} 
+\begin{bmatrix} 1 & 0 \\ \frac{2X(2)}{\epsilon} & \frac{1}{\sqrt{\epsilon}} \end{bmatrix}
+= \begin{bmatrix}
+1+\frac{4 X(2)^2}{\epsilon^2} & \frac{2X(2)}{\epsilon^{3/2}} \\
+\frac{2X(2)}{\epsilon^{3/2}} & \frac{1}{\epsilon}
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+\left( J_1 J_1^T \right)^{-1} = 
+\epsilon \begin{bmatrix}
+\frac{1}{\epsilon} & -\frac{2X(2)}{\epsilon^{3/2}} \\
+-\frac{2X(2)}{\epsilon^{3/2}} & 1+\frac{4  X(2)^2}{\epsilon^2}
+\end{bmatrix}
+= \begin{bmatrix}
+1 & -\frac{2X(2)}{\sqrt{\epsilon}} \\
+-\frac{2X(2)}{\sqrt{\epsilon}} & \epsilon+\frac{4 X(2)^2}{\epsilon}
+\end{bmatrix}
+\end{equation}
+
+We then compute the eigenvalues of $(J_1 J_1^T)^{-1}$
+\begin{equation}
+\left( J_1 J_1^T \right)^{-1} - \lambda I =
+\begin{bmatrix}
+1-\lambda & -\frac{2X(2)}{\sqrt{\epsilon}} \\
+-\frac{2X(2)}{\sqrt{\epsilon}} & \epsilon+\frac{4 X(2)^2}{\epsilon}-\lambda
+\end{bmatrix}
+\end{equation}
+
+\begin{eqnarray}
+\det \left( \left( J_1 J_1^T \right)^{-1} - \lambda I \right) &=& 
+\left(1-\lambda \right) \left( \epsilon+\frac{4 X(2)^2}{\epsilon}-\lambda \right) - \frac{4 X(2)^2 }{\epsilon} \\
+&=& \epsilon - \lambda  - \lambda \epsilon - \lambda \frac{4 X(2)^2}{\epsilon} + \lambda^2 \\
+&=& \lambda^2 - \lambda \left( 1 + \epsilon + \frac{4 X(2)^2}{\epsilon} \right) + \epsilon
+\end{eqnarray}
+
+\begin{equation}
+\lambda = \frac{1}{2} \left( 1 + \epsilon + \frac{4 X(2)^2}{\epsilon}  \pm \sqrt{\left( 1 + \epsilon + \frac{4 X(2)^2}{\epsilon} \right)^2 - 4 \epsilon}\right)
+\end{equation}
+
+Let $X(2)^2 \approx Var(X(2)) = \epsilon/2$
+
+\begin{eqnarray}
+\lambda &=& 
+\frac{1}{2} \left( 1 + \epsilon + 2  \pm \sqrt{\left( 1 + \epsilon + 2 \right)^2 - 4 \epsilon}\right) \\
+&=& \frac{1}{2} \left( 2 + \epsilon \pm \sqrt{ 9 + 6 \epsilon + \epsilon^2 - 4 \epsilon}\right) \\
+&=& \frac{1}{2} \left( 2 + \epsilon \pm \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right)
+\end{eqnarray}
+
+\begin{eqnarray}
+A &=& 
+\frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1} \\
+&=& \frac{1}{2} 
+\begin{bmatrix} 1 & -\frac{2X(2)}{\sqrt{\epsilon}} \\ -\frac{2X(2)}{\sqrt{\epsilon}} & \epsilon+\frac{4 X(2)^2}{\epsilon} \end{bmatrix}
+\begin{bmatrix} 1 \\ 0 \end{bmatrix}
+\left( \frac{\epsilon^2}{4} + 
+\frac{\delta t}{2} 
+\begin{bmatrix} 1 & 0 \end{bmatrix}
+\begin{bmatrix} 1 & -\frac{2X(2)}{\sqrt{\epsilon}} \\ -\frac{2X(2)}{\sqrt{\epsilon}} & \epsilon+\frac{4 X(2)^2}{\epsilon} \end{bmatrix}
+\begin{bmatrix} 1 \\ 0 \end{bmatrix}
+\right)^{-1} \\
+&&\begin{bmatrix} 1 & 0 \end{bmatrix}
+\begin{bmatrix} 1 & -\frac{2X(2)}{\sqrt{\epsilon}} \\ -\frac{2X(2)}{\sqrt{\epsilon}} & \epsilon+\frac{4  X(2)^2}{\epsilon} \end{bmatrix} \\
+&=& \frac{1}{2} 
+\begin{bmatrix} 1 \\ -\frac{2X(2)}{\sqrt{\epsilon}} \end{bmatrix}
+\left( \frac{\epsilon^2}{4} + 
+\frac{\delta t}{2} 
+\right)^{-1} 
+\begin{bmatrix} 1 & -\frac{2X(2)}{\sqrt{\epsilon}} \end{bmatrix} \\
+&=& \left( \frac{\epsilon^2}{2} + 
+\delta t
+\right)^{-1} 
+\begin{bmatrix}
+1 & -\frac{2X(2)}{\sqrt{\epsilon}} \\ -\frac{2X(2)}{\sqrt{\epsilon}} & \frac{4 X(2)^2}{\epsilon}
+\end{bmatrix}
+\end{eqnarray}
+
+Therefore, the eigenvalues of $A$ are $\lambda_i = \left( \frac{\epsilon^2}{2} +  \delta t \right)^{-1} \left( 1 + \frac{4X(2)^2}{\epsilon} \right), 0$
+
+For the derivatives of the inverse function $g(Y)$, we have
+\begin{eqnarray}
+K_1 &=& \sup_{i,j,Y} |g_j^i(Y)| = \sup_Y 2 Y(2) = 2 \\
+K_2 &=& \sup_{i,j,k,Y} |g_{jk}^i(Y)| = 2 \\
+K_3 &=& \sup_{i,j,k,l,Y} |g_{jkl}^i(Y)| = 0
+\end{eqnarray}
+
+\begin{itemize}
+\item The error from the {\em estimation} of the covariance.
+%
+This is
+\begin{eqnarray}
+\mathcal{O} \left( \delta t \| Y_2 - Y_1 \|^2 \sup_{Y, i} |\lambda_i(A(Y))| \right) 
+&=& \mathcal{O} \left( \delta t \| Y_2 - Y_1 \| ^2 \max_{X} \left( \frac{\epsilon^2}{2} +  \delta t \right)^{-1} \left( 1 + \frac{4 X(2)^2}{\epsilon} \right) \right)  \\
+&=& \mathcal{O} \left( \frac{2 \delta t}{\epsilon^2 + 2 \delta t} \| Y_2 - Y_1 \| ^2 \left( 1 + \frac{4 \left( 9 Var(X(2)) \right)}{\epsilon} \right) \right) \\
+&=& \mathcal{O} \left( \frac{2 \delta t}{\epsilon ^2 + 2 \delta t} \| Y_2 - Y_1 \| ^2 \left( 1 + \frac{4 \left( 9 \epsilon /2 \right)}{\epsilon} \right) \right) \\
+&=& \mathcal{O} \left( \frac{38 \delta t}{\epsilon ^2 + 2 \delta t} \| Y_2 - Y_1 \| ^2 \right)
+\end{eqnarray}
+where $\max_{X} X(2)^2  = 9 Var(X(2)) = 9 (\epsilon/2)$
+
+
+\item The errors from the truncation of the Taylor expansion for the Mahalanobis distance, which is 
+$$\mathcal{O} \left(  n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \right)
+= \mathcal{O} \left( 10 \| Y_2 - Y_1 \| ^4  \right) $$
+\end{itemize}
+
+Therefore, we need the kernel to be smaller than 
+\begin{equation}
+(Y_2 - Y_1)^T (JJ^T)^{-1} (Y_2 - Y_1) 
+\approx \mathcal{O} \left(  \frac{1}{2} \left( 2 + \epsilon \pm \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right) \|Y_2 - Y_1 \|^2\right) 
+\end{equation}
 
 \end{document}
