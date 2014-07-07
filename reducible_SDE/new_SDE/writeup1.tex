@@ -5,6 +5,8 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
 \usepackage{epstopdf}
+\graphicspath{ {quadratic_example/} }
+
 \begin{document}
 
 \section{Multiscale SDEs}
@@ -321,6 +323,70 @@ Simulation number & $\epsilon$ & $\sigma_{kernel}$ & $\delta t$ \\
 \includegraphics[width=0.22\textwidth]{dmaps_corr_5}
 \caption{(First column) Original data $X$. (Second column) Transformed data $Y = f(X)$. (Third column) Relevant quantities as a function of $\Delta Y$. The blue curve is the linear approximation distance, the green curve is the error from covariance estimation, and the red curve is the error from Taylor expansion. The blue circle indicates the value of $\sigma_{kernel}$ used in the diffusion maps calculations. (Fourth column) The first NIV, obtained from the transformed data $Y$, versus the first DMAPS variable, obtained from the original data $X$. }
 \end{figure}
+
+\subsection{Empirical Estimation}
+
+Again, we have the three terms in our expansion
+\begin{itemize}
+\item The linearized approximation to the distance,
+%
+\begin{equation}
+(Y_2 - Y_1)^T (JJ^T)^{-1} (Y_2 - Y_1) 
+\end{equation}
+
+\item The error from the {\em estimation} of the covariance.
+%
+This is
+\begin{equation}
+\mathcal{O} \left( \delta t \| Y_2 - Y_1 \|^2 \sup_{Y, i} |\lambda_i(A(Y))| \right) 
+\end{equation}
+
+\item The errors from the {\em truncation} of the Taylor expansion for the Mahalanobis distance, which is 
+\begin{equation}
+\mathcal{O} \left(  n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \right) 
+\end{equation}
+
+\end{itemize}
+and we want to choose $\sigma_{kernel}$ such that the first term dominates. 
+
+When we calculate the distances, we measure a sum of the three terms
+\begin{eqnarray}
+\| X_2 - X_1 \|^2_{est} &=& 
+(Y_2 - Y_1)^T (JJ^T)^{-1} (Y_2 - Y_1)  \\
+&&
++ \mathcal{O} \left( \delta t \| Y_2 - Y_1 \|^2 \sup_{Y, i} |\lambda_i(A(Y))| \right) \\
+&& + \mathcal{O} \left(  n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \right) 
+\end{eqnarray}
+
+Therefore, when the first term dominates, we expect
+\begin{itemize}
+\item $\| X_2 - X_1 \|^2_{est} \sim \| Y_2 - Y_1 \|^2$ (so that the truncation error from the Taylor expansion is not too large)
+\item $\| X_2 - X_1 \|^2_{est}$ constant as a function of $\delta t$ (so that the error from the covariance estimation is not too large)
+\end{itemize}
+
+
+We can look at this for this specific example, with $\epsilon = 10^{-3}$. 
+%
+We use a cloud of $200$ data points to estimate each covariance matrix. 
+
+
+\begin{figure}
+
+\includegraphics[width=0.3\textwidth]{errors_function_dy}
+\includegraphics[width=0.3\textwidth]{totaldist_function_dy}
+\includegraphics[width=0.3\textwidth]{empirical_totaldist_function_dy}
+
+\includegraphics[width=0.3\textwidth]{errors_function_dt}
+\includegraphics[width=0.3\textwidth]{totaldist_function_dt}
+\includegraphics[width=0.3\textwidth]{empirical_totaldist_function_dt}
+
+\includegraphics[width=0.3\textwidth]{original_data}
+\includegraphics[width=0.3\textwidth]{transformed_data}
+\includegraphics[width=0.3\textwidth]{NIV_correlation}
+
+\caption{(Top row, left) Relevant quantities as a function of $\|Y_2 - Y_1\|$, with $\delta t = 10^{-10}$. The blue curve is the linear approximation distance, the green curve is the error from covariance estimation, and the red curve is the error from Taylor expansion.  (Center) The black curve denotes the sum of the three terms as a function of $\|Y_2 - Y_1\|$. The red curve is the $\|X_2 - X_1\|^2 = \|Y_2 - Y_1\|^2$ line. (Right) The blue points are the empirical $\| X_2 - X_1 \|$ as a function of $\|Y_2 - Y_1\|$. The red curve is the $\| X_2 - X_1 \|^2 = \|Y_2 - Y_1\|^2$ line. (Center row, left) Relevant quantities as a function of $\delta t$, with $\|Y_2 - Y_1\| = 0.01$. The blue curve is the linear approximation distance, the green curve is the error from covariance estimation, and the red curve is the error from Taylor expansion. (Center) The sum of the three terms as a function of $\delta t$. (Right) The empirical $\| X_2 - X_1 \|^2$ as a function of $\|Y_2 - Y_1\|$. (Bottom row, left) Original data $X$. (Center) Transformed data $Y = f(X)$. (Right) The first NIV, obtained from the transformed data $Y$, versus the first DMAPS variable, obtained from the original data $X$. Based on the results of how $\| X_2 - X_1 \|^2_{est}$ varies with $\| Y_2 - Y_1\|$ and $\delta t$, we choose $\sigma_{kernel} = 0.01$ and $\delta t = 10^{-9}$. }
+\end{figure}
+
 
 
 \appendix
