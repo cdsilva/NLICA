@@ -1,0 +1,49 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\graphicspath{ {quadratic_example/} }
+
+\title{Data-driven Reduction of Multiscale Stochastic Dynamical Systems }
+
+\begin{document}
+
+\maketitle
+
+\section{Outline}
+
+Main message/contribution:
+\begin{itemize}
+
+\item We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small
+
+\item 
+
+\end{itemize}
+
+\begin{itemize}
+
+\item Introduction
+
+\item Multiscale SDE setting 
+
+\item Analysis of NIVs (remark that applies to more general settings)
+
+\item Toy problem results (half-moon): illustration of the analysis + extraction of slow variable and ``suppression'' of fast variable depending on $\delta t$ and saturation time of fast
+
+\item Conclusion: 
+
+If the cloud of samples is too big then we can observe the cloud of clouds (and those clouds can be histograms, Fourier, scattering, etc.) as a way to get smaller clouds. 
+
+
+Richardson extrapolation allows us to get an estimate of a second-order term in the covariance estimation, thereby locally approximating the function using a quadratic form, rather than a linear form,  which can lead to a better/improved/more accurate ``Mahalanobis'' metric. 
+
+
+\end{itemize}
+
+
+
+\end{document}
