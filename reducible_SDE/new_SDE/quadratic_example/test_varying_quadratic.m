@@ -22,6 +22,7 @@ nsteps_burst = 200;
 
 rng(123);
 [data_init, data_burst_init, data1, data1_burst, t] = simulate_quadratic2(nsteps, dt, nsteps_burst, dt_burst, epsilon);
+% [data_init, data_burst_init, data1, data1_burst, t] = simulate_quadratic3(nsteps, dt, nsteps_burst, dt_burst, epsilon);
 
 
 make_fig;

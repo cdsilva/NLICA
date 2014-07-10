@@ -13,28 +13,53 @@
 
 \maketitle
 
-\section{Outline}
 
-Main message/contribution:
+\section{Main message/contribution}
+
 \begin{itemize}
 
-\item We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small
+\item Link between data mining and dynamical systems
 
-\item 
+\item Doing slow variable reduction from SDEs using the Mahalanobis graph (using NIV for slow variable extraction)
+
+\item We give a full mathematical analysis of the slow variable reduction/procedure, including necessary conditions and user configuration
 
 \end{itemize}
+
+
+
+\section{Outline}
 
 \begin{itemize}
 
 \item Introduction
 
-\item Multiscale SDE setting 
+\item Multiscale SDE setting: fast/slow, want to recover slow variable(s) even when the fast variables are large/very noisy
 
-\item Analysis of NIVs (remark that applies to more general settings)
+\item Background on NIVs 	
+
+\item We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small
+
+\item Error and estimation analysis of NIVs (remark that applies to more general settings): give conditions/bounds when we can recover the intrinsic slow variable
+
+\item Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
 
 \item Toy problem results (half-moon): illustration of the analysis + extraction of slow variable and ``suppression'' of fast variable depending on $\delta t$ and saturation time of fast
 
+\item Experimental results/demonstrations:
+\begin{itemize}
+
+\item DMAPS gives the fast, NIVs gives the slow 
+
+\item Illustration of different aspects (error terms) in the analysis
+
+\item Show empirically what happens as we change the neighborhood (example from notes 1) (recovery of fast variable deep in the spectrum)
+
+\end{itemize}
+
 \item Conclusion: 
+
+We showed that in certain cases (when we do {\em not} have a simulator where we can change $\delta t$), the data cannot be processed as-is (we cannot find the right kernel scale given a fixed $\delta t$ such that we can accurately recover the slow variable). 
 
 If the cloud of samples is too big then we can observe the cloud of clouds (and those clouds can be histograms, Fourier, scattering, etc.) as a way to get smaller clouds. 
 
@@ -43,6 +68,10 @@ Richardson extrapolation allows us to get an estimate of a second-order term in 
 
 
 \end{itemize}
+
+saturation time of SDE has to be smaller than the timescales
+
+dmaps example: show we recover fast (or garbage), not slow variable
 
 
 
