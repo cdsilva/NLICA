@@ -1,0 +1,285 @@
+\documentclass[1p]{elsarticle}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\title{Data-driven Reduction of Multiscale Stochastic Dynamical Systems }
+
+\author[PrincetonCBE]{C.J.~Dsilva}
+\ead{cdsilva@princeton.edu}
+
+\author[YaleMath]{R.~Talmon}
+\ead{ronen.talmon@yale.edu}
+
+\author[YaleMath]{R.R.~Coifman}
+\ead{coifman@math.yale.edu}
+
+\author[PrincetonCBE, PrincetonPACM]{I.G.~Kevrekidis\corref{cor1}}
+\ead{yannis@princeton.edu}
+
+\address[PrincetonCBE]{Department of Chemical and Biological Engineering, Princton University, Princeton, New Jersey, 08544, USA}
+\address[YaleMath]{Department of Mathematics, Yale University, New Haven, Connecticut, 06520, USA}
+\address[PrincetonPACM]{Program in Applied and Computational Mathematics, Princton University, Princeton, New Jersey, 08544, USA}
+
+\cortext[cor1]{Corresponding author}
+
+
+\begin{document}
+
+\begin{abstract}
+
+\begin{itemize}
+
+\item Link between data mining and dynamical systems
+
+\item Extracting or reducing an SDE system to its slow variables using the Mahalanobis graph and NIVs
+
+\item Full mathematical analysis of the slow variable reduction procedure, including necessary conditions for accurate recovery of the slow variables and a framework for empirically setting the algorithm parameters
+
+\end{itemize}
+
+\end{abstract}
+
+
+\begin{keyword}
+ 
+\end{keyword}
+
+\maketitle
+
+\section{Introduction}
+
+\section{Theory}
+
+\subsection{Multiscale SDEs}
+
+Multiscale SDE setting: fast/slow, want to recover slow variable(s) even when the fast variables are large/very noisy
+
+\begin{equation}
+\begin{aligned}
+dx &= adt + dW_1\\
+dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+\end{aligned}
+\end{equation}
+
+So $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$
+
+\subsection{Nonlinear Intrinsic Variables}
+
+Background on NIVs 	
+
+\begin{equation}
+dx_i = a(X) dt + dW_i
+\end{equation}
+and we will let $X = \begin{bmatrix} X^1 \\ X^2 \\ \vdots \\ X^n \end{bmatrix}$
+
+We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small
+
+saturation time of SDE has to be smaller than the timescales
+
+
+
+Let $y = \frac{z}{\sqrt{\epsilon}}$. Then
+\begin{equation}
+\begin{aligned}
+dx &= adt + dW_1\\
+dz &= -\frac{z}{\epsilon} dt +  dW_2
+\end{aligned}
+\end{equation}
+
+Therefore, now $z$ is a stochastic variable whose diffusion is unity, and whose equilibrium measure is $\mathcal{O}(\epsilon)$. 
+%
+Therefore, when $\epsilon \ll 1$, we have that $z \ll x$, and so we will recover $x$ only.
+
+
+\subsection{Errors and Estimation}
+
+Error and estimation analysis of NIVs (remark that applies to more general settings): give conditions/bounds when we can recover the intrinsic slow variable
+
+Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
+
+
+Given $X$ governed by the above SDE, we can sample ``bursts'' around a point $X_0$ in order to estimate the covariance. 
+
+These clouds will be distributed 
+
+\begin{equation}
+X \sim \mathcal{N}\left( X_0, \delta t I \right)
+\end{equation}
+
+
+We now consider a function $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^m$.
+%
+Let $f^i(X)$ denote the $i^{th}$ entry of $\mathbf{f}$, and let $f^i_j(X) = \frac{\partial f^i}{\partial X^j}$.
+%
+By Taylor expansion around $X=X_0$,
+%
+\begin{eqnarray}
+\hat{C}(X_0) &=& \delta t J_1 J_1^T 
++ \frac{\delta t^2}{2} \left[ J_1 J_3^T + J_3 J_1^T  
++ \frac{3}{2} J_2 J_2^T 
+-\frac{1 }{2} J_2 1 1^T J_2^T \right]
++ \mathcal{O} (\delta t^3) %\\
+%&=& \delta t J_1 J_1^T 
+%+ \frac{\delta t^2}{2} U \Sigma V
+%+ \mathcal{O} (\delta t^3)
+\end{eqnarray}
+where
+\begin{equation}
+\begin{aligned}
+J_1(X_0) &= \begin{bmatrix}
+f_1^1 & f_2^1 & \dots & f_n^1 \\
+\vdots & \vdots & \cdots & \vdots \\
+f_1^m & f_2^m & \dots & f_n^m
+\end{bmatrix}\\
+%
+J_2(X_0) &= \begin{bmatrix}
+f_{11}^1 & f_{22}^1 & \dots & f_{nn}^1 \\
+\vdots & \vdots & \cdots & \vdots \\
+f_{11}^m & f_{22}^m & \dots & f_{nn}^m
+\end{bmatrix}\\
+%
+J_3(X_0) &= \begin{bmatrix}
+f_{111}^1 & f_{222}^1 & \dots & f_{nnn}^1 \\
+\vdots & \vdots & \cdots & \vdots \\
+f_{111}^m & f_{222}^m & \dots & f_{nnn}^m
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+%
+In this equation, we see what we expect (a linear function of the variance, due to the gradient of $f$) and a second (higher-order) term arising from the curvature and third derivative of $f$.
+%
+The importance of this second term increases as the curvature increases, as well as when $\delta t$ increases. 
+
+
+
+Then
+\begin{equation}
+\hat{C}^{-1}(X_0) \approx \frac{1}{\delta t} \left( J J^T \right)^{-1} - A
+\end{equation}
+%
+where 
+\begin{equation}
+A = \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}
+\end{equation}
+and
+\begin{equation}
+U \Sigma V = J_1 J_3^T + J_3 J_1^T + \frac{3}{2} J_2 J_2^T -\frac{1 }{2} J_2 1 1^T J_2^T 
+\end{equation}
+$A$ is a function of the first-, second-, and third-order derivatives of $\mathbf{f}$.
+
+
+We now approximate the distances $\| X_2 - X_1 \|$.
+%
+Let $g = f^{-1}: \mathbb{R}^m \mapsto \mathbb{R}^n$, and let $Y_1 = f(X_1)$, and $Y_2 = f(X_2)$.
+%
+Again, we let $g_j^i = \frac{\partial g^i}{\partial Y^j}$.
+%
+Then, by Taylor expansion, we obtain
+\begin{equation} \label{eq:taylor_expansion}
+\begin{aligned}
+&\| X_2 - X_1 \|^2 \\
+\le&  \left| \frac{1}{2} (Y_2 - Y_1 )^T ((J J^T)^{-1} (Y_1) + (J J^T)^{-1}(Y_2)) (Y_2 - Y_1 ) \right| \\
+& + n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \\
+& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
+\end{aligned}
+\end{equation}
+%
+where
+%
+\begin{equation}
+\begin{aligned}
+K_1 &= \sup_{i,j,Y} |g_j^i(Y)|\\
+K_2 &= \sup_{i,j,k,Y} |g_{jk}^i(Y)|\\
+K_3 &= \sup_{i,j,k,l,Y} |g_{jkl}^i(Y)|
+\end{aligned}
+\end{equation}
+
+Substituting our estimate of the covariance into \eqref{eq:taylor_expansion}, we obtain
+\begin{equation}
+\begin{aligned}
+&\| X_2 - X_1 \|^2 \\
+\approx &  \frac{1}{2} (Y_2 - Y_1)^T \left((J J^T)^{-1}(Y_1)  + (J J^T)^{-1}(Y_2) \right) (Y_2 - Y_1) \\
+& - \frac{\delta t}{2} (Y_2 - Y_1)^T \left( A(Y_1) + A(Y_2) \right) (Y_2 - Y_1)\\
+& + n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  \\
+& + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
+\end{aligned}
+\end{equation}
+%
+We want the first term in this expression to dominate.
+
+
+\section{Results}
+
+ Toy problem results (half-moon): illustration of the analysis + extraction of slow variable and ``suppression'' of fast variable depending on $\delta t$ and saturation time of fast
+ 
+ Define the following two-dimensional system of SDEs
+\begin{eqnarray}
+dX(1) &=& 3 dt + dW_1 \\ 
+dX(2) &=& \frac{-X(2)}{\epsilon} dt + dW_2 
+\end{eqnarray}
+where $W_1, W_2$ are independent Brownian motions, and $\epsilon \ll 1$.
+
+Let
+\begin{eqnarray}
+f^1(X) &=& X(1) + \frac{ X(2)^2}{\epsilon} \\
+f^2(X) &=& \frac{X(2)}{\sqrt{\epsilon}}
+\end{eqnarray}
+Therefore, $X(2)$ is now a ``fast'' variable, and we have further applied a nonlinear transformation to this fast-slow system. 
+
+The inverse function $g = f^{-1}$ is
+\begin{eqnarray}
+g^1(Y) &=& Y(1) - Y(2)^2 \\
+g^2(Y) &=& Y(2) \sqrt{\epsilon}
+\end{eqnarray}
+
+
+ 
+\subsection{NIVs versus DMAPS}
+
+DMAPS gives the fast, NIVs gives the slow 
+
+\subsection{Determining Appropriate Parameters}
+
+Illustration of different aspects (error terms) in the analysis
+
+The three relevant quantities for NIVs are 
+\begin{itemize}
+\item The linearized approximation to the distance,
+%
+\begin{equation}
+(Y_2 - Y_1)^T (JJ^T)^{-1} (Y_2 - Y_1) 
+\approx \mathcal{O} \left(  \frac{1}{2} \left( 2 + \epsilon + \sqrt{ 9 + 2 \epsilon + \epsilon^2}\right) \Delta Y^2\right) 
+\end{equation}
+where $\Delta Y =  \|Y_2 - Y_1\|$
+
+\item The error from the {\em estimation} of the covariance.
+%
+This is
+\begin{equation}
+\frac{\delta t}{2} (Y_2 - Y_1)^T A (Y_2 - Y_1) \approx \mathcal{O} \left( \frac{38 \delta t}{\epsilon ^2 + 2 \delta t}\Delta Y^2 \right)
+\end{equation}
+
+\item The errors from the {\em truncation} of the Taylor expansion for the Mahalanobis distance, which is 
+\begin{equation}
+n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4 \approx \mathcal{O} \left( 10 \Delta Y^4  \right) 
+\end{equation}
+
+\end{itemize}
+
+\subsection{Recovery of Fast Variable}
+
+Show empirically what happens as we change the neighborhood (example from notes 1) (recovery of fast variable deep in the spectrum)
+
+\section{Conclusion}
+
+We showed that in certain cases (when we do {\em not} have a simulator where we can change $\delta t$), the data cannot be processed as-is (we cannot find the right kernel scale given a fixed $\delta t$ such that we can accurately recover the slow variable). 
+
+If the cloud of samples is too big then we can observe the cloud of clouds (and those clouds can be histograms, Fourier, scattering, etc.) as a way to get smaller clouds. 
+
+
+Richardson extrapolation allows us to get an estimate of a second-order term in the covariance estimation, thereby locally approximating the function using a quadratic form, rather than a linear form,  which can lead to a better/improved/more accurate ``Mahalanobis'' metric. 
+
+
+
+\end{document}
