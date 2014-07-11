@@ -53,44 +53,55 @@
 
 \subsection{Multiscale SDEs}
 
-Multiscale SDE setting: fast/slow, want to recover slow variable(s) even when the fast variables are large/very noisy
+Setting
+\begin{itemize}
+\item system of SDEs with separation of timescales
+\item want to recover slow variable(s) even when the fast variables are have large variations
+\end{itemize}
 
-\begin{equation}
+Consider equations of the form
+\begin{equation} \label{eq:fast_slow_SDE}
 \begin{aligned}
-dx &= adt + dW_1\\
-dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+dx &= adt + dW^1\\
+dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW^2
 \end{aligned}
 \end{equation}
 
-So $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$
+So $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$.
+%
+We assume that the saturation time of fast scale  of the SDE is smaller than the other relevant timescales.
+
+TODO: should we write the SDE in a more general form?
 
 \subsection{Nonlinear Intrinsic Variables}
 
 Background on NIVs 	
+\begin{itemize}
+
+\item Want to recover ``intrinsic'' variables that are independent of the measurement.observation function
+\item We define intrinsic as variables that have uncoupled noise with unit variance
+\end{itemize}
 
 \begin{equation}
-dx_i = a(X) dt + dW_i
+dX^i = a(X) dt + dW^i
 \end{equation}
 and we will let $X = \begin{bmatrix} X^1 \\ X^2 \\ \vdots \\ X^n \end{bmatrix}$
 
-We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small
-
-saturation time of SDE has to be smaller than the timescales
-
-
-
-Let $y = \frac{z}{\sqrt{\epsilon}}$. Then
+We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small.
+%
+Consider the SDE in \eqref{eq:fast_slow_SDE}, and let $y = \frac{z}{\sqrt{\epsilon}}$. 
+%
+Then
 \begin{equation}
 \begin{aligned}
 dx &= adt + dW_1\\
 dz &= -\frac{z}{\epsilon} dt +  dW_2
 \end{aligned}
 \end{equation}
-
-Therefore, now $z$ is a stochastic variable whose diffusion is unity, and whose equilibrium measure is $\mathcal{O}(\epsilon)$. 
 %
-Therefore, when $\epsilon \ll 1$, we have that $z \ll x$, and so we will recover $x$ only.
-
+Therefore, $z$ is a stochastic variable whose diffusion is unity, and so $x$ and $z$ are the ``intrinsic variables'' for the underlying SDE.
+%
+However, the equilibrium measure of $z$ is $\mathcal{O}(\epsilon)$, and so when $\epsilon \ll 1$, $z \ll x$, and so we will only recover $x$ (the slow variable). 
 
 \subsection{Errors and Estimation}
 
