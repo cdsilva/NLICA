@@ -55,7 +55,7 @@
 
 Multiscale SDE setting: fast/slow, want to recover slow variable(s) even when the fast variables are large/very noisy
 
-\begin{equation}
+\begin{equation} \label{eq:multiscale_SDE}
 \begin{aligned}
 dx &= adt + dW_1\\
 dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
@@ -73,13 +73,11 @@ dx_i = a(X) dt + dW_i
 \end{equation}
 and we will let $X = \begin{bmatrix} X^1 \\ X^2 \\ \vdots \\ X^n \end{bmatrix}$
 
-We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small
-
-saturation time of SDE has to be smaller than the timescales
-
-
-
-Let $y = \frac{z}{\sqrt{\epsilon}}$. Then
+We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small.
+%
+For example, in \eqref{eq:multiscale_SDE}, let $y = \frac{z}{\sqrt{\epsilon}}$. 
+%
+Then
 \begin{equation}
 \begin{aligned}
 dx &= adt + dW_1\\
@@ -91,12 +89,13 @@ Therefore, now $z$ is a stochastic variable whose diffusion is unity, and whose 
 %
 Therefore, when $\epsilon \ll 1$, we have that $z \ll x$, and so we will recover $x$ only.
 
+Note: saturation time of SDE has to be smaller than the timescales
+
+
 
 \subsection{Errors and Estimation}
 
 Error and estimation analysis of NIVs (remark that applies to more general settings): give conditions/bounds when we can recover the intrinsic slow variable
-
-Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
 
 
 Given $X$ governed by the above SDE, we can sample ``bursts'' around a point $X_0$ in order to estimate the covariance. 
@@ -208,6 +207,13 @@ Substituting our estimate of the covariance into \eqref{eq:taylor_expansion}, we
 %
 We want the first term in this expression to dominate.
 
+Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm.
+
+From \eqref{eq:taylor_expansion}, we can see that the squared {\em intrinsic} distance $\| X_2 - X_1 \|^2$, is a function of $\|Y_2 - Y_1\|$ and $\delta t$. 
+%
+If the first term in the expansion dominates, then $\|X_2 - X_1 \|^2$ should be independent of $\delta t$, and should vary quadratically with $\| Y_2 - Y_1\|$. 
+%
+We can find such a regime empirically (by plotting $\| X_2 - X_1 \|^2$ as a function of $\delta t$ and $\|Y_2 - Y_1\|$), and select a kernel distance where both conditions hold.
 
 \section{Results}
 
