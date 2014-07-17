@@ -3,6 +3,8 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 
+\usepackage{subcaption}
+
 \title{Data-driven Reduction of Multiscale Stochastic Dynamical Systems }
 
 \author[PrincetonCBE]{C.J.~Dsilva}
@@ -105,10 +107,11 @@ However, the equilibrium measure of $z$ is $\mathcal{O}(\epsilon)$, and so when 
 
 \subsection{Errors and Estimation}
 
-Error and estimation analysis of NIVs (remark that applies to more general settings): give conditions/bounds when we can recover the intrinsic slow variable
-
-Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
-
+\begin{itemize}
+\item Error and estimation analysis of NIVs (remark that applies to more general settings): give conditions/bounds when we can recover the intrinsic slow variable
+%
+\item Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
+\end{itemize}
 
 Given $X$ governed by the above SDE, we can sample ``bursts'' around a point $X_0$ in order to estimate the covariance. 
 
@@ -225,14 +228,14 @@ We want the first term in this expression to dominate.
  Toy problem results (half-moon): illustration of the analysis + extraction of slow variable and ``suppression'' of fast variable depending on $\delta t$ and saturation time of fast
  
  Define the following two-dimensional system of SDEs
-\begin{eqnarray}
+\begin{eqnarray} \label{eq:init_data}
 dX(1) &=& 3 dt + dW_1 \\ 
 dX(2) &=& \frac{-X(2)}{\epsilon} dt + dW_2 
 \end{eqnarray}
 where $W_1, W_2$ are independent Brownian motions, and $\epsilon \ll 1$.
 
 Let
-\begin{eqnarray}
+\begin{eqnarray}\label{eq:transformed_data}
 f^1(X) &=& X(1) + \frac{ X(2)^2}{\epsilon} \\
 f^2(X) &=& \frac{X(2)}{\sqrt{\epsilon}}
 \end{eqnarray}
@@ -244,11 +247,37 @@ g^1(Y) &=& Y(1) - Y(2)^2 \\
 g^2(Y) &=& Y(2) \sqrt{\epsilon}
 \end{eqnarray}
 
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_init}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_transformed}
+\caption{}
+\end{subfigure}
+\caption{(a) The original data, simulated from \eqref{eq:init_data}. (b) The data from (a), transformed according to \eqref{eq:transformed_data}. }
+\label{fig:initial_data}
+\end{figure}
 
- 
+
+
 \subsection{NIVs versus DMAPS}
 
 DMAPS gives the fast, NIVs gives the slow 
+
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_transformed_colored_NIV}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_transformed_colored_DMAPS}
+\caption{}
+\end{subfigure}
+\caption{(a) The data from Figure~\ref{fig:initial_data}(b), colored by the first NIV. Note that we recover the slow variable. (b) The data from Figure~\ref{fig:initial_data}(b), colored by the first DMAPS variable. Note that we do {\em not} recover the slow variable.  }
+\label{fig:NIV_versus_DMAPS}
+\end{figure}
 
 \subsection{Determining Appropriate Parameters}
 
@@ -277,6 +306,32 @@ n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \fra
 \end{equation}
 
 \end{itemize}
+
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{errors_function_dt}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{empirical_totaldist_function_dt}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{errors_function_dy}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{empirical_totaldist_function_dy}
+\caption{}
+\end{subfigure}
+\caption{(a) Analytical estimation of errors as a function of $\delta t$. 
+%
+(b) Empirical estimation of total distance as a function of $\delta t$.  
+%
+(c) Analytical estimation of errors as a function of $\Delta Y$. 
+%
+(d) Empirical estimation of total distance as a function of $\Delta Y$}
+\end{figure}
 
 \subsection{Recovery of Fast Variable}
 

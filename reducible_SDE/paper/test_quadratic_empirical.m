@@ -26,7 +26,7 @@ loglog(deltas, 0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2)
 hold on
 loglog(deltas, (38 * dt_burst/(epsilon^2 + 2 * dt_burst))*deltas.^2, '-g')
 loglog(deltas, 10*deltas.^4, '-r')
-% loglog(deltas, 0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2+(38 * dt_burst/(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4, '-k')
+loglog(deltas, 0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2+(38 * dt_burst/(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4, '-k')
 % loglog(sqrt(eps_dmaps/(0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2)))), eps_dmaps, 'ok')
 % legend('linear approximation distance','error from covariance estimation','error from Taylor expansion','location','best')
 xlabel('$\| Y_2 - Y_1 \|$','interpreter','latex')
@@ -34,14 +34,14 @@ ylabel('$\| X_2 - X_1 \|^2_{est}$','interpreter','latex')
 axis(dy_axis_lim)
 print(gcf, '-depsc', 'errors_function_dy');
 
-make_fig;
-loglog(deltas, 0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2+(38 * dt_burst/(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4, '-k')
-hold on
-loglog(deltas, 2*deltas.^2, '-r')
-xlabel('$\| Y_2 - Y_1 \|$','interpreter','latex')
-ylabel('$\| X_2 - X_1 \|^2_{est}$','interpreter','latex')
-axis(dy_axis_lim)
-print(gcf, '-depsc', 'totaldist_function_dy');
+% make_fig;
+% loglog(deltas, 0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2+(38 * dt_burst/(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4, '-k')
+% hold on
+% loglog(deltas, 2*deltas.^2, '-r')
+% xlabel('$\| Y_2 - Y_1 \|$','interpreter','latex')
+% ylabel('$\| X_2 - X_1 \|^2_{est}$','interpreter','latex')
+% axis(dy_axis_lim)
+% print(gcf, '-depsc', 'totaldist_function_dy');
 
 %% simulate SDE
 
@@ -123,11 +123,11 @@ loglog(dt_burst, 0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2
 hold on
 loglog(dt_burst, (38 * dt_burst./(epsilon^2 + 2 * dt_burst))*deltas.^2, '-g')
 loglog(dt_burst, 10*deltas.^4*ones(size(dt_burst)), '-r')
-% loglog(dt_burst,  0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2*ones(size(dt_burst))+(38 * dt_burst./(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4*ones(size(dt_burst)), '-k')
+loglog(dt_burst,  0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2*ones(size(dt_burst))+(38 * dt_burst./(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4*ones(size(dt_burst)), '-k')
 axis(dt_axis_lim)
 xlabel('$\delta t$','interpreter','latex')
 ylabel('$\| X_2 - X_1 \|^2_{est}$','interpreter','latex')
-print(gcf, '-depsc', 'errors_function_dt');
+print(gcf, '-depsc','-loose', 'errors_function_dt');
 
 make_fig;
 loglog(dt_burst,  0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2*ones(size(dt_burst))+(38 * dt_burst./(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4*ones(size(dt_burst)), '-k')
