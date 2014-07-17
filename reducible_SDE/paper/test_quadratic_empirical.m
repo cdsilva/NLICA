@@ -127,7 +127,7 @@ loglog(dt_burst,  0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^
 axis(dt_axis_lim)
 xlabel('$\delta t$','interpreter','latex')
 ylabel('$\| X_2 - X_1 \|^2_{est}$','interpreter','latex')
-print(gcf, '-depsc','-loose', 'errors_function_dt');
+print(gcf, '-depsc', 'errors_function_dt');
 
 make_fig;
 loglog(dt_burst,  0.5*(2 + epsilon + sqrt(9 + 2 * epsilon + epsilon^2))*deltas.^2*ones(size(dt_burst))+(38 * dt_burst./(epsilon^2 + 2 * dt_burst))*deltas.^2+10*deltas.^4*ones(size(dt_burst)), '-k')
