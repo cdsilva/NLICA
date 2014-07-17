@@ -3,6 +3,10 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 
+\usepackage{subcaption}
+
+\usepackage{epstopdf}
+
 \title{Data-driven Reduction of Multiscale Stochastic Dynamical Systems }
 
 \author[PrincetonCBE]{C.J.~Dsilva}
@@ -53,29 +57,44 @@
 
 \subsection{Multiscale SDEs}
 
-Multiscale SDE setting: fast/slow, want to recover slow variable(s) even when the fast variables are large/very noisy
+Setting
+\begin{itemize}
+\item system of SDEs with separation of timescales
+\item want to recover slow variable(s) even when the fast variables are have large variations
+\end{itemize}
 
-\begin{equation} \label{eq:multiscale_SDE}
+
+Consider equations of the form
+\begin{equation} \label{eq:fast_slow_SDE}
 \begin{aligned}
-dx &= adt + dW_1\\
-dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+dx &= adt + dW^1\\
+dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW^2
 \end{aligned}
 \end{equation}
 
-So $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$
+So $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$.
+%
+We assume that the saturation time of fast scale  of the SDE is smaller than the other relevant timescales.
+
+TODO: should we write the SDE in a more general form?
 
 \subsection{Nonlinear Intrinsic Variables}
 
 Background on NIVs 	
+\begin{itemize}
+
+\item Want to recover ``intrinsic'' variables that are independent of the measurement.observation function
+\item We define intrinsic as variables that have uncoupled noise with unit variance
+\end{itemize}
 
 \begin{equation}
-dx_i = a(X) dt + dW_i
+dX^i = a(X) dt + dW^i
 \end{equation}
 and we will let $X = \begin{bmatrix} X^1 \\ X^2 \\ \vdots \\ X^n \end{bmatrix}$
 
 We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small.
 %
-For example, in \eqref{eq:multiscale_SDE}, let $y = \frac{z}{\sqrt{\epsilon}}$. 
+Consider the SDE in \eqref{eq:fast_slow_SDE}, and let $y = \frac{z}{\sqrt{\epsilon}}$. 
 %
 Then
 \begin{equation}
@@ -84,19 +103,20 @@ dx &= adt + dW_1\\
 dz &= -\frac{z}{\epsilon} dt +  dW_2
 \end{aligned}
 \end{equation}
-
-Therefore, now $z$ is a stochastic variable whose diffusion is unity, and whose equilibrium measure is $\mathcal{O}(\epsilon)$. 
 %
-Therefore, when $\epsilon \ll 1$, we have that $z \ll x$, and so we will recover $x$ only.
-
-Note: saturation time of SDE has to be smaller than the timescales
 
 
+Therefore, $z$ is a stochastic variable whose diffusion is unity, and so $x$ and $z$ are the ``intrinsic variables'' for the underlying SDE.
+%
+However, the equilibrium measure of $z$ is $\mathcal{O}(\epsilon)$, and so when $\epsilon \ll 1$, $z \ll x$, and so we will only recover $x$ (the slow variable). 
 
 \subsection{Errors and Estimation}
 
-Error and estimation analysis of NIVs (remark that applies to more general settings): give conditions/bounds when we can recover the intrinsic slow variable
-
+\begin{itemize}
+\item Error and estimation analysis of NIVs (remark that applies to more general settings): give conditions/bounds when we can recover the intrinsic slow variable
+%
+\item Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
+\end{itemize}
 
 Given $X$ governed by the above SDE, we can sample ``bursts'' around a point $X_0$ in order to estimate the covariance. 
 
@@ -220,14 +240,14 @@ We can find such a regime empirically (by plotting $\| X_2 - X_1 \|^2$ as a func
  Toy problem results (half-moon): illustration of the analysis + extraction of slow variable and ``suppression'' of fast variable depending on $\delta t$ and saturation time of fast
  
  Define the following two-dimensional system of SDEs
-\begin{eqnarray}
+\begin{eqnarray} \label{eq:init_data}
 dX(1) &=& 3 dt + dW_1 \\ 
 dX(2) &=& \frac{-X(2)}{\epsilon} dt + dW_2 
 \end{eqnarray}
 where $W_1, W_2$ are independent Brownian motions, and $\epsilon \ll 1$.
 
 Let
-\begin{eqnarray}
+\begin{eqnarray}\label{eq:transformed_data}
 f^1(X) &=& X(1) + \frac{ X(2)^2}{\epsilon} \\
 f^2(X) &=& \frac{X(2)}{\sqrt{\epsilon}}
 \end{eqnarray}
@@ -239,11 +259,37 @@ g^1(Y) &=& Y(1) - Y(2)^2 \\
 g^2(Y) &=& Y(2) \sqrt{\epsilon}
 \end{eqnarray}
 
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_init}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_transformed}
+\caption{}
+\end{subfigure}
+\caption{(a) The original data, simulated from \eqref{eq:init_data}. (b) The data from (a), transformed according to \eqref{eq:transformed_data}. }
+\label{fig:initial_data}
+\end{figure}
 
- 
+
+
 \subsection{NIVs versus DMAPS}
 
 DMAPS gives the fast, NIVs gives the slow 
+
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_transformed_colored_NIV}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{data_transformed_colored_DMAPS}
+\caption{}
+\end{subfigure}
+\caption{(a) The data from Figure~\ref{fig:initial_data}(b), colored by the first NIV. Note that we recover the slow variable. (b) The data from Figure~\ref{fig:initial_data}(b), colored by the first DMAPS variable. Note that we do {\em not} recover the slow variable.  }
+\label{fig:NIV_versus_DMAPS}
+\end{figure}
 
 \subsection{Determining Appropriate Parameters}
 
@@ -272,6 +318,32 @@ n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \fra
 \end{equation}
 
 \end{itemize}
+
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{errors_function_dt}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{empirical_totaldist_function_dt}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{errors_function_dy}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{empirical_totaldist_function_dy}
+\caption{}
+\end{subfigure}
+\caption{(a) Analytical estimation of errors as a function of $\delta t$. 
+%
+(b) Empirical estimation of total distance as a function of $\delta t$.  
+%
+(c) Analytical estimation of errors as a function of $\Delta Y$. 
+%
+(d) Empirical estimation of total distance as a function of $\Delta Y$}
+\end{figure}
 
 \subsection{Recovery of Fast Variable}
 
