@@ -11,9 +11,9 @@ epsilon = 1e-3;
 
 %%
 
-for dt_burst=[1e-9 1e-4 1e-3]
+for dt_burst=[1e-9 1e-4 1e-2]
     
-    eps_dmaps = 0.1;
+    eps_dmaps = 1;
     % dt_burst = 1e-9;
     dt = 1e-3;
     
@@ -66,7 +66,8 @@ for dt_burst=[1e-9 1e-4 1e-3]
     
     %%
     
-    eps_niv = eps_dmaps;
+%     eps_niv = eps_dmaps;
+    eps_niv = 0;
     
     [V1_niv, D1_niv, ~, Dis_data1] = NIV_return_dist(data1, inv_c1, eps_niv, 50, 0);
     
