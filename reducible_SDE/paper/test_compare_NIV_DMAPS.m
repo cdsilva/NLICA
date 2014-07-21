@@ -25,7 +25,7 @@ rng(123);
 
 
 make_fig;
-scatter(data_init(:,1),data_init(:,2),50,t,'.')
+scatter(data_init(:,1),data_init(:,2),50,t*dt,'.')
 xlabel('X(1)')
 ylabel('X(2)')
 h = colorbar('peer',gca);
@@ -35,7 +35,7 @@ print(gcf, '-depsc', 'data_init');
 
 
 make_fig;
-scatter(data1(:,1),data1(:,2),50,t,'.')
+scatter(data1(:,1),data1(:,2),50,t*dt,'.')
 xlabel('Y(1)')
 ylabel('Y(2)')
 h = colorbar('peer',gca);

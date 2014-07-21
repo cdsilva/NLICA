@@ -34,11 +34,11 @@
 
 \begin{itemize}
 
-\item Link between data mining and dynamical systems
+\item Link between data mining and dynamical systems analysis
 
-\item Extracting or reducing an SDE system to its slow variables using the Mahalanobis graph and NIVs
+\item Extracting/reducing an SDE system to its slow variables using the Mahalanobis graph and NIVs
 
-\item Full mathematical analysis of the slow variable reduction procedure, including necessary conditions for accurate recovery of the slow variables and a framework for empirically setting the algorithm parameters
+\item Full mathematical analysis of the slow variable reduction procedure, including necessary conditions for accurate recovery of the intrinsic variables and a framework for empirically setting the algorithm parameters
 
 \end{itemize}
 
@@ -57,14 +57,9 @@
 
 \subsection{Multiscale SDEs}
 
-Setting
-\begin{itemize}
-\item system of SDEs with separation of timescales
-\item want to recover slow variable(s) even when the fast variables are have large variations
-\end{itemize}
+Given a system of SDEs with separation of timescales, we want to recover slow variable(s) even when the fast variables are have large variations.
 
-
-Consider equations of the form
+Consider the following system of SDEs:
 \begin{equation} \label{eq:fast_slow_SDE}
 \begin{aligned}
 dx &= adt + dW^1\\
@@ -72,27 +67,26 @@ dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW^2
 \end{aligned}
 \end{equation}
 
-So $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$.
+So $x$ is the slow variable, and $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$.
 %
 We assume that the saturation time of fast scale  of the SDE is smaller than the other relevant timescales.
+%
+We would like to recover $x$ using data-driven techniques.
 
-TODO: should we write the SDE in a more general form?
+%TODO: should we write the SDE in a more general form?
 
 \subsection{Nonlinear Intrinsic Variables}
 
-Background on NIVs 	
-\begin{itemize}
-
-\item Want to recover ``intrinsic'' variables that are independent of the measurement.observation function
-\item We define intrinsic as variables that have uncoupled noise with unit variance
-\end{itemize}
-
-\begin{equation}
+The goal of NIVs is to recover ``intrinsic'' variables that are independent of the measurement/observation function.
+%
+We define intrinsic variables as those variables which have uncoupled noise with unit variance,
+i.e., the intrinsic variables $X^1, \dots, X^n$ are governed by the following SDEs:
+\begin{equation} \label{eq:NIV_formulation}
 dX^i = a(X) dt + dW^i
 \end{equation}
-and we will let $X = \begin{bmatrix} X^1 \\ X^2 \\ \vdots \\ X^n \end{bmatrix}$
+where $X = \begin{bmatrix} X^1 & X^2 & \cdots & X^n \end{bmatrix}^T$.
 
-We want to emphasize the link between multi scale SDEs and NIVs: NIVs rescales the variables so that the ``fast'' variables become small.
+We want to emphasize the link between multiscale SDEs and NIVs: NIVs rescales the noises, so that the ``fast'' variables become small.
 %
 Consider the SDE in \eqref{eq:fast_slow_SDE}, and let $y = \frac{z}{\sqrt{\epsilon}}$. 
 %
@@ -104,11 +98,11 @@ dz &= -\frac{z}{\epsilon} dt +  dW_2
 \end{aligned}
 \end{equation}
 %
-
-
 Therefore, $z$ is a stochastic variable whose diffusion is unity, and so $x$ and $z$ are the ``intrinsic variables'' for the underlying SDE.
 %
-However, the equilibrium measure of $z$ is $\mathcal{O}(\epsilon)$, and so when $\epsilon \ll 1$, $z \ll x$, and so we will only recover $x$ (the slow variable). 
+However, the equilibrium measure of $z$ is $\mathcal{O}(\epsilon)$, and so when $\epsilon \ll 1$, $z \ll x$, and so we will recover $x$ (the slow variable). 
+%
+In general, we want to recover the slow variable(s) even when the observations of the underlying intrinsic stochastic process are obstructed by a {\em nonlinear} measurement function. 
 
 \subsection{Errors and Estimation}
 
@@ -118,7 +112,7 @@ However, the equilibrium measure of $z$ is $\mathcal{O}(\epsilon)$, and so when 
 \item Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
 \end{itemize}
 
-Given $X$ governed by the above SDE, we can sample ``bursts'' around a point $X_0$ in order to estimate the covariance. 
+Given $X$ governed by the SDE in \eqref{eq:NIV_formulation}, we can sample ``bursts'' around a point $X_0$ in order to estimate the local covariance of the noise. 
 
 These clouds will be distributed 
 
@@ -227,8 +221,6 @@ Substituting our estimate of the covariance into \eqref{eq:taylor_expansion}, we
 %
 We want the first term in this expression to dominate.
 
-Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm.
-
 From \eqref{eq:taylor_expansion}, we can see that the squared {\em intrinsic} distance $\| X_2 - X_1 \|^2$, is a function of $\|Y_2 - Y_1\|$ and $\delta t$. 
 %
 If the first term in the expansion dominates, then $\|X_2 - X_1 \|^2$ should be independent of $\delta t$, and should vary quadratically with $\| Y_2 - Y_1\|$. 
@@ -236,28 +228,29 @@ If the first term in the expansion dominates, then $\|X_2 - X_1 \|^2$ should be 
 We can find such a regime empirically (by plotting $\| X_2 - X_1 \|^2$ as a function of $\delta t$ and $\|Y_2 - Y_1\|$), and select a kernel distance where both conditions hold.
 
 \section{Results}
-
- Toy problem results (half-moon): illustration of the analysis + extraction of slow variable and ``suppression'' of fast variable depending on $\delta t$ and saturation time of fast
  
- Define the following two-dimensional system of SDEs
+Define the following two-dimensional system of SDEs
 \begin{eqnarray} \label{eq:init_data}
 dX(1) &=& 3 dt + dW_1 \\ 
 dX(2) &=& \frac{-X(2)}{\epsilon} dt + dW_2 
 \end{eqnarray}
 where $W_1, W_2$ are independent Brownian motions, and $\epsilon \ll 1$.
+%
 
 Let
 \begin{eqnarray}\label{eq:transformed_data}
 f^1(X) &=& X(1) + \frac{ X(2)^2}{\epsilon} \\
 f^2(X) &=& \frac{X(2)}{\sqrt{\epsilon}}
 \end{eqnarray}
-Therefore, $X(2)$ is now a ``fast'' variable, and we have further applied a nonlinear transformation to this fast-slow system. 
-
+Therefore, the two ``intrinsic variables'' $X(1), X(2)$ have been nonlinearly transformed and rescaled such that the new variables $f^1(X), f^2(X)$ are both $\mathcal{O}(1)$, even though $X(1)$ is the ``fast'' variable. 
+%
 The inverse function $g = f^{-1}$ is
 \begin{eqnarray}
 g^1(Y) &=& Y(1) - Y(2)^2 \\
 g^2(Y) &=& Y(2) \sqrt{\epsilon}
 \end{eqnarray}
+%
+Data from a simulation is shown in Figure~\ref{fig:initial_data}.
 
 \begin{figure}[h]
 \begin{subfigure}{0.5\textwidth}
@@ -268,15 +261,21 @@ g^2(Y) &=& Y(2) \sqrt{\epsilon}
 \includegraphics[width=\textwidth]{data_transformed}
 \caption{}
 \end{subfigure}
-\caption{(a) The original data, simulated from \eqref{eq:init_data}. (b) The data from (a), transformed according to \eqref{eq:transformed_data}. }
+\caption{(a) The original data, simulated from \eqref{eq:init_data} with $\epsilon = 10^{-3}$. We take $3000$ timesteps with $dt = 10^{-4}$ (b) The data from (a), transformed according to \eqref{eq:transformed_data}. }
 \label{fig:initial_data}
 \end{figure}
 
-
-
 \subsection{NIVs versus DMAPS}
 
-DMAPS gives the fast, NIVs gives the slow 
+We first want to demonstrate the utility of NIVs over DMAPS. 
+%
+We compute the first (nontrivial) NIV and DMAPS coordinate using the data in Figure~\ref{fig:initial_data}(b). 
+%
+The results are shown in Figure~\ref{fig:NIV_versus_DMAPS}.
+%
+NIV accurately recovers the slow variable (the coloring in Figure~\ref{fig:NIV_versus_DMAPS}(a) is consistent with the coloring in Figure~\ref{fig:initial_data}(b)). 
+%
+In contrast, DMAPS does not recover the slow variable. 
 
 \begin{figure}[h]
 \begin{subfigure}{0.5\textwidth}
@@ -287,15 +286,15 @@ DMAPS gives the fast, NIVs gives the slow
 \includegraphics[width=\textwidth]{data_transformed_colored_DMAPS}
 \caption{}
 \end{subfigure}
-\caption{(a) The data from Figure~\ref{fig:initial_data}(b), colored by the first NIV. Note that we recover the slow variable. (b) The data from Figure~\ref{fig:initial_data}(b), colored by the first DMAPS variable. Note that we do {\em not} recover the slow variable.  }
+\caption{(a) The data from Figure~\ref{fig:initial_data}(b), colored by the first NIV (we take $\sigma_{kernel} = 0.01$, and $\delta t = 10^{-9}$). Note that we recover the slow variable. (b) The data from Figure~\ref{fig:initial_data}(b), colored by the first DMAPS variable (we take $\sigma_{kernel} = 0.01$). Note that we do {\em not} recover the slow variable.}
 \label{fig:NIV_versus_DMAPS}
 \end{figure}
 
 \subsection{Determining Appropriate Parameters}
 
-Illustration of different aspects (error terms) in the analysis
+We would like to demonstrate how we can {\em empirically} determine the appropriate parameters $\delta t$ and $\sigma_{kernel}$ so that we can accurately recover the slow variable(s).
 
-The three relevant quantities for NIVs are 
+For the system in \eqref{eq:init_data} and \eqref{eq:transformed_data}, the three relevant quantities for NIVs are 
 \begin{itemize}
 \item The linearized approximation to the distance,
 %
@@ -318,6 +317,28 @@ n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \fra
 \end{equation}
 
 \end{itemize}
+%
+We can plot each of these quantities analytically as a function of $\delta t$ and $\|Y_2 - Y_1\|$. 
+%
+The results are shown in Figure~\ref{fig:empirical_estimation}(a)~and~(c). 
+%
+In practice, for more complex SDEs, we cannot write down the three terms analytically.
+%
+We can only measure the sum of the three terms; this is the estimate of the intrinsic distance that we calculate, $\|X_2 - X_1 \|^2_{est}$.
+%
+This is also shown in Figure~\ref{fig:empirical_estimation}(a)~and~(c).
+%
+Clearly, when higher-order terms become important corresponds to a ``kink'' in the plots. 
+%
+We can also plot the empirical estimates of $\| X_2 - X_1 \|^2_{est}$ obtained from simulation data, as a function of $\delta t$ and $\| Y_2 - Y_1 \|$.
+%
+This is shown in Figure~\ref{fig:empirical_estimation}(b)~and~(d). 
+%
+The same ``kink'' is evident in these plots at approximately the same position as the analytical plots. 
+%
+Therefore, we choose $\delta t$ and a $\sigma_{kernel}$ which corresponds to a $\|X_2 - X_1 \|_{est}^2$ value {\em before} the kink. 
+%
+For this particular example, we take $\delta t = 10^{-9}$ and $\sigma_{kernel} = 0.01$, which allows us to accurately recover the slow variable. 
 
 \begin{figure}[h]
 \begin{subfigure}{0.5\textwidth}
@@ -336,18 +357,79 @@ n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \fra
 \includegraphics[width=\textwidth]{empirical_totaldist_function_dy}
 \caption{}
 \end{subfigure}
-\caption{(a) Analytical estimation of errors as a function of $\delta t$. 
+\caption{(a) Total estimated distance (black) and the three separate terms in the estimated distance, as a function of $\delta t$. The linearized approximation is in blue, the error from the covariance estimation is in green, and the error from the truncation of the distance expansion is in red. 
 %
-(b) Empirical estimation of total distance as a function of $\delta t$.  
+(b) Empirical estimation of total distance as a function of $\delta t$, with $\|Y_2 - Y_1 \|^2 = 0.01$.  
 %
-(c) Analytical estimation of errors as a function of $\Delta Y$. 
+(c) Total estimated distance (black) and the three separate terms in the estimated distance, as a function of $\|Y_2 - Y_1\|$. The linearized approximation is in blue, the error from the covariance estimation is in green, and the error from the truncation of the distance expansion is in red. 
 %
-(d) Empirical estimation of total distance as a function of $\Delta Y$}
+(d) Empirical estimation of total distance as a function of $\|Y_2 - Y_1\|$, with $\delta t =  10^{-10}$. The red line corresponds to the quadratic $\|X_2 - X_1 \|^2_{est} \propto \|Y_2 - Y_1 \|^2$.}
+\label{fig:empirical_estimation}
 \end{figure}
 
 \subsection{Recovery of Fast Variable}
 
-Show empirically what happens as we change the neighborhood (example from notes 1) (recovery of fast variable deep in the spectrum)
+The size of the ``burst'' we take also affects the recovery of the fast variable, even when there is no nonlinear transformation.
+%
+When the time scale of the burst is smaller than that of the equilibration time of the fast variable, the estimated covariance is constant and the fast variable is collapsed significantly relative to the slow variable.
+%
+This means that the fast variable is recovered {\em very} far down in the DMAPS eigenvectors.
+%
+However, if the time scale of the burst is {\em longer} than the saturation time of the fast variable, the estimated covariance changes: the variance in the slow direction continues to grow, while the variance in the fast direction is fixed.
+%
+This means that the collapse of the fast variable is less pronounced relative to the slow variable, and the fast variable is recovered in a higher eigenvector. 
+
+We again consider the SDE system from \eqref{eq:init_data}, and consider the transformation
+\begin{eqnarray}\label{eq:transformed_data2}
+h^1(X) &=& X(1)  \\
+h^2(X) &=& \frac{X(2)}{\sqrt{\epsilon}}
+\end{eqnarray}
+%
+Unlike previously, there is no nonlinear component to the transformation, only a rescaling that makes the noise in the ``fast'' direction larger. 
+
+Figure~\ref{fig:vary_burst} shows data collected from simulation of \eqref{eq:transformed_data2}.
+%
+Different timescales were used to simulate the bursts and estimate the local covariance. 
+%
+We can see that, when the timescale is less than the saturation time of the fast variable (the first two plots), the fast variable is recovered deep in the eigenvalue spectrum (eigenvector 14).
+%
+However when the timescale exceeds the saturation time of the fast variable (the third plot), the fast variable moves up in the eigenvalue spectrum (eigenvector 8).
+
+\begin{figure}[h]
+%\begin{subfigure}{0.5\textwidth}
+%\includegraphics[width=\textwidth]{dat_varyburst}
+%\caption{}
+%\end{subfigure}
+%
+\begin{subfigure}{0.3\textwidth}
+\includegraphics[width=\textwidth]{data_withburst_1}
+\includegraphics[width=\textwidth]{fast_var_corr_1}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.3\textwidth}
+\includegraphics[width=\textwidth]{data_withburst_2}
+\includegraphics[width=\textwidth]{fast_var_corr_2}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.3\textwidth}
+\includegraphics[width=\textwidth]{data_withburst_3}
+\includegraphics[width=\textwidth]{fast_var_corr_3}
+\caption{}
+\end{subfigure}
+\caption{
+(a) Top: data in blue, simulated from \eqref{eq:init_data} and \eqref{eq:transformed_data2}, with representative burst in red.  
+%
+Bottom: correlation between NIV coordinate and fast variable. 
+%
+(b) Top: data in blue, with representative burst in red.  
+%
+Bottom: correlation between NIV coordinate and fast variable. 
+%
+(c) Top: data in blue, with representative burst in red.  
+%
+Bottom: correlation between NIV coordinate and fast variable. }
+\label{fig:vary_burst}
+\end{figure}
 
 \section{Conclusion}
 
@@ -356,7 +438,7 @@ We showed that in certain cases (when we do {\em not} have a simulator where we 
 If the cloud of samples is too big then we can observe the cloud of clouds (and those clouds can be histograms, Fourier, scattering, etc.) as a way to get smaller clouds. 
 
 
-Richardson extrapolation allows us to get an estimate of a second-order term in the covariance estimation, thereby locally approximating the function using a quadratic form, rather than a linear form,  which can lead to a better/improved/more accurate ``Mahalanobis'' metric. 
+Richardson extrapolation could allow us to get an estimate of a second-order term in the covariance estimation, thereby locally approximating the function using a quadratic form, rather than a linear form,  which can lead to a better/improved/more accurate ``Mahalanobis'' metric. 
 
 
 

@@ -8,7 +8,7 @@ DiffnFn = @(t, x) [1 0; 0 1];
 
 f1 = @(x) [x(:,1) x(:,2)/sqrt(epsilon)];
 
-min_dt = 1e-3;
+min_dt = 0.5e-3;
 
 if nargin < 6
     dt_step = min(dt, min_dt);
