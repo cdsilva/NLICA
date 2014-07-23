@@ -38,7 +38,7 @@ Many dynamical systems are governed by stochastic motions at the microscale whic
 %
 The relationship between the microscopic and macroscopic dynamics is often not immediately obvious and either requires some modeling assumptions or extensive observation of the system.
 %
-We demonstrate how extracting macroscopic dynamics from microscale data can be accomplished automatically using manifold learning techniques. 
+We demonstrate how extracting a parameterization of microscale data can be accomplished automatically using manifold learning techniques, and that this parameterization is consistent with the governing macroscopic dynamical model. 
 %
 These data-driven algorithms need no {\em a priori} knowledge about the appropriate macroscopic model, but instead, only require the appropriate observers and pairwise metric between observations in order to recover the governing macroscopic variables.
 %
@@ -60,7 +60,7 @@ For example, fluid flow, which can be described via the position and velocity of
 %
 However, in general, this mapping from microscale to macroscale is not always obvious.
 %
-We would like to {\em automatically} uncover a system's macroscale behavior from data collected at the microscale without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
+We would like to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
 
 In this letter, we will present how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
 %
@@ -135,6 +135,9 @@ where $p$ is an initial probability.
 %
 The velocity of each particle randomly switches between $\pm s$ following an (independent) Poisson process with rate $\lambda$.
 %
+We would like to note that we have chosen a one-parameter family of initial conditions.
+%
+Other initial conditions could easily be chosen, but the simplicity of this setup will allow us to easily illustrate our main points. 
 
 This particular example has a known analytic macroscopic equation that governs the overall system behavior.
 %
