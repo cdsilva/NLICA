@@ -38,9 +38,9 @@ Many dynamical systems are governed by stochastic motions at the microscale whic
 %
 The relationship between the microscopic and macroscopic dynamics is often not immediately obvious and either requires some modeling assumptions or extensive observation of the system.
 %
-We demonstrate how extracting a parameterization of microscale data can be accomplished automatically using manifold learning techniques, and that this parameterization is consistent with the governing macroscopic dynamical model. 
+We demonstrate automatically extracting a parameterization of microscale data using manifold learning techniques, and show that this parameterization is consistent with the governing macroscopic dynamical model. 
 %
-These data-driven algorithms need no {\em a priori} knowledge about the appropriate macroscopic model, but instead, only require the appropriate observers and pairwise metric between observations in order to recover the governing macroscopic variables.
+These data-driven algorithms need no {\em a priori} knowledge about the appropriate macroscopic model, but instead, only require the appropriate observers and pairwise metric between observations.
 %
 We also show how these algorithms can detect changes in the macroscopic dynamical behavior as a function of the microscopic system parameters. 
 %
@@ -62,7 +62,7 @@ However, in general, this mapping from microscale to macroscale is not always ob
 %
 We would like to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
 
-In this letter, we will present how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
+In this letter, we will demonstrate how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
 %
 Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) choosing the appropriate observers, especially in presence of stochastic dynamics, and (b) selecting an appropriate metric for comparison \cite{mallat2012group}. 
 %
@@ -82,7 +82,7 @@ Second, it consists of an ensemble of individual stochastic particles which must
 %
 Third, it has an analytic macroscopic description, which serves as a ground truth and will allow us to verify our results which are obtained in an unsupervised manner.
 %
-We will show that manifold learning algorithms based on statistical observers and with the appropriate affinity metric between pairs of observations uncovers a description of the microscopic data which is consistent with the macroscopic model.
+We will show that manifold learning algorithms based on statistical observers and with the appropriate affinity metric between pairs of observations uncovers a parameterization of the microscopic data which is consistent with the macroscopic model.
 %
 Furthermore, these data-driven methods allow us to detect changes in dynamical behavior resulting from changes in the system parameters. 
 
@@ -120,7 +120,7 @@ At random times, a cell will ``turn around'' and switch the direction of its vel
 
 The microscopic model consists of a collection of $N$ particles whose states are defined by their positions and velocities. 
 %
-Let $x_i(t)$ and $v_i(t)$ denote the position and velocity of particle $i$ at time $t$, respectively.
+Let $x_i(t)$ and $v_i(t)$ denote the position and velocity, respectively, of particle $i$ at time $t$.
 %
 The velocity of each particle is either $\pm s$, where $s$ is a (fixed) speed. 
 %
@@ -131,13 +131,13 @@ x_i(0) & = 0 \\
 \mathbb{P} \{ v_i(0) = +s \} & = p
 \end{aligned}
 \end{equation}
-where $p$ is an initial probability.
+where $0 < p < 1$ is the probability of a particle initially moving to the right.
 %
 The velocity of each particle randomly switches between $\pm s$ following an (independent) Poisson process with rate $\lambda$.
 %
-We would like to note that we have chosen a one-parameter family of initial conditions.
+We would like to note that we have chosen a very specific one-parameter family of initial conditions, which lead to simple dynamics and straightforward illustration of our main points.
 %
-Other initial conditions could easily be chosen, but the simplicity of this setup will allow us to easily illustrate our main points. 
+More complex initial conditions could easily be chosen. 
 
 This particular example has a known analytic macroscopic equation that governs the overall system behavior.
 %
@@ -163,7 +163,7 @@ Alternatively, \eqref{eqn:coupled_pdes} can be rewritten as one, second--order P
 From \eqref{eq:second_order_pde}, we see that, for fixed values of $\lambda$ and $s$, the macroscopic state of the system (the probability density of the particles) is a function of two independent variables: $p$, which controls the initial distribution of the particles, and $t$, the time. 
 %
 This implies that for fixed $\lambda$ and $s$, the {\em microscopic} data in a high-dimensional ambient space (e.g., the positions of all $N$ particles) should lie on a two-dimensional manifold parameterized by $p$ and $t$, 
-and uncovering the low-dimensional structure of the microscopic data reveals the governing macroscopic variables.
+and uncovering the low-dimensional structure of the microscopic data reveals this manifold.
 
 We consider two asymptotic regimes of simulation.
 %
@@ -198,7 +198,7 @@ When $\lambda \rightarrow \infty$, the dynamics are described by one heat equati
 
 For general dynamical systems, the governing macroscopic variables and asymptotic behavior may not be immediately obvious, and instead need to be inferred from the microscopic data.
 %
-However, similarly to the chemotaxis model, we expect the simulation data to lie on a low-dimensional manifold which is parameterized by the macroscopic variables.
+We expect the simulation data to lie on a low-dimensional manifold which is parameterized by the macroscopic variables.
 %
 We use diffusion maps \cite{coifman2005geometric}, which is a manifold learning technique, to uncover such low-dimensional structure and to analyze the results of the microscopic chemotaxis simulations.
 %
@@ -392,7 +392,7 @@ These two components induce the ``correct" Riemannian geometry and allow for inf
 %
 In this paper, these concepts were demonstrated using a dynamical model of cellular chemotaxis with a known macroscopic behavior.
 %
-We showed that, using histograms as observers and EMD as a distance metric, diffusion maps can uncover the underlying macroscopic dynamical behavior which is consistent with the analytic macroscopic model.
+We showed that, using histograms as observers and EMD as a distance metric, diffusion maps can uncover a parameterization of the microscale data which is consistent with the analytic macroscopic model.
 %
 We are confident that such techniques can help inform modeling efforts for systems where the macroscopic dynamics and behavior are not currently known. 
 
