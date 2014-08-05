@@ -10,7 +10,7 @@ epsilon = 1e-3;
 
 
 dt = 1e-4;
-dt_burst = 1e-10;
+dt_burst = 1e-9;
 
 nsteps = 3000;
 nsteps_burst = 200;

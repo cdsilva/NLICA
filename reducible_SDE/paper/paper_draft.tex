@@ -15,6 +15,9 @@
 \author[YaleMath]{R.~Talmon}
 \ead{ronen.talmon@yale.edu}
 
+\author[PrincetonCBE]{C.W.~Gear}
+\ead{wgear@princeton.edu}
+
 \author[YaleMath]{R.R.~Coifman}
 \ead{coifman@math.yale.edu}
 
@@ -73,6 +76,14 @@ We assume that the saturation time of fast scale  of the SDE is smaller than the
 %
 We would like to recover $x$ using data-driven techniques.
 
+We would like to note that the ratio of the drift and diffusion terms in the $y$ equation is essential.
+%
+We need the square of the diffusivity to be of the same order as the drift.
+%
+If the diffusivity is too large, the equilibrium measure of $y$ will be unbounded.
+%
+Conversely, if the diffusivity is too small, the equilibrium measure of $y$ will go to 0.
+
 %TODO: should we write the SDE in a more general form?
 
 \subsection{Nonlinear Intrinsic Variables}
@@ -86,6 +97,8 @@ dX^i = a(X) dt + dW^i
 \end{equation}
 where $X = \begin{bmatrix} X^1 & X^2 & \cdots & X^n \end{bmatrix}^T$.
 
+These same conditions for uncoupled noises with unit variance will allow us to recover the slow variable(s) from data with multiple timescales. 
+%
 We want to emphasize the link between multiscale SDEs and NIVs: NIVs rescales the noises, so that the ``fast'' variables become small.
 %
 Consider the SDE in \eqref{eq:fast_slow_SDE}, and let $y = \frac{z}{\sqrt{\epsilon}}$. 
@@ -227,6 +240,13 @@ If the first term in the expansion dominates, then $\|X_2 - X_1 \|^2$ should be 
 %
 We can find such a regime empirically (by plotting $\| X_2 - X_1 \|^2$ as a function of $\delta t$ and $\|Y_2 - Y_1\|$), and select a kernel distance where both conditions hold.
 
+
+\begin{figure}
+\includegraphics[width=\textwidth]{schematic}
+\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligable. }
+\label{fig:schematic}
+\end{figure}
+
 \section{Results}
  
 Define the following two-dimensional system of SDEs
@@ -363,8 +383,40 @@ For this particular example, we take $\delta t = 10^{-9}$ and $\sigma_{kernel} =
 %
 (c) Total estimated distance (black) and the three separate terms in the estimated distance, as a function of $\|Y_2 - Y_1\|$. The linearized approximation is in blue, the error from the covariance estimation is in green, and the error from the truncation of the distance expansion is in red. 
 %
-(d) Empirical estimation of total distance as a function of $\|Y_2 - Y_1\|$, with $\delta t =  10^{-10}$. The red line corresponds to the quadratic $\|X_2 - X_1 \|^2_{est} \propto \|Y_2 - Y_1 \|^2$.}
+(d) Empirical estimation of total distance as a function of $\|Y_2 - Y_1\|$, with $\delta t =  10^{-9}$. The red line corresponds to the quadratic $\|X_2 - X_1 \|^2_{est} \propto \|Y_2 - Y_1 \|^2$.}
 \label{fig:empirical_estimation}
+\end{figure}
+
+\begin{figure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{changing_parameters_error_terms_1}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{changing_parameters_NIV_corr_1}
+\caption{}
+\end{subfigure}
+
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{changing_parameters_error_terms_2}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{changing_parameters_NIV_corr_2}
+\caption{}
+\end{subfigure}
+
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{changing_parameters_error_terms_3}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{changing_parameters_NIV_corr_3}
+\caption{}
+\end{subfigure}
+
+\caption{ Error analysis and recovery of the slow variable for three different simulation configurations. (a, b) $\sigma_{kernel} = 10^{-2}$, $\delta t = 10^{-9}$, (c, d) $\sigma_{kernel} = 10^{2}$, $\delta t = 10^{-9}$ (e, f) $\sigma_{kernel} = 10^{-2}$, $\delta t = 10^{-5}$.  (a, c, e) The three separate terms in the estimated distance, as a function of $\|Y_2 - Y_1\|$. The linearized approximation is in blue, the error from the covariance estimation is in green, and the error from the truncation of the distance expansion is in red. The blue circle indicates the value of $\sigma_{kernel}$ used in the diffusion maps calculations. (b, d, f) The first NIV, obtained from the transformed data $Y$, versus the slow variable $X(1)$. Note that we only recover the slow variable $X(1)$ when the linearized approximation dominates the other two error terms in the distance function at the scale of $\sigma_{kernel}$. }
+
 \end{figure}
 
 \subsection{Recovery of Fast Variable}
