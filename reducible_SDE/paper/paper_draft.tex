@@ -125,6 +125,11 @@ In general, we want to recover the slow variable(s) even when the observations o
 \item Empirical configuration/demonstration of the method, how to use the analysis to set the parameters in the algorithm
 \end{itemize}
 
+We assume that
+\begin{equation}
+\int_{t}^{t + \delta t} a(X_\tau) d \tau - a(X_t) \delta t \le C \delta t
+\end{equation}
+
 Given $X$ governed by the SDE in \eqref{eq:NIV_formulation}, we can sample ``bursts'' around a point $X_0$ in order to estimate the local covariance of the noise. 
 
 These clouds will be distributed 

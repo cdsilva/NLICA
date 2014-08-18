@@ -47,16 +47,15 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 
-\usepackage{subcaption}
+\usepackage{graphicx}
+%\usepackage{subcaption}
+%\usepackage{epstopdf}
 
 
 \title{Data-driven Reduction of Multiscale Stochastic Dynamical Systems \thanks{This work was
 supported by ....}} 
 
-\author{TeX Production\thanks{Society for Industrial and
-Applied Mathematics, Philadelphia, Pennsylvania. 
-(\email{multimedia@siam.org}). Questions, comments, or corrections
-to this document may be directed to that email address.}}
+\author{Carmeline J. Dsilva \and Ronen Talmon \and C. William Gear \and Ronald R. Coifman \and Ioannis G. Kevrekidis}
 
 \begin{document}
 \maketitle
@@ -162,11 +161,12 @@ We will present both analytical results for the error bounds, as well as an empi
 TODO: change ``curvature'' in figure to ``nonlinearity'' in $\sigma_{kernel}$
 TODO: emphasize that if $\delta t$ is too large, then data does not look Gaussian
 TODO: change strip to look different than other data
-%\begin{figure}
-%\includegraphics[width=\textwidth]{schematic}
-%\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligable. }
-%\label{fig:schematic}
-%\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{schematic.eps}
+\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligable. }
+\label{fig:schematic}
+\end{figure}
 
 \subsection{Error analysis of the Mahalanobis distance}
 
