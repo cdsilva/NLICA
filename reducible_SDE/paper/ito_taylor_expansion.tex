@@ -1,0 +1,117 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+(Taken from Kloeden, P. and Platen, E. (1995) Numerical Solution of Stochastic Differential Equations. New York: Springer.)
+
+Consider a $d$-dimensional SDE of the form (page 166, 1.24)
+%
+\begin{equation}
+X_\tau = X_\rho + \int_\rho^\tau a(s, X_s) ds + \sum_{j=1}^m \int_\rho^\tau b^j (s, X_s) dW_s^j
+\end{equation}
+%
+and a function 
+$$f: \mathbb{R}^{+} \times \mathbb{R}^d \mapsto \mathbb{R}$$
+%
+From page 182, equation 5.3
+%
+\begin{equation} \label{eq:ito_taylor}
+f(\tau, X_\tau) = \sum_{\alpha \in A} I_\alpha [f_\alpha(\rho, X_\rho)]_{\rho, \tau} + \sum_{\alpha \in B(A)} I_\alpha [f_\alpha (\cdot, X_\cdot)]_{\rho, \tau}
+\end{equation}
+where 
+\begin{itemize}
+\item $A \subset M$ is a hierarchical set (page 180)
+\item $M$ is the set of multiindices 
+\item  $B(A)$ is the remainder set (page 180)
+$$B(A) = \left\{ \alpha \in M \ A: -\alpha \in A \right\}$$
+\item  $-\alpha$ denotes $a$ with the first entry deleted
+\item $\rho$ and $\tau$ are two stopping times
+\item $I_\alpha$ denotes the multiple Ito integral (page 168)
+\item $f_\alpha$ denotes the Ito coefficient function (page 177)
+\end{itemize}
+
+
+Let 
+$$ A = \{ \alpha \in M : l(\alpha) \le 1 \} = \{ (j) : 0 \le j \le m \} \cup \{v \}$$
+where $v$ is the empty multiindex.
+%
+Then
+$$B(A) = \{ (j, k) : 0 \le j \le m, 0 \le k \le m \}$$
+
+We can write \eqref{eq:ito_taylor} as
+\begin{equation} \label{eq:ito_taylor2}
+f( X_\tau) = I_{v} [f_{v} ( X_\rho)]_{\rho, \tau} + \sum_{j=0}^m I_{(j)} [f_{(j)}( X_\rho)]_{\rho, \tau} + \sum_{j=0}^m \sum_{k=0}^m I_{(j,k)} [f_{(j,k)} ( X_\cdot)]_{\rho, \tau}
+\end{equation}
+
+
+We have that (page 169)
+\begin{itemize}
+\item $I_v [f(\cdot)]_{\rho, \tau} = f(\tau) = \mathcal{O}(1)$
+\item $I_{(0)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} f(s) ds = \mathcal{O}(\tau - \rho)$
+\item $I_{(j)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} f(s) dW_s^j = \mathcal{O}(\sqrt{\tau - \rho})$, for $j \ge 1$
+\item $I_{(0,0)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) ds_1 ds_2 = \mathcal{O}((\tau - \rho)^2)$
+\item $I_{(j,0)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) dW_{s_1}^j ds_2 = \mathcal{O}((\tau - \rho)^{3/2})$, for $j \ge 1$
+\item $I_{(0,k)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) ds_1 dW_{s_2}^k = \mathcal{O}((\tau - \rho)^{3/2})$, for $k \ge 1$
+\item $I_{(j,k)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) dW_{s_1}^j dW_{s_2}^k = \mathcal{O}(\tau - \rho)$, for $j, k \ge 1$
+\end{itemize}
+
+Then, rewriting \eqref{eq:ito_taylor2} with the terms in order of importance, we have
+\begin{equation} \label{eq:ito_taylor_sorted}
+\begin{aligned}
+f( X_\tau) =& I_{v} [f_{v} ( X_\rho)]_{\rho, \tau}  \\
+&+ \sum_{j=1}^d I_{(j)} [f_{(j)}( X_\rho)]_{\rho, \tau} \\ &
++ I_{(0)} [f_{(0)}( X_\rho)]_{\rho, \tau} + \sum_{j=1}^d \sum_{k=1}^d I_{(j,k)} [f_{(j,k)} ( X_\cdot)]_{\rho, \tau} \\
+& + \sum_{j=1}^d I_{(j,0)} [f_{(j,0)} ( X_\cdot)]_{\rho, \tau} + \sum_{k=1}^d  I_{(0,k)} [f_{(0,k)} ( X_\cdot)]_{\rho, \tau} \\
+& + I_{(0,0)} [f_{(0,0)} ( X_\cdot)]_{\rho, \tau} 
+\end{aligned}
+\end{equation}
+
+From page 177,
+\begin{itemize}
+\item $f_v = f$
+\item $f_{(j)} = \sum_{k=1}^d b^{k,j} \frac{\partial f}{\partial x^k}$, for $j \ge 1$
+\item $f_{(0)} = \frac{\partial f}{\partial t} + \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^d \sum_{j=1}^m b^{k,j} b^{l,j} \frac{\partial^2 f}{\partial x^k \partial x^l}$
+\item $f_{(j, k)} = \sum_{i=1}^d b^{i,j} \frac{\partial }{\partial x^i} \left( \sum_{l=1}^d b^{l,k} \frac{\partial f}{\partial x^l} \right) $ for $j,k \ge 1$
+\item $f_{(j,0)} = \sum_{k=1}^d b^{k,j} \frac{\partial }{\partial x^k} \left( \frac{\partial f}{\partial t} + \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^d \sum_{i=1}^m b^{k,i} b^{l,i} \frac{\partial^2 f}{\partial x^k \partial x^l} \right)$
+\item $f_{(0, j)} = \left( \frac{\partial}{\partial t} + \sum_{k=1}^d a^k \frac{\partial}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^d \sum_{i=1}^m b^{k,i} b^{l,i} \frac{\partial^2}{\partial x^k \partial x^l} \right)  \sum_{k=1}^d b^{k,j} \frac{\partial f}{\partial x^k}$ for $j \ge 1$
+\item $f_{(0,0)} = \left( \frac{\partial}{\partial t} + \sum_{k=1}^d a^k \frac{\partial}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^d \sum_{j=1}^m b^{k,j} b^{l,j} \frac{\partial^2}{\partial x^k \partial x^l} \right) $\\ $ \left( \frac{\partial f}{\partial t} + \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^d \sum_{j=1}^m b^{k,j} b^{l,j} \frac{\partial^2 f}{\partial x^k \partial x^l} \right)$
+\end{itemize}
+%
+For intrinsic variables, we assume that $b^{j,k} = \delta_{j,k}$, $d=m$, and $f$ does not depend on $t$. 
+%
+The terms then reduce to
+\begin{itemize}
+\item $f_v = f$
+\item $f_{(j)} = \frac{\partial f}{\partial x^j}$, for $j \ge 1$
+\item $f_{(0)} =  \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{j=1}^d \frac{\partial^2 f}{\partial {x^j}^2}$
+\item $f_{(j, k)} = \frac{\partial }{\partial x^j} \left( \frac{\partial f}{\partial x^k} \right) = \frac{\partial^2 f}{\partial x^j \partial x^k}$ for $j,k \ge 1$
+\item $f_{(j,0)} = \frac{\partial }{\partial x^j} \left( \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k=1}^d \frac{\partial^2 f}{\partial x^k \partial x^k} \right)$ \\
+$ =  \sum_{k=1}^d a^k \frac{\partial^2 f}{\partial x^j \partial x^k} + \frac{1}{2} \sum_{k=1}^d \frac{\partial^3 f}{\partial x^j \partial {x^k}^2}$ 
+\item $f_{(0, j)} = \left( \sum_{k=1}^d a^k \frac{\partial}{\partial x^k} + \frac{1}{2} \sum_{k=1}^d  \frac{\partial^2}{\partial x^k \partial x^k} \right) \frac{\partial f}{\partial x^j}$ \\
+$= \sum_{k=1}^d a^k \frac{\partial^ f}{\partial x^k \partial x^j} + \frac{1}{2} \sum_{k=1}^d  \frac{\partial^3 f}{\partial {x^k}^2 \partial x^j}$ for $j \ge 1$
+\item $f_{(0,0)} = \left( \sum_{j=1}^d a^j \frac{\partial}{\partial x^j} + \frac{1}{2} \sum_{j=1}^d  \frac{\partial^2}{\partial x^j \partial x^j} \right) \left( \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k=1}^d \frac{\partial^2 f}{\partial x^k \partial x^k} \right)$ \\
+$= \sum_{j=1}^d \sum_{k=1}^d \left[ a^j \frac{\partial}{\partial x^j}\left( a^k \frac{\partial f}{\partial x^k} \right) + \frac{1}{2} \frac{\partial^2}{\partial {x^j}^2} \left( a^k \frac{\partial f}{\partial x^k} \right) + \frac{1}{2} a^j \frac{\partial^3 f}{\partial x^j \partial {x^k}^2} + \frac{1}{4} \frac{\partial^4 f}{\partial {x^j}^2 \partial {x^k}^2} \right]$
+\end{itemize}
+
+Then, substituting into \eqref{eq:ito_taylor_sorted}, we obtain
+\begin{equation}
+\begin{aligned}
+f( X_\tau) = & f( X_\rho) \\
+&+ \sum_{j=1}^d \left. \frac{\partial f}{\partial x^j} \right|_{X_\rho}  \int_{\rho}^{\tau}  dW_s^j \\ &
++  \left. \left( \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{j=1}^d \frac{\partial^2 f}{\partial {x^j}^2} \right) \right|_{X_\rho} \int_{\rho}^{\tau} ds + \sum_{j=1}^m \sum_{k=1}^m \int_{\rho}^{\tau} \int_{\rho}^{s_2} \frac{\partial^2 f}{\partial x^j \partial x^k} dW_{s_1}^j dW_{s_2}^k \\
+& + \sum_{j=1}^d  \int_{\rho}^{\tau} \int_{\rho}^{s_2} \left( \sum_{k=1}^d a^k \frac{\partial^2 f}{\partial x^j \partial x^k} + \frac{1}{2} \sum_{k=1}^d \frac{\partial^3 f}{\partial x^j \partial {x^k}^2} \right) dW_{s_1}^j ds_2 \\
+& + \sum_{j=1}^d  \int_{\rho}^{\tau} \int_{\rho}^{s_2} \left( \sum_{k=1}^d a^k \frac{\partial^ f}{\partial x^k \partial x^j} + \frac{1}{2} \sum_{k=1}^d  \frac{\partial^3 f}{\partial {x^k}^2 \partial x^j} \right) ds_1 dW_{s_2}^j  \\
+& + \int_{\rho}^{\tau} \int_{\rho}^{s_2} \left( \sum_{j=1}^d \sum_{k=1}^d \left[ a^j \frac{\partial}{\partial x^j}\left( a^k \frac{\partial f}{\partial x^k} \right) + \frac{1}{2} \frac{\partial^2}{\partial {x^j}^2} \left( a^k \frac{\partial f}{\partial x^k} \right) + \frac{1}{2} a^j \frac{\partial^3 f}{\partial x^j \partial {x^k}^2} + \frac{1}{4} \frac{\partial^4 f}{\partial {x^j}^2 \partial {x^k}^2} \right] \right)  ds_1 ds_2
+\end{aligned}
+\end{equation}
+
+There are two terms that are $\mathcal{O}(\tau - \rho)$:
+\begin{itemize}
+\item $\left. \left( \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{j=1}^d \frac{\partial^2 f}{\partial {x^j}^2} \right) \right|_{X_\rho} \int_{\rho}^{\tau} ds $
+\item $ \sum_{j=1}^m \sum_{k=1}^m \int_{\rho}^{\tau} \int_{\rho}^{s_2} \frac{\partial^2 f}{\partial x^j \partial x^k} dW_{s_1}^j dW_{s_2}^k $
+\end{itemize}
+
+\end{document}
