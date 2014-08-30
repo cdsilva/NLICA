@@ -47,20 +47,26 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 
-\usepackage{graphicx}
-%\usepackage{subcaption}
-%\usepackage{epstopdf}
+\usepackage{epsfig}
 
 
 \title{Data-driven Reduction of Multiscale Stochastic Dynamical Systems \thanks{This work was
 supported by ....}} 
 
-\author{Carmeline J. Dsilva \and Ronen Talmon \and C. William Gear \and Ronald R. Coifman \and Ioannis G. Kevrekidis}
+\author{Carmeline J. Dsilva\footnotemark[2] \and Ronen Talmon\footnotemark[3] \and C. William Gear\footnotemark[2] \and Ronald R. Coifman\footnotemark[3] \and Ioannis G. Kevrekidis\footnotemark[2]\ \footnotemark[4]}
 
 \begin{document}
 \maketitle
 \newcommand{\slugmaster}{%
 \slugger{siads}{xxxx}{xx}{x}{x--x}}%slugger should be set to juq, siads, sifin, or siims
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\footnotetext[2]{Department of Chemical and Biological Engineering, Princeton University, Princeton, New Jersey, 08544, USA}
+\footnotetext[3]{Department of Mathematics, Yale University, New Haven, Connecticut, 06520, USA}
+\footnotetext[4]{Program in Applied and Computational Mathematics, Princeton University, Princeton, New Jersey, 08544, USA}
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
 
 \begin{abstract}
 
@@ -68,32 +74,79 @@ supported by ....}}
 
 \begin{keywords}\end{keywords}
 
-\begin{AMS}\end{AMS}
-
+\begin{AMS}
+37M10, 62-07
+\end{AMS}
 
 \pagestyle{myheadings}
 \thispagestyle{plain}
-\markboth{TEX PRODUCTION}{USING SIAM'S MM \LaTeX\ MACROS}
+\markboth{C.~J. DSILVA {\it ET AL}}{DATA-DRIVEN REDUCTION OF SDES}
 
 
 \section{Introduction}
 
+\begin{itemize}
+
+\item
+Bridge/connect between data mining/analysis and dynamical systems
+
+\begin{itemize}
+
+\item
+Main idea and scope: analyze stochastic dynamical systems using data-driven methods.
+
+\begin{itemize}
+
+\item
+Reduction in fast-slow systems using manifold learning
+
+\end{itemize}
+
+\end{itemize}
+\item
+We cannot use off-the-shelf data-driven methods because they are typically based on metrics and geometry and are not informed (take into account) the dynamics and time.
+
+\item
+Our contribution:
+
+\begin{itemize}
+
+\item
+We show how to use data analysis methods that are typically applied to data sets for analyzing data collected as a time series from a dynamical system. In particular, we ``propose" a data-driven (graph-based) method for recovering the slow variable of reducible systems.
+
+\item
+The method is based mostly on local analysis that combines geometry and dynamics.
+
+\item
+We offer rigorous analysis for the method that gives the conditions (for our method to successfully recover the ``right" slow variables), intuition.
+
+\end{itemize}
+
+\end{itemize}
+
 \subsection{Multiscale SDEs}
+
+Add a general formulation of a reducible system (with a general drift, and decoupled diffusions) and Dror/Kasmiskii's conditions.
+(We assume that the saturation time of fast scale  of the SDE is smaller than the other relevant timescales.)
+\begin{equation} 
+\begin{aligned}
+dx &= a(x,y) dt + dW_1\\
+dy &= -\frac{b(x,y)}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+\end{aligned}
+\end{equation}
 
 Given a system of SDEs with separation of timescales, we want to recover slow variable(s) even when the fast variables are have large variations.
 
-Consider the following system of SDEs:
+We consider systems that can be written as deterministic nonlinear functions $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^m$ of the following system of SDEs (in the general form, in particular, this one):
 \begin{equation} \label{eq:fast_slow_SDE}
 \begin{aligned}
 dx &= adt + dW_1\\
 dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
 \end{aligned}
 \end{equation}
-TODO: add more general formulation of the multi scale SDE
+where the diffusion terms of the fast and slow variables are decoupled. 
 
 So $x$ is the slow variable, and $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$.
-%
-We assume that the saturation time of fast scale  of the SDE is smaller than the other relevant timescales.
 %
 We would like to recover $x$ using data-driven techniques.
 
@@ -105,10 +158,6 @@ If the diffusivity is too large, the equilibrium measure of $y$ will be unbounde
 %
 Conversely, if the diffusivity is too small, the equilibrium measure of $y$ will go to 0.
 
-\subsection{Nonlinear functions}
-
-We will also consider a (nonlinear) function $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^m$ of the data sampled from the SDE in \eqref{eq:fast_slow_SDE}. 
-
 We will consider two specific examples. 
 \begin{enumerate}
 \item fat strip
@@ -117,38 +166,70 @@ We will consider two specific examples.
 %
 We will show in both cases how we can recover the slow variables using data-driven techniques. 
 
-\section{Data mining: Nonlinear Intrinsic Variables}
+\section{Local Invariant Metrics}
 
-%These same conditions for uncoupled noises with unit variance will allow us to recover the slow variable(s) from data with multiple timescales. 
+Assume we want to locally recover the slow variables. 
 %
-We want to emphasize the link between multiscale SDEs and NIVs: NIVs rescales the noises, so that the ``fast'' variables become small.
+To do so, we need to build a metric that is invariant to the fast variables. 
 %
-Consider the SDE in \eqref{eq:fast_slow_SDE}, and let $y = \frac{z}{\sqrt{\epsilon}}$. 
+This is typically done by averaging out the fast variables. 
 %
-Then
+We propose to do this using the Mahalanobis distance, which is a local PCA-type approach that inverts the local covariance matrix of the data, thereby creating a space with normalized diffusion terms.
+%
+It can be shown that the Mahalanobis distance locally approximates: 
+\begin{equation}
+\| f(x_1, y_1) - f(x_2, y_2) \|^2_M = \| X_1 - X_2 \|^2_2 + \mathcal{O}(\| f(x_1, y_1) - f(x_2, y_2) \|^4_2)
+\end{equation}
+where $X$ comprises variables which have uncoupled noise with unit variance,
+i.e., the variables $X^1, \dots, X^n$ are governed by the following SDEs:
+\begin{equation} \label{eq:NIV_formulation}
+dX^i = a(X) dt + dW^i
+\end{equation}
+where $X = \begin{bmatrix} X^1 & X^2 & \cdots & X^n \end{bmatrix}^T$.
+%
+In particular for the case TODO, consider the change of variable $z = y\sqrt{\epsilon}$. This change of variables gives the following system:
 \begin{equation}
 \begin{aligned}
 dx &= adt + dW_1\\
 dz &= -\frac{z}{\epsilon} dt +  dW_2
 \end{aligned}
 \end{equation}
-%
-Therefore, $z$ is a stochastic variable whose diffusion is unity, and so $x$ and $z$ are the ``intrinsic variables'' for the underlying SDE.
-%
-However, the equilibrium measure of $z$ is $\mathcal{O}(\epsilon)$, and so when $\epsilon \ll 1$, $z \ll x$, and so we will recover $x$ (the slow variable). 
-%
-In general, we want to recover the slow variable(s) even when the observations of the underlying intrinsic stochastic process are obstructed by a {\em nonlinear} measurement function. 
+Therefore, $z$ is a stochastic variable whose diffusion is unity, and $X = \begin{bmatrix} x \\ z \end{bmatrix}$.
 
-We will define $X = \begin{bmatrix} x \\ z \end{bmatrix}$
-
-
-To get a parameterization of NIV, we require $\| X_2 - X_1\|_2$.
+Note that for this specific case
+\begin{equation}
+\| X_1 - X_2 \|^2_2 = \|x_1 - x_2 \|^2_2 + \epsilon \|y_1 - y_2 \|^2_2.
+\end{equation}
+Remarkably, it implies two features.
 %
-However, we only have access to $Y = f(X)$.
+One, it rescales that data (in the sense that the variables have unit diffusion terms) so that the fast variables are collapsed and become (``epsilon") small as observed in the second term in the right hand side. 
 %
-Assuming that we have a local approximation to $\| X_2 - X_1\|$ from the measurements $Y$, we can then use DMAPS to uncover a parameterization of $X$ from the estimates of the pairwise distances. 
+Two, it inverts the function $f$ (locally) and allows for the approximation of the Euclidean distance between samples of the slow variables in the ``decoupled" SDE space.
+
+%These same conditions for uncoupled noises with unit variance will allow us to recover the slow variable(s) from data with multiple timescales. 
+%
+%
+
+%To get a parameterization of NIV, we require $\| X_2 - X_1\|_2$.
+%
+%However, we only have access to $Y = f(X)$.
+%
+%Assuming that we have a local approximation to $\| X_2 - X_1\|$ from the measurements $Y$, we can then use DMAPS to uncover a parameterization of $X$ from the estimates of the pairwise distances. 
+
+\section{DMAPS/Graph-Based/Kernel-based method}
 
 Description of DMAPS........
+
+
+\section{Analysis}
+
+\begin{figure}
+\epsfig{width=\textwidth, file=schematic.eps}
+\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligable. }
+\label{fig:schematic}
+\end{figure}
+
+See schematic figure.
 
 Our approximation of the pairwise distances will rely on the Taylor expansion of the measurement function $f$. 
 %
@@ -162,13 +243,15 @@ TODO: change ``curvature'' in figure to ``nonlinearity'' in $\sigma_{kernel}$
 TODO: emphasize that if $\delta t$ is too large, then data does not look Gaussian
 TODO: change strip to look different than other data
 
-\begin{figure}
-\includegraphics[width=\textwidth]{schematic.eps}
-\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligable. }
-\label{fig:schematic}
-\end{figure}
 
 \subsection{Error analysis of the Mahalanobis distance}
+
+Given the true covariance, we can write the Euclidean distance $\|X_2 - X_1 \|$ using Taylor expansion as...
+
+Talk about fourth-order error terms, say we want to choose the kernel scale such that these error terms are negligible. 
+%
+The error terms involve curvature of $f$, etc.
+
 
 Let $g = f^{-1}: \mathbb{R}^m \mapsto \mathbb{R}^n$, and let $Y_1 = f(X_1)$, and $Y_2 = f(X_2)$.
 %
@@ -226,130 +309,16 @@ K_3 &= \sup_{i,j,k,l,Y} |g_{jkl}^i(Y)|
 \end{equation}
 
 
+
 \subsection{Error analysis of the covariance estimation}
 
-To compute the Mahalanobis distance, we require $J J^T$.
+To compute the Mahalanobis distance, we require $J J^T$ (estimate the covariance matrix from the data).
 %
-By Ito formula, we have
-\begin{equation}
-dY^j = \sum_{i=1}^n \left( \frac{1}{2} f_{ii}^j + a_i f_i^j \right) dt + \sum_{i=1}^n f_i^j dW_i
-\end{equation}
+We do this using local simulation ``bursts''. 
 %
-TODO: define partials...
+The error in the covariance estimation is... (add equations).
 %
-The covariance $C$ defined by 
-\begin{equation}
-[C]_{jk} = \mathrm{Cov} \left( dY^j, dY^k \right)
-\end{equation}
-equals $C = J J^T$ \cite{...}. 
-
-We will empirically estimate the covariance from data. 
-
-Comment: Use a more general model (not necessarily multi scale)
-
-
-The goal of NIVs is to recover ``intrinsic'' variables that are independent of the measurement/observation function.
-%
-We define intrinsic variables as those variables which have uncoupled noise with unit variance,
-i.e., the intrinsic variables $X^1, \dots, X^n$ are governed by the following SDEs:
-\begin{equation} \label{eq:NIV_formulation}
-dX^i = a(X) dt + dW^i
-\end{equation}
-where $X = \begin{bmatrix} X^1 & X^2 & \cdots & X^n \end{bmatrix}^T$.
-
-
-Restrictions:
-\begin{itemize}
-\item Drift is bilipshitz wrt process $X$
-\item Access to simulator, BUT the analysis could be extended to a single trajectory (cite people....); emphasize the difference between simulation and experiment
-\end{itemize}
-
-
-We assume that
-\begin{equation}
- \int_{t}^{t + \delta t} a(X_\tau) d \tau - a(X_t) \delta t  = \mathcal{O} (\delta t) \: \forall t
-\end{equation}
-TODO: for the toy problems, find the order of this term, possibly as a function of $\epsilon$-- then we can relate $\epsilon$ to $\delta t$, and place bounds on $\delta t$
-
-\begin{equation}
-\begin{aligned}
-X(t + \delta t) =& X_t + \int_{t}^{t+\delta t} a(X_\tau) d \tau + d W \\
-= & X_t + \int_{t}^{t+\delta t} \left[ a(X_t) + \left( a(X_\tau) - a(X_t) \right) \right] d \tau + d W \\
-= & X_t + a(X_t) \delta t  + \sqrt{\delta t} W + \mathcal{O} (\delta t)
-\end{aligned}
-\end{equation}
-
-Given $X$ governed by the SDE in \eqref{eq:NIV_formulation}, we can sample ``bursts'' around a point $X_0$ in order to estimate the local covariance of the noise. 
-
-These clouds will be distributed 
-
-\begin{equation}
-X \sim \mathcal{N}\left( X_0, \delta t I \right)
-\end{equation}
-where 
-$$X_0 = X_t + \left( a(X_t) + \mathcal{O}(1) \right) \delta t $$
-%
-Note: we bound the random variation due to the variations in the drift, and note that this bound makes these variations smaller than the variations due to the local noise/diffusion. 
-%
-Therefore, we simply absorb these variations into an $\mathcal{O}(\delta t)$ correction of the mean of the sample distribution, turning a random term into a deterministic term. 
-
-Let $f^i(X)$ denote the $i^{th}$ entry of $\mathbf{f}$, and let $f^i_j(X) = \frac{\partial f^i}{\partial X^j}$.
-%
-By Taylor expansion around $X=X_0$,
-%
-\begin{eqnarray}
-\hat{C}(X_0) &=& \delta t J_1 J_1^T 
-+ \frac{\delta t^2}{2} \left[ J_1 J_3^T + J_3 J_1^T  
-+ \frac{3}{2} J_2 J_2^T 
--\frac{1 }{2} J_2 1 1^T J_2^T \right]
-+ \mathcal{O} (\delta t^3) %\\
-%&=& \delta t J_1 J_1^T 
-%+ \frac{\delta t^2}{2} U \Sigma V
-%+ \mathcal{O} (\delta t^3)
-\end{eqnarray}
-where
-\begin{equation}
-\begin{aligned}
-J_1(X_0) &= \begin{bmatrix}
-f_1^1 & f_2^1 & \dots & f_n^1 \\
-\vdots & \vdots & \cdots & \vdots \\
-f_1^m & f_2^m & \dots & f_n^m
-\end{bmatrix}\\
-%
-J_2(X_0) &= \begin{bmatrix}
-f_{11}^1 & f_{22}^1 & \dots & f_{nn}^1 \\
-\vdots & \vdots & \cdots & \vdots \\
-f_{11}^m & f_{22}^m & \dots & f_{nn}^m
-\end{bmatrix}\\
-%
-J_3(X_0) &= \begin{bmatrix}
-f_{111}^1 & f_{222}^1 & \dots & f_{nnn}^1 \\
-\vdots & \vdots & \cdots & \vdots \\
-f_{111}^m & f_{222}^m & \dots & f_{nnn}^m
-\end{bmatrix}
-\end{aligned}
-\end{equation}
-%
-In this equation, we see what we expect (a linear function of the variance, due to the gradient of $f$) and a second (higher-order) term arising from the curvature and third derivative of $f$.
-%
-The importance of this second term increases as the curvature increases, as well as when $\delta t$ increases. 
-
-
-
-Then
-\begin{equation}
-\hat{C}^{-1}(X_0) \approx \frac{1}{\delta t} \left( J J^T \right)^{-1} - A
-\end{equation}
-%
-where 
-\begin{equation}
-A = \frac{1}{2} (J_1 J_1^T)^{-1} U \left(\Sigma^{-1} + \frac{\delta t}{2} V \left( J_1 J_1^T \right)^{-1} U \right)^{-1} V \left( J_1 J_1^T \right)^{-1}
-\end{equation}
-and
-\begin{equation}
-U \Sigma V = J_1 J_3^T + J_3 J_1^T + \frac{3}{2} J_2 J_2^T -\frac{1 }{2} J_2 1 1^T J_2^T 
-\end{equation}
-$A$ is a function of the first-, second-, and third-order derivatives of $\mathbf{f}$.
+The lowest-order error term depends on the curvature of $f$. 
 
 TODO: define error function for covariance estimation
 
@@ -366,13 +335,13 @@ Substituting our estimate of the covariance into \eqref{eq:taylor_expansion}, we
 %
 We want the first term in this expression to dominate.
 
-From \eqref{eq:taylor_expansion}, we can see that the squared {\em intrinsic} distance $\| X_2 - X_1 \|^2$, is a function of $\|Y_2 - Y_1\|$ and $\delta t$. 
+TODO: interpret the different terms we get w.r.t. the curvature of f, the drift, the scale epsilon, and the window size.
+
+From \eqref{eq:taylor_expansion}, we can see that the squared distance $\| X_2 - X_1 \|^2$, is a function of $\|Y_2 - Y_1\|$ and $\delta t$. 
 %
 If the first term in the expansion dominates, then $\|X_2 - X_1 \|^2$ should be independent of $\delta t$, and should vary quadratically with $\| Y_2 - Y_1\|$. 
 %
 We can find such a regime empirically (by plotting $\| X_2 - X_1 \|^2$ as a function of $\delta t$ and $\|Y_2 - Y_1\|$), and select a kernel distance where both conditions hold.
-
-
 
 \section{Results}
 
@@ -631,52 +600,6 @@ If the cloud of samples is too big then we can observe the cloud of clouds (and 
 
 
 Richardson extrapolation could allow us to get an estimate of a second-order term in the covariance estimation, thereby locally approximating the function using a quadratic form, rather than a linear form,  which can lead to a better/improved/more accurate ``Mahalanobis'' metric. 
-
-
-
-\Appendix
-\section{The use of appendices}
-The \verb|\appendix| command may be used before the final sections
-of a paper to designate them as appendices. Once \verb|\appendix|
-is called, all subsequent sections will appear as 
-
-\appendix
-\section{Title of appendix} Each one will be sequentially lettered
-instead of numbered. Theorem-like environments, subsections,
-and equations will also have the section number changed to a letter.
-
-If there is only {\em one} appendix, however, the \verb|\Appendix|
-(with a capital letter) should be used instead. This produces only 
-the word {\bf Appendix} in the section title, and does not add a letter.
-Equation numbers, theorem numbers and subsections of the appendix
-will have the letter ``A''  designating the section number.
-
-If you don't want to title your appendix, and just call it
-{\bf Appendix A.} for example, use \verb|\appendix\section*{}| 
-and don't include anything in the title field. This works
-opposite to the way \verb|\section*| usually works, by including the
-section number, but not using a title.
-
- 
-Appendices should appear before the bibliography section, not after,
-and any acknowledgments should be placed after the appendices and before
-the bibliography. 
-
-\begin{thebibliography}{1}
-\bibitem{GoMiSa} {\sc M. Goossens, F. Mittelbach, and A. Samarin},
-{\em The} \LaTeX\ {\em Companion}, Addison-Wesley, Reading, MA, 1994.
-
-\bibitem{Higham} {\sc N.~J. Higham}, {\em Handbook of Writing for
-the Mathematical Sciences}, Society for Industrial and Applied
-Mathematics, Philadelphia, PA, 1993.
-
-\bibitem{Lamport} {\sc L. Lamport}, \LaTeX: {\em A Document
-Preparation System}, Addison-Wesley, Reading, MA, 1986.
-
-\bibitem{SerLev} {\sc R. Seroul and S. Levy}, {\em A
-Beginner's Book of} \TeX, Springer-Verlag, Berlin, New
-York, 1991.
-\end{thebibliography}
 
 
 \end{document}
