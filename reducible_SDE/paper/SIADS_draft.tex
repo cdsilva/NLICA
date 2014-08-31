@@ -126,100 +126,150 @@ We offer rigorous analysis for the method that gives the conditions (for our met
 
 \subsection{Multiscale SDEs}
 
-Add a general formulation of a reducible system (with a general drift, and decoupled diffusions) and Dror/Kasmiskii's conditions.
-(We assume that the saturation time of fast scale  of the SDE is smaller than the other relevant timescales.)
-\begin{equation} 
+We consider the following two-scale SDE. 
+\begin{equation} \label{eq:general_SDE}
 \begin{aligned}
-dx &= a(x,y) dt + dW_1\\
-dy &= -\frac{b(x,y)}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+dx_i &= a_i(x_1, \dots, x_n) dt + dW_i, \: 1 \le i \le m \\
+dx_i &= -\frac{a_i(x_1, \dots, x_n)}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i , \: m+1 \le i \le n
 \end{aligned}
 \end{equation}
-
-Given a system of SDEs with separation of timescales, we want to recover slow variable(s) even when the fast variables are have large variations.
-
-We consider systems that can be written as deterministic nonlinear functions $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^m$ of the following system of SDEs (in the general form, in particular, this one):
-\begin{equation} \label{eq:fast_slow_SDE}
-\begin{aligned}
-dx &= adt + dW_1\\
-dy &= -\frac{y}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
-\end{aligned}
-\end{equation}
-where the diffusion terms of the fast and slow variables are decoupled. 
-
-So $x$ is the slow variable, and $y$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$.
+where $W_i$ are independent Brownian motions, and $\epsilon \ll 1$.
 %
-We would like to recover $x$ using data-driven techniques.
-
-We would like to note that the ratio of the drift and diffusion terms in the $y$ equation is essential.
+Therefore, \eqref{eq:general_SDE} defines an $n$-dimensional stochastic system with $m$ slow variables and $n-m$ fast variables. 
+%
+We would like to note that the ratio of the drift and diffusion terms is essential.
 %
 We need the square of the diffusivity to be of the same order as the drift.
 %
-If the diffusivity is too large, the equilibrium measure of $y$ will be unbounded.
+If the diffusivity is too large, the equilibrium measure will be unbounded.
 %
-Conversely, if the diffusivity is too small, the equilibrium measure of $y$ will go to 0.
+Conversely, if the diffusivity is too small, the equilibrium measure will go to 0.
+
+Assuming that the functions $a_i$ are bounded and Lipschitz, and we can find
+\begin{equation}
+\mathbb{E} \left| \frac{1}{T} \int_t^{t + T} a_i(x_1, \dots, x_m, X_{m+1}(s), \dots, X_n(s)) ds - \overline{a} (x_1, \dots, x_m) \right| < \kappa_i (T) 
+\end{equation}
+for $1 \le i \le m$, where $\kappa_i((T) \rightarrow 0 $ as $T \rightarrow \infty$, then the averaging principle \cite{...} states that we can write an effective equation in the slow variables $x_1, \dots, x_m$. 
+%
+We will consider systems that can be written as deterministic (perhaps nonlinear) bi-Lipshitz functions $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$ of the SDE in \eqref{eq:general_SDE}.
+%
+Our goal is to recover the slow variables $x_1, \dots, x_m$ using data-driven techniques. 
+
+For illustrative purposes, we will consider the following two-dimensional SDE as a specific example of \eqref{eq:general_SDE}. 
+\begin{equation} \label{eq:fast_slow_SDE}
+\begin{aligned}
+dx_1 &= adt + dW_1\\
+dx_2 &= -\frac{x_2}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+\end{aligned}
+\end{equation}
+%
+where $a$ is a constant of order 1. 
+%
+So $x_1$ is the slow variable, and $x_2$ is a fast noise whose equilibrium measure is bounded and $\mathcal{O}(1)$.
+%
+We would like to recover $x_1$ using data-driven techniques.
 
 We will consider two specific examples. 
-\begin{enumerate}
-\item fat strip
-\item half moon
-\end{enumerate}
+%
+In the first example, our data will form a strip where the fast and slow remain uncoupled,
+\begin{equation}
+\mathbf{f_1}(x_1, x_2) = \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+\end{equation}
+
+In the second example, our data will be warped into half-moon shapes
+\begin{equation}
+\mathbf{f_2}(x_1, x_2) = 
+\begin{bmatrix} 
+x_1 + x_2^2 \\
+x_2
+\end{bmatrix}
+\end{equation}
 %
 We will show in both cases how we can recover the slow variables using data-driven techniques. 
 
 \section{Local Invariant Metrics}
 
-Assume we want to locally recover the slow variables. 
+To locally recover the slow variables, we need to build a metric that is invariant to the fast variables. 
 %
-To do so, we need to build a metric that is invariant to the fast variables. 
-%
-This is typically done by averaging out the fast variables. 
+Typically, this is done by averaging out the fast variables. 
 %
 We propose to do this using the Mahalanobis distance, which is a local PCA-type approach that inverts the local covariance matrix of the data, thereby creating a space with normalized diffusion terms.
 %
 It can be shown that the Mahalanobis distance locally approximates: 
-\begin{equation}
-\| f(x_1, y_1) - f(x_2, y_2) \|^2_M = \| X_1 - X_2 \|^2_2 + \mathcal{O}(\| f(x_1, y_1) - f(x_2, y_2) \|^4_2)
+\begin{equation} \label{eq:mahalanobis}
+\| \mathbf{f}(Y_1) - \mathbf{f}(Y_2) \|^2_M = \| Y_1 - Y_2 \|^2_2 + \mathcal{O}(\| \mathbf{f}(Y_1) - \mathbf{f}(Y_2) \|^4_2)
 \end{equation}
-where $X$ comprises variables which have uncoupled noise with unit variance,
-i.e., the variables $X^1, \dots, X^n$ are governed by the following SDEs:
+where the components of $Y$ have uncoupled noise with unit variance,
+i.e., the variables $y_1, \dots, y_n$ are governed by the following SDEs:
 \begin{equation} \label{eq:NIV_formulation}
-dX^i = a(X) dt + dW^i
+dy_i = b(y) dt + dW_i
 \end{equation}
-where $X = \begin{bmatrix} X^1 & X^2 & \cdots & X^n \end{bmatrix}^T$.
-%
-In particular for the case TODO, consider the change of variable $z = y\sqrt{\epsilon}$. This change of variables gives the following system:
-\begin{equation}
+and $Y = \begin{bmatrix} y_1 & y_2& \cdots & y_n \end{bmatrix}^T$.
+
+In particular, for SDEs of the form in \eqref{eq:general_SDE}, consider the transformation
+\begin{equation} \label{eq:general_rescale}
 \begin{aligned}
-dx &= adt + dW_1\\
-dz &= -\frac{z}{\epsilon} dt +  dW_2
+x_i = y_i, \: &1 \le i \le m \\
+x_i = \frac{y_i}{\sqrt{\epsilon}} \: &1 \le i \le m
 \end{aligned}
 \end{equation}
-Therefore, $z$ is a stochastic variable whose diffusion is unity, and $X = \begin{bmatrix} x \\ z \end{bmatrix}$.
 
-Note that for this specific case
+Then, \eqref{eq:general_SDE} becomes
+\begin{equation} 
+\begin{aligned}
+dy_i &= b_i(y_1, \dots, y_n) dt + dW_i, \: 1 \le i \le m \\
+dy_i &= -\frac{b_i(y_1, \dots, y_n)}{\sqrt{\epsilon}} dt + dW_i , \: m+1 \le i \le n
+\end{aligned}
+\end{equation}
+where $b_i(y_1, \dots, y_n) = a_i (y_1, \dots, y_m, \frac{y_{m+1}}{\sqrt{\epsilon}}, \dots, \frac{y_n}{\sqrt{\epsilon}})$.
+%
+From \eqref{eq:general_rescale}, we can see that if $x_i = \mathcal{O}(1)$, then $y_i = \mathcal{O}({\sqrt{\epsilon}})$ for $ m+1 \le i \le n$, and 
+\begin{equation}
+\| Y_2 - Y_1 \|^2_2 = \sum_{i=1}^m \| y_{i,2} - y_{i,1} \|^2 = \sum_{i=1}^m \|x_{i,2} - x_{i,1} \|^2 + \epsilon \sum_{i=m+1}^n \|x_{i,2} - x_{i,1}\|^2
+\end{equation}
+%
+Remarkably, this metric induces two important features. 
+%
+One, rescaling the data so that all variables have unit diffusion terms means that fast variables are collapsed and become ``epsilon" small, as observed in the second term in the right hand side. 
+%
+Two, the righthandside of \eqref{eq:mahalanobis} is invariant (to fourth order) to the function $\mathbf{f}$ and allows for the approximation of the Euclidean distance between samples of the slow variables in the ``decoupled" SDE space.
+
+
+For the specific example \eqref{eq:fast_slow_SDE}, the change of variables gives the following system:
+\begin{equation}
+\begin{aligned}
+dy_1 &= adt + dW_1\\
+dy_2 &= -\frac{y}{\epsilon} dt +  dW_2
+\end{aligned}
+\end{equation}
+Therefore, $y_2$ is a stochastic variable whose diffusion is unity, and 
 \begin{equation}
 \| X_1 - X_2 \|^2_2 = \|x_1 - x_2 \|^2_2 + \epsilon \|y_1 - y_2 \|^2_2.
 \end{equation}
-Remarkably, it implies two features.
-%
-One, it rescales that data (in the sense that the variables have unit diffusion terms) so that the fast variables are collapsed and become (``epsilon") small as observed in the second term in the right hand side. 
-%
-Two, it inverts the function $f$ (locally) and allows for the approximation of the Euclidean distance between samples of the slow variables in the ``decoupled" SDE space.
 
-%These same conditions for uncoupled noises with unit variance will allow us to recover the slow variable(s) from data with multiple timescales. 
-%
-%
 
-%To get a parameterization of NIV, we require $\| X_2 - X_1\|_2$.
+\section{Diffusion Maps for Global Parameterization}
+
+Our goal is to extract a {\em global} parameterization of the data that respects the slow variables. 
 %
-%However, we only have access to $Y = f(X)$.
+We will use diffusion maps, a kernel-based manifold learning technique, to extract a global parameterization using the local distances that we described in the previous section. 
 %
-%Assuming that we have a local approximation to $\| X_2 - X_1\|$ from the measurements $Y$, we can then use DMAPS to uncover a parameterization of $X$ from the estimates of the pairwise distances. 
+Given data $z_1, \dots, z_N \in \mathbb{R}^d$, we first construct the matrix $W \in \mathbb{R}^{N \times N}$, where 
+\begin{equation}
+W_{ij} = \exp \left( -\frac{\|z_i - z_j \|^2}{\sigma_{kernel}^2} \right)
+\end{equation}
+where $\| \cdot \|$ denotes the appropriate norm, and $\sigma_{kernel}$ is the kernel scale and denotes a characteristic distance within the data set (we often set $\sigma_{kernel}$ to be the median of the pairwise distances). 
+%
+In our applications, we will use the Mahalanobis distance \eqref{eq:mahalanobis} as the norm between points, so that we can recover the slow variables. 
 
-\section{DMAPS/Graph-Based/Kernel-based method}
-
-Description of DMAPS........
-
+We then construct the diagonal matrix $D \in \mathbb{R}^{N \times N}$, with 
+\begin{equation}
+D_{ii} = \sum_{j=1}^N W_{ij}
+\end{equation}
+%
+We compute the eigenvalues $\lambda_0, \dots, \lambda_{N-1}$ and eigenvalues $\phi_0, \dots, \phi_{N-1}$ of the matrix $A = D^{-1}W$, and order them such that $|\lambda_0| \ge |\lambda_1| \ge \dots \ge |\lambda_{N-1}|$. 
+%
+$\phi_0$ is a constant trivial eigenvector; the next few eigenvectors give a parameterization/embedding coordinates for the data. 
 
 \section{Analysis}
 
@@ -229,13 +279,11 @@ Description of DMAPS........
 \label{fig:schematic}
 \end{figure}
 
-See schematic figure.
-
 Our approximation of the pairwise distances will rely on the Taylor expansion of the measurement function $f$. 
 %
 We will then {\em empirically} estimate the first-order term in this expansion using simulation bursts to estimate the local covariance.  
 %
-Accordingly, we will address the accuracy of our method from two standpoints: (1) the accuracy of the Taylor expansion, and (2) the accuracy of the covariance estimation (see Figure...).
+Accordingly, we will address the accuracy of our method from two standpoints: (1) the accuracy of the Taylor expansion, and (2) the accuracy of the covariance estimation (see Figure~\ref{fig:schematic}).
 %
 We will present both analytical results for the error bounds, as well as an empirical methodology to set the appropriate parameters for our method to accurately recover the intrinsic slow variable(s). 
 
@@ -311,6 +359,18 @@ K_3 &= \sup_{i,j,k,l,Y} |g_{jkl}^i(Y)|
 
 
 \subsection{Error analysis of the covariance estimation}
+
+
+\begin{equation}
+\begin{aligned}
+f( X_\tau) = & f( X_\rho) \\
+&+ \sum_{j=1}^d \left. \frac{\partial f}{\partial x^j} \right|_{X_\rho}  \int_{\rho}^{\tau}  dW_s^j \\ &
++  \left. \left( \sum_{k=1}^d a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{j=1}^d \frac{\partial^2 f}{\partial {x^j}^2} \right) \right|_{X_\rho} \int_{\rho}^{\tau} ds + \sum_{j=1}^m \sum_{k=1}^m \int_{\rho}^{\tau} \int_{\rho}^{s_2} \frac{\partial^2 f}{\partial x^j \partial x^k} dW_{s_1}^j dW_{s_2}^k \\
+& + \sum_{j=1}^d  \int_{\rho}^{\tau} \int_{\rho}^{s_2} \left( \sum_{k=1}^d a^k \frac{\partial^2 f}{\partial x^j \partial x^k} + \frac{1}{2} \sum_{k=1}^d \frac{\partial^3 f}{\partial x^j \partial {x^k}^2} \right) dW_{s_1}^j ds_2 \\
+& + \sum_{j=1}^d  \int_{\rho}^{\tau} \int_{\rho}^{s_2} \left( \sum_{k=1}^d a^k \frac{\partial^ f}{\partial x^k \partial x^j} + \frac{1}{2} \sum_{k=1}^d  \frac{\partial^3 f}{\partial {x^k}^2 \partial x^j} \right) ds_1 dW_{s_2}^j  \\
+& + \int_{\rho}^{\tau} \int_{\rho}^{s_2} \left( \sum_{j=1}^d \sum_{k=1}^d \left[ a^j \frac{\partial}{\partial x^j}\left( a^k \frac{\partial f}{\partial x^k} \right) + \frac{1}{2} \frac{\partial^2}{\partial {x^j}^2} \left( a^k \frac{\partial f}{\partial x^k} \right) + \frac{1}{2} a^j \frac{\partial^3 f}{\partial x^j \partial {x^k}^2} + \frac{1}{4} \frac{\partial^4 f}{\partial {x^j}^2 \partial {x^k}^2} \right] \right)  ds_1 ds_2
+\end{aligned}
+\end{equation}
 
 To compute the Mahalanobis distance, we require $J J^T$ (estimate the covariance matrix from the data).
 %
