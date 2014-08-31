@@ -1,0 +1,260 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[margin=1in]{geometry}
+\begin{document}
+
+(Taken from Kloeden, P. and Platen, E. (1995) Numerical Solution of Stochastic Differential Equations. New York: Springer.)
+
+Consider a $n$-dimensional SDE of the form (page 166, 1.24)
+%
+\begin{equation}
+X_\tau = X_\rho + \int_\rho^\tau a(s, X_s) ds + \sum_{j=1}^n \int_\rho^\tau b^j (s, X_s) dW_s^j
+\end{equation}
+(note: for NIV/multiscale SDEs, we will assume the dimension of the Brownian motion will be the same as the dimension of the SDE)
+%
+and a function 
+$$f: \mathbb{R}^{+} \times \mathbb{R}^n \mapsto \mathbb{R}$$
+%
+From page 182, equation 5.3
+%
+\begin{equation} \label{eq:ito_taylor}
+f(\tau, X_\tau) = \sum_{\alpha \in A} I_\alpha [f_\alpha(\rho, X_\rho)]_{\rho, \tau} + \sum_{\alpha \in B(A)} I_\alpha [f_\alpha (\cdot, X_\cdot)]_{\rho, \tau}
+\end{equation}
+where 
+\begin{itemize}
+\item $A \subset M$ is a hierarchical set (page 180)
+\item $M$ is the set of multiindices 
+\item  $B(A)$ is the remainder set (page 180)
+$$B(A) = \left\{ \alpha \in M \ A: -\alpha \in A \right\}$$
+\item  $-\alpha$ denotes $a$ with the first entry deleted
+\item $\rho$ and $\tau$ are two stopping times
+\item $I_\alpha$ denotes the multiple Ito integral (page 168)
+\item $f_\alpha$ denotes the Ito coefficient function (page 177)
+\end{itemize}
+
+
+Let 
+$$ A = \{ \alpha \in M : l(\alpha) \le 1 \} = \{ (j) : 0 \le j \le n \} \cup \{v \}$$
+where $v$ is the empty multiindex.
+%
+Then
+$$B(A) = \{ (j, k) : 0 \le j \le n, 0 \le k \le n \}$$
+
+We can write \eqref{eq:ito_taylor} as
+\begin{equation} \label{eq:ito_taylor2}
+f( X_\tau) = I_{v} [f_{v} ( X_\rho)]_{\rho, \tau} + \sum_{j=0}^n I_{(j)} [f_{(j)}( X_\rho)]_{\rho, \tau} + \sum_{j=0}^n \sum_{k=0}^n I_{(j,k)} [f_{(j,k)} ( X_\cdot)]_{\rho, \tau}
+\end{equation}
+
+
+We have that (page 169)
+\begin{itemize}
+\item $I_v [f(\cdot)]_{\rho, \tau} = f(\tau) = \mathcal{O}(1)$
+\item $I_{(0)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} f(s) ds = \mathcal{O}(\tau - \rho)$
+\item $I_{(j)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} f(s) dW_s^j = \mathcal{O}(\sqrt{\tau - \rho})$, for $j \ge 1$
+\item $I_{(0,0)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) ds_1 ds_2 = \mathcal{O}((\tau - \rho)^2)$
+\item $I_{(j,0)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) dW_{s_1}^j ds_2 = \mathcal{O}((\tau - \rho)^{3/2})$, for $j \ge 1$
+\item $I_{(0,k)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) ds_1 dW_{s_2}^k = \mathcal{O}((\tau - \rho)^{3/2})$, for $k \ge 1$
+\item $I_{(j,k)} [f(\cdot)]_{\rho, \tau} = \int_{\rho}^{\tau} \int_{\rho}^{s_2} f(s_1) dW_{s_1}^j dW_{s_2}^k = \mathcal{O}(\tau - \rho)$, for $j, k \ge 1$
+\end{itemize}
+
+Then, rewriting \eqref{eq:ito_taylor2} with the terms in order of importance, we have
+\begin{equation} \label{eq:ito_taylor_sorted}
+\begin{aligned}
+f( X_\tau) =& I_{v} [f_{v} ( X_\rho)]_{\rho, \tau}  \\
+&+ \sum_{j=1}^d I_{(j)} [f_{(j)}( X_\rho)]_{\rho, \tau} \\ &
++ I_{(0)} [f_{(0)}( X_\rho)]_{\rho, \tau} + \sum_{j=1}^d \sum_{k=1}^d I_{(j,k)} [f_{(j,k)} ( X_\cdot)]_{\rho, \tau} \\
+& + \sum_{j=1}^d I_{(j,0)} [f_{(j,0)} ( X_\cdot)]_{\rho, \tau} + \sum_{k=1}^d  I_{(0,k)} [f_{(0,k)} ( X_\cdot)]_{\rho, \tau} \\
+& + I_{(0,0)} [f_{(0,0)} ( X_\cdot)]_{\rho, \tau} 
+\end{aligned}
+\end{equation}
+
+From page 177,
+\begin{itemize}
+\item $f_v = f$
+\item $f_{(j)} = \sum_{k=1}^n b^{k,j} \frac{\partial f}{\partial x^k}$, for $j \ge 1$
+\item $f_{(0)} = \frac{\partial f}{\partial t} + \sum_{k=1}^n a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^n \sum_{j=1}^n b^{k,j} b^{l,j} \frac{\partial^2 f}{\partial x^k \partial x^l}$
+\item $f_{(j, k)} = \sum_{i=1}^n b^{i,j} \frac{\partial }{\partial x^i} \left( \sum_{l=1}^n b^{l,k} \frac{\partial f}{\partial x^l} \right) $ for $j,k \ge 1$
+\item $f_{(j,0)} = \sum_{k=1}^n b^{k,j} \frac{\partial }{\partial x^k} \left( \frac{\partial f}{\partial t} + \sum_{k=1}^n a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^n \sum_{i=1}^n b^{k,i} b^{l,i} \frac{\partial^2 f}{\partial x^k \partial x^l} \right)$
+\item $f_{(0, j)} = \left( \frac{\partial}{\partial t} + \sum_{k=1}^n a^k \frac{\partial}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^n \sum_{i=1}^n b^{k,i} b^{l,i} \frac{\partial^2}{\partial x^k \partial x^l} \right)  \sum_{k=1}^n b^{k,j} \frac{\partial f}{\partial x^k}$ for $j \ge 1$
+\item $f_{(0,0)} = \left( \frac{\partial}{\partial t} + \sum_{k=1}^n a^k \frac{\partial}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^n \sum_{j=1}^n b^{k,j} b^{l,j} \frac{\partial^2}{\partial x^k \partial x^l} \right) $\\ $ \left( \frac{\partial f}{\partial t} + \sum_{k=1}^n a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^n \sum_{j=1}^n b^{k,j} b^{l,j} \frac{\partial^2 f}{\partial x^k \partial x^l} \right)$
+\end{itemize}
+
+For intrinsic variables, we assume an equation of the following form 
+\begin{equation} \label{eq:general_SDE}
+\begin{aligned}
+dx_i &= a_i(x_1, \dots, x_n) dt + dW_i, \: 1 \le i \le m \\
+dx_i &= -\frac{a_i(x_1, \dots, x_n)}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i , \: m+1 \le i \le n
+\end{aligned}
+\end{equation}
+where $W_i$ are independent Brownian motions, and $\epsilon \ll 1$.
+%
+We also assume that $\frac{\partial f}{\partial t} = 0$. 
+%
+Therefore,
+\begin{equation}
+\begin{aligned}
+a^i \mapsto a_i, \: & 1 \le i \le m \\
+a^i \mapsto \frac{a_i}{\epsilon}, \: & m+1 \le i \le n \\
+b^{i,j} \mapsto \delta_{ij}, \: & 1 \le i \le m \\
+b^{i,j} \mapsto \frac{\delta_{ij}}{\sqrt{\epsilon}}, \: & m+1 \le i \le n 
+\end{aligned}
+\end{equation}
+%
+and so the terms reduce to
+%
+\begin{itemize}
+\item $f_v = f$
+%
+\item $f_{(j)} = \frac{\partial f}{\partial x_j}$, for $1 \le j \le m$
+\item $f_{(j)} = \frac{1}{\sqrt{\epsilon}} \frac{\partial f}{\partial x_j}$, for $m+1 \le j \le n$
+%
+\item $f_{(0)} = \sum_{k=1}^m a_k \frac{\partial f}{\partial x_k} 
++ \frac{1}{\epsilon} \sum_{k=m+1}^n a_k \frac{\partial f}{\partial x_k} 
++ \frac{1}{2} \sum_{k=1}^m \frac{\partial^2 f}{\partial x_k^2}
++ \frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^2 f}{\partial x_k^2}$
+%
+\item $f_{(j, k)} =  \frac{\partial^2 f}{\partial x_j \partial x_k}  $ for $1 \le j,k \le m$
+\item $f_{(j, k)} =  \frac{1}{\sqrt{\epsilon}} \frac{\partial^2 f}{\partial x_j \partial x_k} $ for $m+1 \le j \le n$, $1 \le k \le m$
+\item $f_{(j, k)} =  \frac{1}{\sqrt{\epsilon}} \frac{\partial^2 f}{\partial x_j \partial x_k} $ for $1 \le j \le m$, $ m+1 \le k \le n$
+\item $f_{(j, k)} =  \frac{1}{\epsilon} \frac{\partial^2 f}{\partial x_j \partial x_k} $ for $m+1 \le j,k \le n$
+%
+\item $f_{(j,0)} = \sum_{k=1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{2} \sum_{k=1}^m \frac{\partial^3 f}{\partial x_j \partial x_k^2} + \frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^3 f}{\partial x_j \partial x_k^2} $ for $1 \le j \le m$
+\item $f_{(j,0)} = \frac{1}{\sqrt{\epsilon}} \sum_{k=1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{\epsilon^{3/2}} \sum_{k=m+1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 \sqrt{\epsilon}} \sum_{k=1}^m \frac{\partial^3 f}{\partial x_j \partial x_k^2} + \frac{1}{2 \epsilon^{3/2}} \sum_{k=m+1}^n \frac{\partial^3 f}{\partial x_j \partial x_k^2} $ for $m+1 \le j \le n$
+%
+\item $f_{(0, j)} = \sum_{k=1}^m a_k \frac{\partial^2 f}{\partial x_k \partial x_j} 
++ \frac{1}{\epsilon} \sum_{k=m+1}^n a_k \frac{\partial^2 f}{\partial x_k \partial x_j} 
+ + \frac{1}{2} \sum_{k=1}^m \frac{\partial^3 f}{\partial x_k^2 \partial x_j} 
+ +\frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^3 f}{\partial x_k^2 \partial x_j}$ for $1 \le j \le m$
+\item $f_{(0, j)} = \frac{1}{\sqrt{\epsilon}}  \left(\sum_{k=1}^m a_k \frac{\partial^2 f}{\partial x_k \partial x_j} 
++ \frac{1}{\epsilon} \sum_{k=m+1}^n a_k \frac{\partial^2 f}{\partial x_k \partial x_j} 
+ + \frac{1}{2} \sum_{k=1}^m \frac{\partial^3 f}{\partial x_k^2 \partial x_j} 
+ +\frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^3 f}{\partial x_k^2 \partial x_j} \right)$ for $m+1 \le j \le n$
+%
+\item $f_{(0,0)} = \left(\sum_{k=1}^m a_k \frac{\partial}{\partial x_k} 
++ \frac{1}{\epsilon} \sum_{k=m+1}^n a_k \frac{\partial}{\partial x_k} 
++ \frac{1}{2} \sum_{k=1}^m \frac{\partial^2}{\partial x_k^2} 
++ \frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^2}{\partial x_k^2} \right) $\\
+$ \left(\sum_{k=1}^m a_k \frac{\partial f}{\partial x_k} 
++ \frac{1}{\epsilon} \sum_{k=m+1}^n a_k \frac{\partial f}{\partial x_k} 
++ \frac{1}{2} \sum_{k=1}^m \frac{\partial^2 f}{\partial x_k^2} 
++ \frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^2 f}{\partial x_k^2} \right)$ \\
+$= \left(\sum_{k=1}^m \left( a_k \frac{\partial}{\partial x_k} + \frac{1}{2} \frac{\partial^2}{\partial x_k^2} \right) 
++ \frac{1}{\epsilon} \sum_{k=m+1}^n \left( a_k \frac{\partial}{\partial x_k} + \frac{1}{2} \frac{\partial^2}{\partial x_k^2}  \right) \right) $\\
+$ \left(\sum_{k=1}^m \left( a_k \frac{\partial f}{\partial x_k} + \frac{1}{2} \frac{\partial^2 f}{\partial x_k^2} \right) 
++ \frac{1}{\epsilon} \sum_{k=m+1}^n \left( a_k \frac{\partial f}{\partial x_k} + \frac{1}{2} \frac{\partial^2 f}{\partial x_k^2}  \right) \right) $ \\
+$ = \sum_{j=1}^m \sum_{k=1}^m \left[ a_j \frac{\partial}{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{a_j}{2} \frac{\partial}{\partial x_j} \left( \frac{\partial^2 f}{\partial x_k^2} \right) + \frac{1}{2} \frac{\partial^2}{\partial x_j^2} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{4} \frac{\partial^4 f}{\partial x_j^2 \partial x_k^2} \right] $\\
+$+ \frac{1}{\epsilon} \sum_{j=m+1}^n \sum_{k=1}^m \left[ a_j \frac{\partial}{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{a_j}{2} \frac{\partial}{\partial x_j} \left( \frac{\partial^2 f}{\partial x_k^2} \right) + \frac{1}{2} \frac{\partial^2}{\partial x_j^2} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{4} \frac{\partial^4 f}{\partial x_j^2 \partial x_k^2} \right] $\\
+$+ \frac{1}{\epsilon} \sum_{j=1}^m \sum_{k= m+1}^n \left[ a_j \frac{\partial}{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{a_j}{2} \frac{\partial}{\partial x_j} \left( \frac{\partial^2 f}{\partial x_k^2} \right) + \frac{1}{2} \frac{\partial^2}{\partial x_j^2} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{4} \frac{\partial^4 f}{\partial x_j^2 \partial x_k^2} \right] $\\
+$+ \frac{1}{\epsilon^2} \sum_{j=m+1}^n \sum_{k=m+1}^n \left[ a_j \frac{\partial}{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{a_j}{2} \frac{\partial}{\partial x_j} \left( \frac{\partial^2 f}{\partial x_k^2} \right) + \frac{1}{2} \frac{\partial^2}{\partial x_j^2} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{4} \frac{\partial^4 f}{\partial x_j^2 \partial x_k^2} \right]  $
+\end{itemize}
+
+Therefore, 
+\begin{equation} 
+\begin{aligned}
+f( X_\tau) =& f(X_\rho) \\
+& + \sum_{j=1}^n f_{(j)} (X_\rho) \int_\rho^\tau dW_s^j 
+  + f_{(0)} (X_\rho) \int_\rho^\tau ds \\
+& + \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k \\
+& + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{(j,0)} (s_1) dW_{s_1}^j ds_2 \\
+& + \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{(0,k)} (s_1) ds_1 dW_{s_2}^k \\
+& + \int_\rho^\tau \int_\rho^{s_2} f_{(0,0)} (s_1) ds_1 ds_2 
+\end{aligned}
+\end{equation}
+
+
+We are interested in the covariance
+\begin{equation}
+\mathbb{E}\left[ f_1(X_\tau) f_2(X_\tau) \right] - \mathbb{E}\left[ f_1(X_\tau) \right] \mathbb{E}\left[ f_2(X_\tau) \right]  
+\end{equation}
+
+The ``real term'' that we are interested in will be $\mathcal{O} (\tau - \rho)$, since it comes from the $dW_s dW_s$ term.
+%
+Therefore, we will retain terms up to $\mathcal{O} ((\tau - \rho)^{3/2})$.
+%
+We have
+\begin{equation}
+\begin{aligned}
+&f_1(X_\tau) f_2(X_\tau) = \\
+ f_1(X_\rho) & \left( f_2(X_\rho) 
+ + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
+  + f_{2(0)} (X_\rho) \int_\rho^\tau ds \right. \\
+& + \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k 
+ + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \\
+& \left. + \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(0,k)} (s_1) ds_1 dW_{s_2}^k  \right) \\
++ \sum_{j=1}^n f_{1(j)} (X_\rho) \int_\rho^\tau dW_s^j  & \left( f_2(X_\rho) 
+ + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
+  + f_{2(0)} (X_\rho) \int_\rho^\tau ds \right. \\
+& \left. + \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k  \right) \\
++ f_{1(0)} (X_\rho) \int_\rho^\tau ds & \left( f_2(X_\rho) 
+ + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j  \right) \\
++ \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k 
+& \left( f_2(X_\rho) + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j \right)\\
+& + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)} (s_1) dW_{s_1}^j ds_2 f_2(X_\rho)\\
+& + \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(0,k)} (s_1) ds_1 dW_{s_2}^k f_2(X_\rho) \\
+&+ \mathcal{O} ((\tau - \rho)^2 ) 
+\end{aligned}
+\end{equation}
+
+Therefore, we have
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(X_\tau) f_2(X_\tau) \right] = \\
+ f_1(X_\rho) & \left( f_2(X_\rho) 
+  + f_{2(0)} (X_\rho) (\tau - \rho) 
+  + \sum_{j=1}^n \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k \right] \right. \\
+& \left. + \sum_{j=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right] 
++ \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{2(0,k)} (s_1) ds_1 dW_{s_2}^k \right]  \right) \\
+& +  \sum_{i=1}^n \sum_{j=1}^n f_{1(i)} (X_\rho) f_{2(j)} (X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right) \left( \int_\rho^\tau dW_s^j \right) \right] \\
+& + \sum_{i=1}^n \sum_{j=1}^n \sum_{k=1}^n f_{1(i)} (X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i  \right) \left( \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k  \right) \right] \\
+& + f_{1(0)} (X_\rho) f_2(X_\rho) (\tau - \rho) \\
+&+ \sum_{j=1}^n \sum_{k=1}^n f_2(X_\rho) \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{1(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k \right] \\
+& + \sum_{i=1}^n \sum_{j=1}^n \sum_{k=1}^n  f_{2(i)} (X_\rho)  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)  \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k \right) \right] \\
+& + f_2(X_\rho) \sum_{j=1}^n \mathbb{E} \left[  \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)} (s_1) dW_{s_1}^j ds_2 \right] \\
+& + f_2(X_\rho) \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{1(0,k)} (s_1) ds_1 dW_{s_2}^k \right] \\
+&+ \mathcal{O} ((\tau - \rho)^2 ) 
+\end{aligned}
+\end{equation}
+%
+and
+\begin{equation}
+\begin{aligned}
+\mathbb{E} [f(X_\tau)] =&  f(X_\rho) \\
+& + f_{(0)} (X_\rho) (\tau - \rho) \\
+& + \sum_{j=1}^n \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k  \right]\\
+& + \sum_{j=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{(j,0)} (s_1) dW_{s_1}^j ds_2 \right] \\
+& + \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{(0,k)} (s_1) ds_1 dW_{s_2}^k \right] \\
+& + \int_\rho^\tau \int_\rho^{s_2} f_{(0,0)} (s_1) ds_1 ds_2 
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+& \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)] = \\
+f_1(X_\rho) 
+& \left(  f_2(X_\rho) 
+ + f_{2(0)} (X_\rho) (\tau - \rho) 
+ + \sum_{j=1}^n \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k  \right] \right. \\
+& \left. + \sum_{j=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right] 
+ + \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{2(0,k)} (s_1) ds_1 dW_{s_2}^k \right]\right) \\
+& + f_{1(0)} (X_\rho) f_2(X_\rho) (\tau - \rho) \\
+& + \mathcal{O} ((\tau - \rho)^2)
+\end{aligned}
+\end{equation}
+
+And therefore, the covariance is given by
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(X_\tau) f_2(X_\tau) \right] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)] = \\
+& \sum_{i=1}^n \sum_{j=1}^n f_{1(i)} (X_\rho) f_{2(j)} (X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right) \left( \int_\rho^\tau dW_s^j \right) \right] \\
+& + \sum_{i=1}^n \sum_{j=1}^n \sum_{k=1}^n f_{1(i)} (X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i  \right) \left( \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k  \right) \right] \\
+&+ \sum_{j=1}^n \sum_{k=1}^n f_2(X_\rho) \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{1(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k \right] \\
+& + \sum_{i=1}^n \sum_{j=1}^n \sum_{k=1}^n  f_{2(i)} (X_\rho)  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)  \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k \right) \right] \\
+& + f_2(X_\rho) \sum_{j=1}^n \mathbb{E} \left[  \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)} (s_1) dW_{s_1}^j ds_2 \right] \\
+& + f_2(X_\rho) \sum_{k=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{1(0,k)} (s_1) ds_1 dW_{s_2}^k \right] \\
+&+ \mathcal{O} ((\tau - \rho)^2 ) 
+\end{aligned}
+\end{equation}
+
+\end{document}
