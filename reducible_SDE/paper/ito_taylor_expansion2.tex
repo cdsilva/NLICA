@@ -65,9 +65,11 @@ Then, rewriting \eqref{eq:ito_taylor2} with the terms in order of importance, we
 \begin{equation} \label{eq:ito_taylor_sorted}
 \begin{aligned}
 f( X_\tau) =& I_{v} [f_{v} ( X_\rho)]_{\rho, \tau}  \\
-&+ \sum_{j=1}^d I_{(j)} [f_{(j)}( X_\rho)]_{\rho, \tau} \\ &
-+ I_{(0)} [f_{(0)}( X_\rho)]_{\rho, \tau} + \sum_{j=1}^d \sum_{k=1}^d I_{(j,k)} [f_{(j,k)} ( X_\cdot)]_{\rho, \tau} \\
-& + \sum_{j=1}^d I_{(j,0)} [f_{(j,0)} ( X_\cdot)]_{\rho, \tau} + \sum_{k=1}^d  I_{(0,k)} [f_{(0,k)} ( X_\cdot)]_{\rho, \tau} \\
+&+ \sum_{j=1}^n I_{(j)} [f_{(j)}( X_\rho)]_{\rho, \tau} \\ &
++ I_{(0)} [f_{(0)}( X_\rho)]_{\rho, \tau} 
++ \sum_{j=1}^n \sum_{k=1}^n I_{(j,k)} [f_{(j,k)} ( X_\cdot)]_{\rho, \tau} \\
+& + \sum_{j=1}^n I_{(j,0)} [f_{(j,0)} ( X_\cdot)]_{\rho, \tau} 
++ \sum_{k=1}^n  I_{(0,k)} [f_{(0,k)} ( X_\cdot)]_{\rho, \tau} \\
 & + I_{(0,0)} [f_{(0,0)} ( X_\cdot)]_{\rho, \tau} 
 \end{aligned}
 \end{equation}
@@ -124,7 +126,7 @@ and so the terms reduce to
 \item $f_{(j, k)} =  \frac{1}{\sqrt{\epsilon}} \frac{\partial^2 f}{\partial x_j \partial x_k} $ for $1 \le j \le m$, $ m+1 \le k \le n$
 \item $f_{(j, k)} =  \frac{1}{\epsilon} \frac{\partial^2 f}{\partial x_j \partial x_k} $ for $m+1 \le j,k \le n$
 %
-\item $f_{(j,0)} = \sum_{k=1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{2} \sum_{k=1}^m \frac{\partial^3 f}{\partial x_j \partial x_k^2} + \frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^3 f}{\partial x_j \partial x_k^2} $ for $1 \le j \le m$
+\item $f_{(j,0)} = \sum_{k=1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{\epsilon} \sum_{k=m+1}^n \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{2} \sum_{k=1}^m \frac{\partial^3 f}{\partial x_j \partial x_k^2} + \frac{1}{2 \epsilon} \sum_{k=m+1}^n \frac{\partial^3 f}{\partial x_j \partial x_k^2} $ for $1 \le j \le m$
 \item $f_{(j,0)} = \frac{1}{\sqrt{\epsilon}} \sum_{k=1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{\epsilon^{3/2}} \sum_{k=m+1}^m \frac{\partial }{\partial x_j} \left( a_k \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 \sqrt{\epsilon}} \sum_{k=1}^m \frac{\partial^3 f}{\partial x_j \partial x_k^2} + \frac{1}{2 \epsilon^{3/2}} \sum_{k=m+1}^n \frac{\partial^3 f}{\partial x_j \partial x_k^2} $ for $m+1 \le j \le n$
 %
 \item $f_{(0, j)} = \sum_{k=1}^m a_k \frac{\partial^2 f}{\partial x_k \partial x_j} 
@@ -174,30 +176,32 @@ We are interested in the covariance
 \mathbb{E}\left[ f_1(X_\tau) f_2(X_\tau) \right] - \mathbb{E}\left[ f_1(X_\tau) \right] \mathbb{E}\left[ f_2(X_\tau) \right]  
 \end{equation}
 
-The ``real term'' that we are interested in will be $\mathcal{O} (\tau - \rho)$, since it comes from the $dW_s dW_s$ term.
+We are interested in estimating the local Jacobian, which comes from the $dW_s dW_s$ term and is $\mathcal{O} (\tau - \rho)$.
 %
-Therefore, we will retain terms up to $\mathcal{O} ((\tau - \rho)^{3/2})$.
+We will retain terms up to $\mathcal{O} ((\tau - \rho)^{3/2})$ so that we can see the first error terms in this approximation. 
 %
 We have
 \begin{equation}
 \begin{aligned}
-&f_1(X_\tau) f_2(X_\tau) = \\
+f_1(X_\tau) f_2(X_\tau) = & \\
  f_1(X_\rho) & \left( f_2(X_\rho) 
  + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
   + f_{2(0)} (X_\rho) \int_\rho^\tau ds \right. \\
 & + \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k 
  + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \\
 & \left. + \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(0,k)} (s_1) ds_1 dW_{s_2}^k  \right) \\
-+ \sum_{j=1}^n f_{1(j)} (X_\rho) \int_\rho^\tau dW_s^j  & \left( f_2(X_\rho) 
+& + \left( \sum_{j=1}^n f_{1(j)} (X_\rho) \int_\rho^\tau dW_s^j  \right) 
+  \left( f_2(X_\rho) 
  + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
   + f_{2(0)} (X_\rho) \int_\rho^\tau ds \right. \\
 & \left. + \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k  \right) \\
-+ f_{1(0)} (X_\rho) \int_\rho^\tau ds & \left( f_2(X_\rho) 
+& + f_{1(0)} (X_\rho) \int_\rho^\tau ds 
+  \left( f_2(X_\rho) 
  + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j  \right) \\
-+ \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k 
-& \left( f_2(X_\rho) + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j \right)\\
-& + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)} (s_1) dW_{s_1}^j ds_2 f_2(X_\rho)\\
-& + \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(0,k)} (s_1) ds_1 dW_{s_2}^k f_2(X_\rho) \\
+&+ \left( \sum_{j=1}^n \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,k)} (s_1) dW_{s_1}^j dW_{s_2}^k  \right)
+ \left( f_2(X_\rho) + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j \right)\\
+& + f_2(X_\rho) \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)} (s_1) dW_{s_1}^j ds_2 \\
+& + f_2(X_\rho) \sum_{k=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(0,k)} (s_1) ds_1 dW_{s_2}^k \\
 &+ \mathcal{O} ((\tau - \rho)^2 ) 
 \end{aligned}
 \end{equation}
@@ -330,30 +334,29 @@ f( X_\tau) =& f(X_\rho) \\
 
 \subsection{Covariance estimation}
 
-Up to order $\mathcal{O} ((\tau - \rho)^2)$, we have
+Up to order $\mathcal{O} ((\tau - \rho)^{5/2})$, we have
 \begin{equation}
 \begin{aligned}
 & f_1(X_\tau) f_2(X_\tau) = \\
-f_1(X_\rho) 
-& \left( f_2(X_\rho) 
+&f_1(X_\rho) 
+ \left( f_2(X_\rho) 
  + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
  + f_{2(0)} (X_\rho) \int_\rho^\tau ds \right. \\
 & \left. + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 
  + \int_\rho^\tau \int_\rho^{s_2} f_{2(0,0)} (s_1) ds_1 ds_2 \right) \\
- + \left( \sum_{j=1}^n f_{1(j)}(X_\rho) \int_\rho^\tau dW_s^j \right)
-& \left( f_2(X_\rho) 
+ & + \left( \sum_{j=1}^n f_{1(j)}(X_\rho) \int_\rho^\tau dW_s^j \right)
+ \left( f_2(X_\rho) 
  + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
  + f_{2(0)} (X_\rho) \int_\rho^\tau ds \right. \\
 & \left. + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right) \\
-+ \left( f_{1(0)} (X_\rho) \int_\rho^\tau ds \right)
-& \left( f_2(X_\rho) 
+&+ \left( f_{1(0)} (X_\rho) \int_\rho^\tau ds \right)
+ \left( f_2(X_\rho) 
  + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
  + f_{2(0)} (X_\rho) \int_\rho^\tau ds \right) \\
- + \left( \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right)
-& \left( f_2(X_\rho) 
+& + \left( \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right)
+ \left( f_2(X_\rho) 
  + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j  \right) \\
- + \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(0,0)} (s_1) ds_! ds_2 \right)
-& \left( f_2(X_\rho) \right)
+ &+ f_2(X_\rho) \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(0,0)} (s_1) ds_! ds_2 \right)
 \\ & + \mathcal{O} ((\tau - \rho)^{5/2})
 \end{aligned}
 \end{equation}
@@ -362,23 +365,19 @@ Therefore, we have
 \begin{equation}
 \begin{aligned}
 & \mathbb{E} [f_1(X_\tau) f_2(X_\tau) ] = \\
-\mathbb{E} \left[ \right.
 & f_1(X_\rho) 
  \left( f_2(X_\rho) 
  + f_{2(0)} (X_\rho) (\tau - \rho) 
- + \sum_{j=1}^n  \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 
+ + \sum_{j=1}^n  \mathbb{E} \left[ \ \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right]
  + \int_\rho^\tau \int_\rho^{s_2} f_{2(0,0)} (s_1) ds_1 ds_2 \right) \\
- & + \left( \sum_{j=1}^n f_{1(j)}(X_\rho) \int_\rho^\tau dW_s^j \right)
-  \left( \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
- + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right) \\
-& + \left( f_{1(0)} (X_\rho) (\tau - \rho) \right)
+& + \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) f_{2(k)}(X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^j \right)  \left(  \int_\rho^\tau dW_s^k \right) \right] \\
+& + \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^j \right)  \left(  \int_\rho^\tau \int_\rho^{s_2} f_{2(k,0)} (s_1) dW_{s_1}^k ds_2  \right) \right] \\
+ & + \left( f_{1(0)} (X_\rho) (\tau - \rho) \right)
  \left( f_2(X_\rho) 
  + f_{2(0)} (X_\rho) (\tau - \rho) \right) \\
- & + \left( \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right)
-\left( f_2(X_\rho) 
- + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j  \right) \\
- & + \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(0,0)} (s_1) ds_! ds_2 \right)
- \left( f_2(X_\rho) \right) \left. \right]
+ & + f_2(X_\rho) \sum_{j=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right] \\
+ & + \sum_{j=1}^n \sum_{k=1}^n f_{2(k)}(X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right) \left( \int_\rho^\tau dW_s^k  \right) \right] \\ 
+ & + f_2(X_\rho)  \int_\rho^\tau \int_\rho^{s_2} f_{1(0,0)} (s_1) ds_1 ds_2 
 \\ & + \mathcal{O} ((\tau - \rho)^{5/2})
 \end{aligned}
 \end{equation}
@@ -395,39 +394,28 @@ Therefore, we have
 \begin{equation}
 \begin{aligned}
 & \mathbb{E} [f_1(X_\tau) f_2(X_\tau) ] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)]= \\
-\mathbb{E} \left[ \right.
 & f_1(X_\rho) 
  \left( f_2(X_\rho) 
  + f_{2(0)} (X_\rho) (\tau - \rho) 
- + \sum_{j=1}^n  \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 
+ + \sum_{j=1}^n  \mathbb{E} \left[ \ \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right]
  + \int_\rho^\tau \int_\rho^{s_2} f_{2(0,0)} (s_1) ds_1 ds_2 \right) \\
- & + \left( \sum_{j=1}^n f_{1(j)}(X_\rho) \int_\rho^\tau dW_s^j \right)
-  \left( \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
- + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right) \\
-& + \left( f_{1(0)} (X_\rho) (\tau - \rho) \right)
+& + \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) f_{2(k)}(X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^j \right)  \left(  \int_\rho^\tau dW_s^k \right) \right] \\
+& + \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^j \right)  \left(  \int_\rho^\tau \int_\rho^{s_2} f_{2(k,0)} (s_1) dW_{s_1}^k ds_2  \right) \right] \\
+ & + \left( f_{1(0)} (X_\rho) (\tau - \rho) \right)
  \left( f_2(X_\rho) 
  + f_{2(0)} (X_\rho) (\tau - \rho) \right) \\
- & + \left( \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right)
-\left( f_2(X_\rho) 
- + \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j  \right) \\
- & + \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(0,0)} (s_1) ds_! ds_2 \right)
- \left( f_2(X_\rho) \right) \left. \right] \\
+ & + f_2(X_\rho) \sum_{j=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right] \\
+ & + \sum_{j=1}^n \sum_{k=1}^n f_{2(k)}(X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right) \left( \int_\rho^\tau dW_s^k  \right) \right] \\ 
+ & + f_2(X_\rho)  \int_\rho^\tau \int_\rho^{s_2} f_{1(0,0)} (s_1) ds_1 ds_2 \\
  & - f_1(X_\rho) 
  \left( f_2(X_\rho) 
  + f_{2(0)} (X_\rho) (\tau - \rho) 
  + \sum_{j=1}^n  \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2  \right]
- + \int_\rho^\tau \int_\rho^{s_2} f_{2(0,0)} (s_1) ds_1 ds_2 \right)) \\
+ + \int_\rho^\tau \int_\rho^{s_2} f_{2(0,0)} (s_1) ds_1 ds_2 \right) \\
  & - f_{1(0)} (X_\rho)(\tau - \rho) \left( f_2(X_\rho) + f_{2(0)} (X_\rho) (\tau - \rho) \right) \\
  & - f_2(X_\rho) \left( \sum_{j=1}^n \mathbb{E} \left[ \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)} (s_1) dW_{s_1}^j ds_2 \right] 
  + \int_\rho^\tau \int_\rho^{s_2} f_{1(0,0)} (s_1) ds_1 ds_2 \right)
 \\ & + \mathcal{O} ((\tau - \rho)^{5/2}) \\
-= 
- & \left( \sum_{j=1}^n f_{1(j)}(X_\rho) \int_\rho^\tau dW_s^j \right)
-  \left( \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j 
- + \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{2(j,0)} (s_1) dW_{s_1}^j ds_2 \right) \\
- & + \left( \sum_{j=1}^n \int_\rho^\tau \int_\rho^{s_2} f_{1(j,0)}(s_1) dW_{s_1}^j ds_2 \right)
-\left(  \sum_{j=1}^n f_{2(j)} (X_\rho) \int_\rho^\tau dW_s^j  \right) \\
- & + \mathcal{O} ((\tau - \rho)^{5/2}) \\
  =  &  \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) f_{2(k)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^j \right)  \left(\int_\rho^\tau dW_s^k \right) \right] \\
  & + \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^j \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} f_{2(k,0)}(s_1) dW_{s_1}^k ds_2 \right) \right] \\ 
  & + \sum_{j=1}^n \sum_{k=1}^n f_{2(j)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^j \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} f_{1(k,0)}(s_1) dW_{s_1}^k ds_2 \right) \right] \\
