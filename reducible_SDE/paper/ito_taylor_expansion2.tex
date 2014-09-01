@@ -5,6 +5,8 @@
 \usepackage[margin=1in]{geometry}
 \begin{document}
 
+\section{General setup}
+
 (Taken from Kloeden, P. and Platen, E. (1995) Numerical Solution of Stochastic Differential Equations. New York: Springer.)
 
 Consider a $n$-dimensional SDE of the form (page 166, 1.24)
@@ -81,7 +83,9 @@ From page 177,
 \item $f_{(0,0)} = \left( \frac{\partial}{\partial t} + \sum_{k=1}^n a^k \frac{\partial}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^n \sum_{j=1}^n b^{k,j} b^{l,j} \frac{\partial^2}{\partial x^k \partial x^l} \right) $\\ $ \left( \frac{\partial f}{\partial t} + \sum_{k=1}^n a^k \frac{\partial f}{\partial x^k} + \frac{1}{2} \sum_{k,l=1}^n \sum_{j=1}^n b^{k,j} b^{l,j} \frac{\partial^2 f}{\partial x^k \partial x^l} \right)$
 \end{itemize}
 
-For intrinsic variables, we assume an equation of the following form 
+\section{Multiscale SDE assumptions}
+
+We assume a multi scale SDE of the form
 \begin{equation} \label{eq:general_SDE}
 \begin{aligned}
 dx_i &= a_i(x_1, \dots, x_n) dt + dW_i, \: 1 \le i \le m \\
@@ -163,6 +167,7 @@ f( X_\tau) =& f(X_\rho) \\
 \end{aligned}
 \end{equation}
 
+\subsection{Covariance calculation}
 
 We are interested in the covariance
 \begin{equation}
@@ -257,34 +262,58 @@ And therefore, the covariance is given by
 \end{aligned}
 \end{equation}
 
-\section{No nonlinearities}
+By independence,
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(X_\tau) f_2(X_\tau) \right] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)] = \\
+& \sum_{i=1}^n f_{1(i)} (X_\rho) f_{2(i)} (X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)^2 \right] \\
+& + \sum_{i=1}^n f_{1(i)} (X_\rho) \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i  \right) \left( \int_\rho^\tau \int_\rho^{s_2} f_{2(i,i)} (s_1) dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
+& + \sum_{i=1}^n f_{2(i)} (X_\rho)  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)  \left( \int_\rho^\tau \int_\rho^{s_2} f_{1(i,i)} (s_1) dW_{s_1}^i dW_{s_2}^i \right) \right] \\
+&+ \mathcal{O} ((\tau - \rho)^2 ) 
+\end{aligned}
+\end{equation}
+
+Subsitituting, we have
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(X_\tau) f_2(X_\tau) \right] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)] = \\
+& \sum_{i=1}^m \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)^2 \right] \\
+& + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)^2 \right] \\
+& + \sum_{i=1}^m \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i  \right) \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_2}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
+& + \frac{1}{\epsilon^{3/2}} \sum_{i=m+1}^n \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i  \right) \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_2}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
+& + \sum_{i=1}^m \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)  \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_1}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
+& + \frac{1}{\epsilon^{3/2}} \sum_{i=m+1}^n \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)  \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_1}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
+&+ \mathcal{O} ((\tau - \rho)^2 ) 
+\end{aligned}
+\end{equation}
+
+
+\section{SDE with linear transformation function}
 
 However, we will also consider a second case, where $f$ only defines a rescaling.
-%
-Let $\frac{\partial f}{\partial x_j} = c_j$, where $c_j$ is a constant.
 %
 In this case, the higher order derivatives of $f$ are 0, and we have
 %
 \begin{itemize}
 \item $f_v = f$
 %
-\item $f_{(j)} = c_j$, for $1 \le j \le m$
-\item $f_{(j)} = \frac{1}{\sqrt{\epsilon}} c_j$, for $m+1 \le j \le n$
+\item $f_{(j)} = \frac{\partial f}{\partial x_j}$, for $1 \le j \le m$
+\item $f_{(j)} = \frac{1}{\sqrt{\epsilon}} \frac{\partial f}{\partial x_j}$, for $m+1 \le j \le n$
 %
-\item $f_{(0)} = \sum_{k=1}^m a_k c_k
-+ \frac{1}{\epsilon} \sum_{k=m+1}^n a_k c_k$
+\item $f_{(0)} = \sum_{k=1}^m a_k \frac{\partial f}{\partial x_k}
++ \frac{1}{\epsilon} \sum_{k=m+1}^n a_k \frac{\partial f}{\partial x_k}$
 %
 \item $f_{(j, k)} =  0  $ for $1 \le j,k \le n$
 %
-\item $f_{(j,0)} = \sum_{k=1}^m \frac{\partial a_k}{\partial x_j} c_k  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_j} c_k $ for $1 \le j \le m$
-\item $f_{(j,0)} = \frac{1}{\sqrt{\epsilon}} \sum_{k=1}^m \frac{\partial a_k }{\partial x_j} c_k  + \frac{1}{\epsilon^{3/2}} \sum_{k=m+1}^m \frac{\partial a_k}{\partial x_j} c_k$ for $m+1 \le j \le n$
+\item $f_{(j,0)} = \sum_{k=1}^m \frac{\partial a_k}{\partial x_j} \frac{\partial f}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_j} \frac{\partial f}{\partial x_k}$ for $1 \le j \le m$
+\item $f_{(j,0)} = \frac{1}{\sqrt{\epsilon}} \sum_{k=1}^m \frac{\partial a_k }{\partial x_j} \frac{\partial f}{\partial x_k}  + \frac{1}{\epsilon^{3/2}} \sum_{k=m+1}^m \frac{\partial a_k}{\partial x_j} \frac{\partial f}{\partial x_k}$ for $m+1 \le j \le n$
 %
 \item $f_{(0, j)} =0 $ for $1 \le j \le n$
 %
-\item $f_{(0,0)}  = \sum_{j=1}^m \sum_{k=1}^m \left[ a_j \frac{\partial a_k}{\partial x_j} c_k + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} c_k \right] 
-+ \frac{1}{\epsilon} \sum_{j=m+1}^n \sum_{k=1}^m \left[ a_j \frac{\partial a_k}{\partial x_j} c_k + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} c_k \right] $\\
-$+ \frac{1}{\epsilon} \sum_{j=1}^m \sum_{k= m+1}^n \left[ a_j \frac{\partial a_k}{\partial x_j} c_k + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} c_k \right] 
-+ \frac{1}{\epsilon^2} \sum_{j=m+1}^n \sum_{k=m+1}^n \left[ a_j \frac{\partial a_k}{\partial x_j} c_k + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} c_k \right]  $
+\item $f_{(0,0)}  = \sum_{j=1}^m \sum_{k=1}^m \left[ a_j \frac{\partial a_k}{\partial x_j} \frac{\partial f}{\partial x_k} + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} \frac{\partial f}{\partial x_k} \right] 
++ \frac{1}{\epsilon} \sum_{j=m+1}^n \sum_{k=1}^m \left[ a_j \frac{\partial a_k}{\partial x_j} \frac{\partial f}{\partial x_k} + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} \frac{\partial f}{\partial x_k} \right] $\\
+$+ \frac{1}{\epsilon} \sum_{j=1}^m \sum_{k= m+1}^n \left[ a_j \frac{\partial a_k}{\partial x_j} \frac{\partial f}{\partial x_k} + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} \frac{\partial f}{\partial x_k} \right] 
++ \frac{1}{\epsilon^2} \sum_{j=m+1}^n \sum_{k=m+1}^n \left[ a_j \frac{\partial a_k}{\partial x_j} \frac{\partial f}{\partial x_k} + \frac{1}{2} \frac{\partial^2 a_k}{\partial x_j^2} c\frac{\partial f}{\partial x_k}\right]  $
 \end{itemize}
 
 
@@ -298,6 +327,8 @@ f( X_\tau) =& f(X_\rho) \\
 & + \int_\rho^\tau \int_\rho^{s_2} f_{(0,0)} (s_1) ds_1 ds_2 
 \end{aligned}
 \end{equation}
+
+\subsection{Covariance estimation}
 
 Up to order $\mathcal{O} ((\tau - \rho)^2)$, we have
 \begin{equation}
@@ -400,6 +431,63 @@ Therefore, we have
  =  &  \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) f_{2(k)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^j \right)  \left(\int_\rho^\tau dW_s^k \right) \right] \\
  & + \sum_{j=1}^n \sum_{k=1}^n f_{1(j)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^j \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} f_{2(k,0)}(s_1) dW_{s_1}^k ds_2 \right) \right] \\ 
  & + \sum_{j=1}^n \sum_{k=1}^n f_{2(j)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^j \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} f_{1(k,0)}(s_1) dW_{s_1}^k ds_2 \right) \right] \\
+& + \mathcal{O} ((\tau - \rho)^{5/2})
+ \end{aligned}
+\end{equation}
+
+By independence, we have
+\begin{equation}
+\begin{aligned}
+& \mathbb{E} [f_1(X_\tau) f_2(X_\tau) ] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)]= \\
+=  &  \sum_{i=1}^n  f_{1(i)}(X_\rho) f_{2(i)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)^2  \right] \\
+ & + \sum_{i=1}^n f_{1(i)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} f_{2(i,0)}(s_1) dW_{s_1}^i ds_2 \right) \right] \\ 
+ & + \sum_{i=1}^n  f_{2(i)}(X_\rho) \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} f_{1(i,0)}(s_1) dW_{s_1}^i ds_2 \right) \right] \\
+& + \mathcal{O} ((\tau - \rho)^{5/2})
+ \end{aligned}
+\end{equation}
+
+Substituting, we have
+\begin{equation}
+\begin{aligned}
+& \mathbb{E} [f_1(X_\tau) f_2(X_\tau) ] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)]= \\
+=  &  \sum_{i=1}^m  \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)^2  \right] \\
+& + \frac{1}{\epsilon} \sum_{i=m+1}^n  \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)^2  \right] \\
+ & + \sum_{i=1}^m \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_2}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_2}{\partial x_k} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
+ & + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_2}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_2}{\partial x_k} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
+ & + \sum_{i=1}^m  \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_1}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_1}{\partial x_k} \right) dW_{s_1}^i ds_2 \right) \right] \\
+& + \frac{1}{\epsilon} \sum_{i=m+1}^n  \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_1}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_1}{\partial x_k} \right) dW_{s_1}^i ds_2 \right) \right] \\
+& + \mathcal{O} ((\tau - \rho)^{5/2})
+ \end{aligned}
+\end{equation}
+
+\section{Summary}
+
+For our general multi scale + function SDE formulation, 
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(X_\tau) f_2(X_\tau) \right] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)] = \\
+& \sum_{i=1}^m \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)^2 \right] \\
+& + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)^2 \right] \\
+& + \sum_{i=1}^m \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i  \right) \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_2}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
+& + \frac{1}{\epsilon^{3/2}} \sum_{i=m+1}^n \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i  \right) \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_2}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
+& + \sum_{i=1}^m \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)  \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_1}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
+& + \frac{1}{\epsilon^{3/2}} \sum_{i=m+1}^n \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left( \int_\rho^\tau dW_s^i \right)  \left( \int_\rho^\tau \int_\rho^{s_2} \frac{\partial^2 f_1}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
+&+ \mathcal{O} ((\tau - \rho)^2 ) 
+\end{aligned}
+\end{equation}
+
+
+
+For the case when $f$ is linear,
+\begin{equation}
+\begin{aligned}
+& \mathbb{E} [f_1(X_\tau) f_2(X_\tau) ] - \mathbb{E}[f_1(X_\tau)]\mathbb{E}[f_2(X_\tau)]= \\
+=  &  \sum_{i=1}^m  \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)^2  \right] \\
+& + \frac{1}{\epsilon} \sum_{i=m+1}^n  \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho} \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)^2  \right] \\
+ & + \sum_{i=1}^m \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_2}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_2}{\partial x_k} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
+ & + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_1}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_2}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_2}{\partial x_k} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
+ & + \sum_{i=1}^m  \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_1}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_1}{\partial x_k} \right) dW_{s_1}^i ds_2 \right) \right] \\
+& + \frac{1}{\epsilon} \sum_{i=m+1}^n  \left. \frac{\partial f_2}{\partial x_i} \right|_{X_\rho}  \mathbb{E} \left[ \left(\int_\rho^\tau dW_s^i \right)  \left(\int_\rho^\tau \int_{\rho}^{s_2} \left(  \sum_{k=1}^m \frac{\partial a_k}{\partial x_i} \frac{\partial f_1}{\partial x_k}  + \frac{1}{\epsilon} \sum_{k=m+1}^m \frac{\partial a_k }{\partial x_i} \frac{\partial f_1}{\partial x_k} \right) dW_{s_1}^i ds_2 \right) \right] \\
 & + \mathcal{O} ((\tau - \rho)^{5/2})
  \end{aligned}
 \end{equation}
