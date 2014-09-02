@@ -147,13 +147,13 @@ Conversely, if the diffusivity is too small, the equilibrium measure will go to 
 
 Assuming that the functions $a_i$ are bounded and Lipschitz, and we can find
 \begin{equation}
-\mathbb{E} \left| \frac{1}{T} \int_t^{t + T} a_i(x_1, \dots, x_m, X_{m+1}(s), \dots, X_n(s)) ds - \overline{a} (x_1, \dots, x_m) \right| < \kappa_i (T) 
+\mathbb{E} \left| \frac{1}{T} \int_t^{t + T} a_i(x_1, \dots, x_m, x_{m+1}(s), \dots, x_n(s)) ds - \overline{a} (x_1, \dots, x_m) \right| < \kappa_i (T) 
 \end{equation}
 for $1 \le i \le m$, where $\kappa_i((T) \rightarrow 0 $ as $T \rightarrow \infty$, then the averaging principle \cite{...} states that we can write an effective equation in the slow variables $x_1, \dots, x_m$. 
-%
+
 We will consider systems that can be written as deterministic (perhaps nonlinear) bi-Lipshitz functions $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$ of the SDE in \eqref{eq:general_SDE}.
 %
-Our goal is to recover the slow variables $x_1, \dots, x_m$ using data-driven techniques. 
+Our goal is to recover the slow variables $x_1, \dots, x_m$  from observations of $\mathbf{f}(x_1, \dots, x_n)$ using data-driven techniques. 
 
 For illustrative purposes, we will consider the following two-dimensional SDE as a specific example of \eqref{eq:general_SDE}. 
 \begin{equation} \label{eq:fast_slow_SDE}
@@ -197,20 +197,19 @@ We propose to do this using the Mahalanobis distance, which is a local PCA-type 
 %
 It can be shown that the Mahalanobis distance locally approximates: 
 \begin{equation} \label{eq:mahalanobis}
-\| \mathbf{f}(\Xi_1) - \mathbf{f}(\Xi_2) \|^2_M = \| \Xi_1 - \Xi_2 \|^2_2 + \mathcal{O}(\| \mathbf{f}(\Xi_1) - \mathbf{f}(\Xi_2) \|^4_2)
+\| \mathbf{f}(X_1) - \mathbf{f}(X_2) \|^2_M = \| \Xi_1 - \Xi_2 \|^2_2 + \mathcal{O}(\| \mathbf{f}(X_1) - \mathbf{f}(X_2) \|^4_2)
 \end{equation}
-where the components of $\Xi$ have uncoupled noise with unit variance,
-i.e., the variables $\xi_1, \dots, \xi_n$ are governed by the following SDEs:
+where the components of $\Xi$ are sampled from a stochastic process with uncoupled noise with unit variance,
+i.e., $\Xi = \begin{bmatrix} \xi_1 & \xi_2& \cdots & \xi_n \end{bmatrix}^T$, where $\xi_1, \dots, \xi_n$ are governed by the following SDEs:
 \begin{equation} \label{eq:NIV_formulation}
 d\xi_i = b(\xi) dt + dW_i
 \end{equation}
-and $\Xi = \begin{bmatrix} \xi_1 & \xi_2& \cdots & \xi_n \end{bmatrix}^T$.
 
 In particular, for SDEs of the form in \eqref{eq:general_SDE}, consider the transformation
 \begin{equation} \label{eq:general_rescale}
 \begin{aligned}
 x_i = \xi_i, \: &1 \le i \le m \\
-x_i = \frac{\xi_i}{\sqrt{\epsilon}} \: &1 \le i \le m
+x_i = \frac{\xi_i}{\sqrt{\epsilon}}, \: &m+1 \le i \le n
 \end{aligned}
 \end{equation}
 
@@ -269,13 +268,13 @@ $\phi_0$ is a constant trivial eigenvector; the next few eigenvectors give a par
 
 \section{Analysis}
 
-\begin{figure}
+\begin{figure}[t]
 \epsfig{width=\textwidth, file=schematic.eps}
 \caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligable. }
 \label{fig:schematic}
 \end{figure}
 
-Our approximation of the pairwise distances will rely on the Taylor expansion of the measurement function $f$. 
+Our approximation of the pairwise distances will rely on the Taylor expansion of the measurement function $\mathbf{f}$. 
 %
 We will then {\em empirically} estimate the first-order term in this expansion using simulation bursts to estimate the local covariance.  
 %
@@ -290,80 +289,99 @@ TODO: change strip to look different than other data
 
 \subsection{Error analysis of the Mahalanobis distance}
 
-Given the true covariance, we can write the Euclidean distance $\|X_2 - X_1 \|$ using Taylor expansion as...
-
-Talk about fourth-order error terms, say we want to choose the kernel scale such that these error terms are negligible. 
+We want to calculate the distance $\|\Xi_2 - \Xi_1\|$ in terms of the observations $\mathbf{f}(X)$. 
 %
-The error terms involve curvature of $f$, etc.
-
-
-Let $\mathbf{g} = \mathbf{f}^{-1}: \mathbb{R}^d \mapsto \mathbb{R}^n$, and let $Y_1 = f(X_1)$, and $Y_2 = f(X_2)$.
+Let $\mathbf{g} = \mathbf{f}^{-1}: \mathbb{R}^d \mapsto \mathbb{R}^n$.
 %
-Again, we let $g_j^i = \frac{\partial g^i}{\partial Y^j}$.
+By \eqref{eq:general_rescale}, we have
+\begin{equation}
+\begin{aligned}
+g_i(Y) = x_i = \xi_i,& \: 1 \le i \le m \\
+\sqrt{\epsilon} g_i(Y) = \sqrt{\epsilon} x_i = \xi_i,& \: m+1 \le i \le n
+\end{aligned}
+\end{equation}
+%
+Let $Y_1 = \mathbf{f}(X_1)$, and $Y_2 = \mathbf{f}(X_2)$.
 %
 Then, by Taylor expansion, we obtain
 \begin{equation}
 \begin{aligned}
-x_{2,i} &=& 
-x_{1,i} 
+\xi_{2,i} &=& 
+\xi_{1,i} 
 + \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} (y_{2,j} - y_{1,j} ) 
 + \frac{1}{2} \sum_{j=1}^d \sum_{k=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_1} (y_{2,j} - y_{1,j}) (y_{2,k} - y_{1,k}) \\
 &&+ \frac{1}{6} \sum_{j=1}^d \sum_{k=1}^d \sum_{l=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{Y_1} (y_{2,j} - y_{1,j}) (y_{2,k} - y_{1,k}) (y_{2,l} - y_{1,l})
 + \mathcal{O}( \|Y_2 - Y_1\|^4 )
 \end{aligned}
 \end{equation}
-
-Substituting the Taylor expansion into the quadratic form, we obtain
+for $1 \le i \le m$, and 
 \begin{equation}
 \begin{aligned}
-\| X_2 - X_1 \|^2_2 
-=& \frac{1}{2} (Y_2 - Y_1 )^T \left(\left.(J J^T)^{-1}\right|_{Y_1} + \left.(J J^T)^{-1}\right|_{Y_2}\right) (Y_2 - Y_1 ) \\
-& + \frac{1}{2} \sum_{i=1}^n \sum_{jkl=1}^{d} \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{Y_1} - \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_2} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l}) \\
-& + \frac{1}{8} \sum_{i=1}^n \sum_{jklm=1}^d  \left( \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_1} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{Y_1} + \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_2} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l})(y_{2,m} - y_{1,m}) \\
-& + \frac{1}{6}  \sum_{i=1}^n \sum_{jklm=1}^d  \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{Y_1} + \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_2} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l})(y_{2,m} - y_{1,m}) \\
+\xi_{2,i} &=& 
+\xi_{1,i} 
++ \sqrt{\epsilon} \left[ \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} (y_{2,j} - y_{1,j} ) 
++ \frac{1}{2} \sum_{j=1}^d \sum_{k=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_1} (y_{2,j} - y_{1,j}) (y_{2,k} - y_{1,k}) \right. \\
+&& \left.+ \frac{1}{6} \sum_{j=1}^d \sum_{k=1}^d \sum_{l=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{Y_1} (y_{2,j} - y_{1,j}) (y_{2,k} - y_{1,k}) (y_{2,l} - y_{1,l}) \right]
++ \mathcal{O}( \|Y_2 - Y_1\|^4 )
+\end{aligned}
+\end{equation}
+for $m+1 \le i \le n$. 
+%
+Substituting the Taylor expansion into the quadratic form, we obtain
+\begin{equation} \label{eq:distance_taylor_expansion}
+\begin{aligned}
+&\| \Xi_2 - \Xi_1 \|^2_2 = \\
+& \frac{1}{2} (Y_2 - Y_1 )^T \left(\left.(J I_\epsilon J^T)^{-1}\right|_{Y_1} + \left.( J I_\epsilon J^T)^{-1}\right|_{Y_2}\right) (Y_2 - Y_1 ) \\
+& + \frac{1}{2} \sum_{i=1}^m \sum_{jkl=1}^{d} \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{Y_1} - \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_2} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l}) \\
+& + \frac{\epsilon}{2} \sum_{i=m+1}^n \sum_{jkl=1}^{d} \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{Y_1} - \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_2} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l}) \\
+& + \frac{1}{8} \sum_{i=1}^m \sum_{jklm=1}^d  \left( \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_1} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{Y_1} + \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_2} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l})(y_{2,m} - y_{1,m}) \\
+& + \frac{\epsilon}{8} \sum_{i=m+1}^n \sum_{jklm=1}^d  \left( \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_1} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{Y_1} + \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{Y_2} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l})(y_{2,m} - y_{1,m}) \\
+& + \frac{1}{6}  \sum_{i=1}^m \sum_{jklm=1}^d  \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{Y_1} + \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_2} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l})(y_{2,m} - y_{1,m}) \\
+& + \frac{\epsilon}{6}  \sum_{i=m+1}^n \sum_{jklm=1}^d  \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_1} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{Y_1} + \left. \frac{\partial g_i}{\partial y_j} \right|_{Y_2} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{Y_2} \right) (y_{2,j} - y_{1,j})  (y_{2,k} - y_{1,k})(y_{2,l} - y_{1,l})(y_{2,m} - y_{1,m}) \\
 & + \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
 \end{aligned}
 \end{equation}
+where $J$ is the Jacobian of $\mathbf{f}$, and $I_\epsilon$ is a diagonal matrix with $I_{\epsilon,ii} = 1$ for $1 \le i \le m$, and $I_{\epsilon,ii} = \frac{1}{\epsilon}$ for $m+1 \le i \le n$. 
 
-In general, we do not have access to $f$, $g$, or any of its derivatives.
+In general, we do not have access to $\mathbf{f}$, $\mathbf{g}$, or any of its derivatives.
 %
-However, we note that $J J^T(Y_1)$ is the local covariance of $Y_1$, which we can empirically estimate from data (this will be discussed in a subsequent section).
+However, we note that $\left. J I_\epsilon J^T\right|_Y$ is the local covariance of the stochastic process at $Y$, which we can empirically estimate from data (this will be discussed in a subsequent section).
 %
 Therefore, we choose to truncate the distance approximation at the first order term.
 %
 We call this distance the {\em Mahalanobis distance}, 
 \begin{equation}
- \| Y_2 - Y_1 \|^2_M = \frac{1}{2} (Y_2 - Y_1 )^T \left(\left.(J J^T)^{-1}\right|_{Y_1} + \left.(J J^T)^{-1}\right|_{Y_2}\right) (Y_2 - Y_1 )
+ \| Y_2 - Y_1 \|^2_M = \frac{1}{2} (Y_2 - Y_1 )^T \left(\left.(J I_\epsilon J^T)^{-1}\right|_{Y_1} + \left.(J I_\epsilon J^T)^{-1}\right|_{Y_2}\right) (Y_2 - Y_1 )
 \end{equation}
 %
 The error in the approximation is defined as
-\begin{equation}
-e_M(Y_1, Y_2) = \| X_2 - X_1 \|^2_2 - \| Y_2 - Y_1 \|^2_M 
+\begin{equation} \label{eq:mahanaobis_error}
+e_M(Y_1, Y_2) = \| \Xi_2 - \Xi_1 \|^2_2 - \| Y_2 - Y_1 \|^2_M 
 \end{equation}
 
-We can bound the error by
-\begin{equation}
-| e_M(Y_1, Y_2)  | \le n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  
-+ \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
-\end{equation}
-%
-where
-%
-\begin{equation}
-\begin{aligned}
-K_1 &= \sup_{i,j,Y} |g_j^i(Y)|\\
-K_2 &= \sup_{i,j,k,Y} |g_{jk}^i(Y)|\\
-K_3 &= \sup_{i,j,k,l,Y} |g_{jkl}^i(Y)|
-\end{aligned}
-\end{equation}
+%We can bound the error by
+%\begin{equation}
+%| e_M(Y_1, Y_2)  | \le n \left( \left| K_1 K_2 \right| + \left| \frac{ K_2^2}{4} \right|  + \left| \frac{K_1 K_3}{3} \right|  \right) \| Y_2 - Y_1 \| ^4  
+%+ \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
+%\end{equation}
+%%
+%where
+%%
+%\begin{equation}
+%\begin{aligned}
+%K_1 &= \sup_{i,j,Y} |g_j^i(Y)|\\
+%K_2 &= \sup_{i,j,k,Y} |g_{jk}^i(Y)|\\
+%K_3 &= \sup_{i,j,k,l,Y} |g_{jkl}^i(Y)|
+%\end{aligned}
+%\end{equation}
 
 
 
 \subsection{Error analysis of the covariance estimation}
 
-To compute the Mahalanobis distance, we require $J J^T$. 
+To compute the Mahalanobis distance, we require $J I_\epsilon J^T$. 
 %
-From \cite{...}, we know that $JJ^T = C$, where $C$ is the local covariance of the observed stochastic process. 
+From \cite{...}, we know that $J I_\epsilon J^T = C$, where $C$ is the local covariance of the observed stochastic process. 
 %
 Therefore, we would like to estimate the local covariance at a point $X_t$. 
 
@@ -376,10 +394,10 @@ C_{jk}(X_t) =
 
 We will use local simulation bursts to estimate the local covariance.
 %
-Let $X_\tau$ denote the samples at time $\tau > t$. 
+Let $X_\tau$ denote samples at time $\tau > t$. 
 %
 For the general SDE formulation outlined in \eqref{eq:general_SDE}, we write the estimated covariance $\hat{C}$ as
-\begin{equation}
+\begin{equation} \label{eq:estimated_cov}
 \begin{aligned}
 \hat{C}_{jk} (X_t, \tau - t) = & 
 \frac{1}{\tau - t} \left(  \mathbb{E} \left[ f_j(X_\tau) f_k(X_\tau) \right] - \mathbb{E}[f_j(X_\tau)]\mathbb{E}[f_k(X_\tau)]   \right)\\
@@ -396,7 +414,7 @@ For the general SDE formulation outlined in \eqref{eq:general_SDE}, we write the
 However, for the specific case when $\mathbf{f}$ is linear, the $\mathcal{O}((\tau - t)^{3/2})$ terms go to 0, and we must consider higher-order terms. 
 %
 In this case, 
-\begin{equation}
+\begin{equation} \label{eq:estimated_cov_linear_f}
 \begin{aligned}
 \hat{C}_{jk} (X_t, \tau - t) = & 
 \frac{1}{\tau - t} \left(  \mathbb{E} \left[ f_j(X_\tau) f_k(X_\tau) \right] - \mathbb{E}[f_j(X_\tau)]\mathbb{E}[f_k(X_\tau)]   \right)\\
@@ -412,15 +430,29 @@ In this case,
 %
 For both cases,  we define the error in the estimation as
 %
-\begin{equation}
+\begin{equation} \label{eq:cov_error}
 \begin{aligned}
-e_C (X_t, \tau - t) = \| \hat{C} (X_t, \tau - t)  - C(X_t, \tau - t) \|
+e_C (X_t, \tau - t) = \hat{C} (X_t, \tau - t)  - C(X_t, \tau - t) 
 \end{aligned}
 \end{equation}
 
+\section{Empirical Estimation of Parameters}
+
+Given data governed by an SDE as in \eqref{eq:general_SDE}, we would like to empirically set the simulation and analysis parameters.
+%
+There are two parameters: $\sigma_{kernel}$, which is the diffusion maps kernel scale, and $\tau - t$, which is the timescale of the ``burst'' used to estimate the covariance. 
+
+$\sigma_{kernel}$ controls which distances we ``trust''.
+%
+Therefore, we want the Mahalanobis distance approximation to be accurate within a ball of radius $\sigma_{kernel}$. 
+%
+From \eqref{eq:distance_taylor_expansion}, we can see that, for $e_M$ to be small, we want $\|Y_2 - Y_1 \|^2_M$ to vary linearly with $\|Y_2 - Y_1\|^2_2$.
+
+For $e_C$ to be accurate, we want $\hat{C}$ to not vary as a function of $\tau - t$. 
+
+We can use simulations to check both of these conditions empirically. 
 
 \section{Results}
-
 
 For illustrative purposes, we will consider the following two-dimensional SDE as a specific example of \eqref{eq:general_SDE}. 
 \begin{equation}
@@ -436,6 +468,15 @@ So $x_1$ is the slow variable, and $x_2$ is a fast noise whose equilibrium measu
 %
 We would like to recover $x_1$ using data-driven techniques.
 
+For this example, the analytical covariance is
+ \begin{equation}
+C(X_t) = 
+\begin{bmatrix}
+1 & 0 \\
+0 & \frac{1}{\epsilon}
+\end{bmatrix}
+\end{equation}
+
 \subsection{Linear functions}
 
 In the first example, our transformation $\mathbf{f}$ will be the identity function and fast and slow remain uncoupled,
@@ -443,35 +484,107 @@ In the first example, our transformation $\mathbf{f}$ will be the identity funct
 \mathbf{f}(x_1, x_2) = \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
 \end{equation}
 %
-and
-%
 \begin{equation}
 \mathbf{g}(y_1, y_2) = \mathbf{f}^{-1} (y_1, y_2) = \begin{bmatrix} y_1 \\ y_2 \end{bmatrix}
 \end{equation}
 
 In this case, $e_M = 0$, as the second- and higher-order derivatives of $\mathbf{g}$ are all 0. 
+ 
+%\begin{equation}
+%\begin{aligned}
+%e_{C, jk} (X_t, \tau - t) = & 
+%\frac{1}{\tau - t} \left. \frac{\partial f_j}{\partial x_1} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^1 \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \frac{\partial a_1}{\partial x_1} \frac{\partial f_k}{\partial x_1}  + \frac{1}{\epsilon} \frac{\partial a_2}{\partial x_1} \frac{\partial f_k}{\partial x_2} \right)  dW_{s_1}^1 ds_2 \right) \right] \\ 
+% & + \frac{1}{\epsilon (\tau - t)} \left. \frac{\partial f_j}{\partial x_2} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^2 \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(\frac{\partial a_1}{\partial x_2} \frac{\partial f_k}{\partial x_1}  + \frac{1}{\epsilon} \frac{\partial a_2 }{\partial x_2} \frac{\partial f_k}{\partial x_2} \right)  dW_{s_1}^2 ds_2 \right) \right] \\ 
+% & + \frac{1}{\tau - t}  \left. \frac{\partial f_k}{\partial x_1} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^1 \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \frac{\partial a_1}{\partial x_1} \frac{\partial f_j}{\partial x_1}  + \frac{1}{\epsilon} \frac{\partial a_2}{\partial x_1} \frac{\partial f_j}{\partial x_2} \right) dW_{s_1}^1 ds_2 \right) \right] \\
+%& + \frac{1}{\epsilon (\tau - t)}  \left. \frac{\partial f_k}{\partial x_2} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^2 \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \frac{\partial a_1}{\partial x_2} \frac{\partial f_j}{\partial x_1}  + \frac{1}{\epsilon} \frac{\partial a_2}{\partial x_2} \frac{\partial f_j}{\partial x_2} \right) dW_{s_1}^2 ds_2 \right) \right] \\
+%& + \mathcal{O} ((\tau - t)^{3/2})\\
+% = & 
+%\frac{1}{\epsilon^2 (\tau - t)} \left. \frac{\partial f_j}{\partial x_2} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^2 \right)  \left(\int_t^\tau \int_{t}^{s_2} -\frac{\partial f_k}{\partial x_2} dW_{s_1}^2 ds_2 \right) \right] \\ 
+%& + \frac{1}{\epsilon^2 (\tau - t)}  \left. \frac{\partial f_k}{\partial x_2} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^2 \right)  \left(\int_t^\tau \int_{t}^{s_2} -\frac{\partial f_j}{\partial x_2} dW_{s_1}^2 ds_2 \right) \right] \\
+%& + \mathcal{O} ((\tau - t)^{3/2})
+% \end{aligned}
+%\end{equation}
 
+From \eqref{eq:estimated_cov_linear_f}, we find that 
 \begin{equation}
 \begin{aligned}
-e_{C, jk} (X_t, \tau - t) = & 
-\frac{1}{\tau - t} \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
- & + \frac{1}{\epsilon (\tau - t)} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_k}{\partial x_l} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
- & + \frac{1}{\tau - t} \sum_{i=1}^m  \left. \frac{\partial f_k}{\partial x_i} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_j}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_j}{\partial x_l} \right) dW_{s_1}^i ds_2 \right) \right] \\
-& + \frac{1}{\epsilon (\tau - t)} \sum_{i=m+1}^n  \left. \frac{\partial f_k}{\partial x_i} \right|_{X_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_j}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_j}{\partial x_l} \right) dW_{s_1}^i ds_2 \right) \right] \\
-& + \mathcal{O} ((\tau - t)^{3/2})
- \end{aligned}
+e_{C, 11}(X_t, \tau - t) &=& 
+e_{C, 12}(X_t, \tau - t) = 
+e_{C, 21}(X_t, \tau - t) = 0 \\
+e_{C, 22}(X_t, \tau - t) &=& 
+\frac{-2}{\epsilon^2 (\tau - t)} \mathbb{E} \left[ \left(\int_t^\tau dW_s^2 \right)  \left(\int_t^\tau \int_{t}^{s_2} -dW_{s_1}^2 ds_2 \right) \right]  
++ \mathcal{O} ((\tau - t)^{3/2})
+\end{aligned}
 \end{equation}
+%
+Therefore, $\|e_C \| = \mathcal{O}\left(\frac{\tau - t}{\epsilon^2} \right)$ and so we need to choose $\tau - t < \epsilon^2$. 
+
+
+
 
 \subsection{Nonlinear functions}
 
 In the second example, our data will be warped into half-moon shapes
 \begin{equation}
-\mathbf{f_2}(x_1, x_2) = 
+\mathbf{f}(x_1, x_2) = 
 \begin{bmatrix} 
 x_1 + x_2^2 \\
 x_2
 \end{bmatrix}
 \end{equation}
+
+\begin{equation}
+\mathbf{g}(y_1, y_2) = \mathbf{f}^{-1} (y_1, y_2) = \begin{bmatrix} y_1 - y_2^2 \\ y_2 \end{bmatrix}
+\end{equation}
+
+From \eqref{eq:distance_taylor_expansion}, we have 
+\begin{equation}
+e_M(Y_1, Y_2) = (\epsilon-1) (y_{2,2} - y_{1,2})^4 
++ \mathcal{O} (\|Y_1 - Y_2 \|^6 ) 
+\end{equation}
+
+%Therefore, we have
+%\begin{equation}
+%\begin{aligned}
+%\frac{\partial f_1}{\partial x_1} &=& 1 \\
+%\frac{\partial f_1}{\partial x_2} &=& 2 x_2 \\
+%\frac{\partial f_2}{\partial x_1} &=& 0 \\
+%\frac{\partial f_2}{\partial x_2} &=& 1 \\
+%\frac{\partial^2 f_1}{\partial x_1^2} = \frac{\partial^2 f_1}{\partial x_1 \partial x_2} &=& 0 \\
+%\frac{\partial^2 f_1}{\partial x_2^2} &=& 2 \\
+%\frac{\partial^2 f_2}{\partial x_1^2} = \frac{\partial^2 f_2}{\partial x_1 \partial x_2} = \frac{\partial^2 f_2}{\partial x_2^2} &=& 0 \\
+%\end{aligned}
+%\end{equation}
+%
+%\begin{equation}
+%\begin{aligned}
+%e_{C, jk} (X_t, \tau - t) = & 
+%\frac{1}{\tau - t} \left. \frac{\partial f_j}{\partial x_1} \right|_{X_t} \mathbb{E} \left[ \left( \int_t^\tau dW_s^1  \right) \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_k}{\partial x_1^2} dW_{s_1}^1 dW_{s_2}^1  \right) \right] \\
+%& + \frac{1}{\epsilon^{3/2} (\tau - t)} \left. \frac{\partial f_j}{\partial x_2} \right|_{X_t} \mathbb{E} \left[ \left( \int_t^\tau dW_s^2  \right) \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_k}{\partial x_2^2} dW_{s_1}^2 dW_{s_2}^2  \right) \right] \\
+%& + \frac{1}{\tau - t} \left. \frac{\partial f_k}{\partial x_1} \right|_{X_t}  \mathbb{E} \left[ \left( \int_t^\tau dW_s^1 \right)  \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_j}{\partial x_1^2}  dW_{s_1}^1 dW_{s_2}^1 \right) \right] \\
+%& + \frac{1}{\epsilon^{3/2} (\tau - t)} \left. \frac{\partial f_k}{\partial x_2} \right|_{X_t}  \mathbb{E} \left[ \left( \int_t^\tau dW_s^2 \right)  \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_j}{\partial x_2^2}  dW_{s_1}^2 dW_{s_2}^2 \right) \right] \\
+%&+ \mathcal{O} ((\tau - t) ) \\
+%= & 
+%\frac{1}{\epsilon^{3/2} (\tau - t)} \left. \frac{\partial f_j}{\partial x_2} \right|_{X_t} \mathbb{E} \left[ \left( \int_t^\tau dW_s^2  \right) \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_k}{\partial x_2^2} dW_{s_1}^2 dW_{s_2}^2  \right) \right] \\
+%& + \frac{1}{\epsilon^{3/2} (\tau - t)} \left. \frac{\partial f_k}{\partial x_2} \right|_{X_t}  \mathbb{E} \left[ \left( \int_t^\tau dW_s^2 \right)  \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_j}{\partial x_2^2}  dW_{s_1}^2 dW_{s_2}^2 \right) \right] \\
+%&+ \mathcal{O} ((\tau - t) ) 
+%\end{aligned}
+%\end{equation}
+
+From \eqref{eq:estimated_cov}, we find that
+\begin{equation}
+\begin{aligned}
+e_{C,11}(X_t, \tau-t) &=& \frac{8}{\epsilon^{3/2} (\tau - t)} X_t \mathbb{E} \left[ \left( \int_t^\tau dW_s^2  \right) \left( \int_t^\tau \int_t^{s_2} dW_{s_1}^2 dW_{s_2}^2  \right) \right] 
++ \mathcal{O} ((\tau - t) ) \\
+e_{C,12}(X_t, \tau-t) &=& \frac{2}{\epsilon^{3/2} (\tau - t)}  \mathbb{E} \left[ \left( \int_t^\tau dW_s^2 \right)  \left( \int_t^\tau \int_t^{s_2}  dW_{s_1}^2 dW_{s_2}^2 \right) \right] 
++ \mathcal{O} ((\tau - t) ) \\
+e_{C,21}(X_t, \tau-t) &=& \frac{2}{\epsilon^{3/2} (\tau - t)} \mathbb{E} \left[ \left( \int_t^\tau dW_s^2  \right) \left( \int_t^\tau \int_t^{s_2} dW_{s_1}^2 dW_{s_2}^2  \right) \right] 
++ \mathcal{O} ((\tau - t) ) \\
+e_{C,22}(X_t, \tau-t) &=& \mathcal{O} ((\tau - t) ) 
+\end{aligned}
+\end{equation}
+
+
 
 
 \begin{itemize}
