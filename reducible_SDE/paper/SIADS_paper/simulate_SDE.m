@@ -6,15 +6,18 @@ a = 3;
 DriftFn = @(t, x) [a; -x(2)/epsilon];
 DiffnFn = @(t, x) [1 0; 0 1/sqrt(epsilon)];
 
-min_dt = 1e-5;
+% min_dt = 1e-5;
+min_dt = epsilon^2;
+step_tol = 1e-4;
 
 if nargin < 6
     dt_step = min(dt, min_dt);
     nsteps_per_step = dt / dt_step;
-    if mod(nsteps_per_step, 1) ~= 0
+    if abs(mod(nsteps_per_step, 1)) > step_tol
         disp('Step dt is not a multiple of dt');
         return;
     end
+    nsteps_per_step = round(nsteps_per_step);
 
     data_start = [0; 0];
 
@@ -29,13 +32,15 @@ end
 
 dt_burst_step = min(dt_burst, min_dt);
 nsteps_burst_per_step = round(dt_burst / dt_burst_step);
-% if mod(nsteps_burst_per_step, 1) ~= 0
-%     disp('Step dt_burst is not a multiple of dt_burst');
-%     return;
-% end
+if abs(mod(nsteps_burst_per_step, 1)) > step_tol
+    disp('Step dt_burst is not a multiple of dt_burst');
+    return;
+end
+nsteps_burst_per_step = round(nsteps_burst_per_step);
 
 data_burst_init = zeros(nsteps_burst, dim, nsteps);
 for i=1:nsteps
+    i
     SDE = sde(DriftFn, DiffnFn, 'StartState', data_init(i, :)');
     [data_tmp, ~, ~] = SDE.simulate(1, 'DeltaTime', dt_burst, 'NSTEPS', nsteps_burst_per_step, 'ntrials', nsteps_burst);
     data_burst_init(:, :, i) = squeeze(data_tmp(end, :, :))';
