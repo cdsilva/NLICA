@@ -14,7 +14,7 @@ nsteps_burst = 50;
 rng(123);
 [data_init, data_burst_init, t] = simulate_SDE(nsteps, dt, nsteps_burst, dt_burst, epsilon);
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data_init(:,1),data_init(:,2),50,t, '.')
 axis tight
 axis square
@@ -30,7 +30,7 @@ W = squareform(pdist(data_init)).^2;
 sigma = median(W(:));
 [V, D] = dmaps(W, sigma, 10);
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data_init(:,1),data_init(:,2),50,V(:,2), '.')
 axis tight
 axis square
@@ -47,7 +47,7 @@ dim = 2;
 
 [V, D, eps, Dis] = NIV_return_dist(data_init, inv_c, 0, 10, 0);
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data_init(:,1),data_init(:,2),50,V(:,2), '.')
 axis tight
 axis square
@@ -62,7 +62,7 @@ saveas(gcf, 'data_linear_NIV.eps','epsc');
 dt_tmp = 10.^(-6:-2);
 dt_tmp2 = logspace(-6, -2, 100);
 
-make_fig(6, 6);
+make_fig(3, 3);
 loglog(dt_tmp2, (1+1/epsilon)*ones(size(dt_tmp2)), '-b')
 hold on
 loglog(dt_tmp2, dt_tmp2/epsilon^2, '-r')
@@ -96,7 +96,7 @@ for i=1:length(dt_tmp)
 end
 
 %%
-make_fig(6.5, 6);
+make_fig(3, 3);
 loglog(dt_tmp, mean(norm_c, 2),'.')
 axis([10^-6 10^-2 10^0 10^5])
 % loglog(dt_tmp2, 1+1/epsilon+dt_tmp2/epsilon^2)
@@ -124,7 +124,7 @@ dt_burst = 1e-9;
 
 [~, idx] = max(abs(corr(V, data_init(:,2))));
 
-make_fig(6, 6);
+make_fig(3, 3);
 plot(data_init(:,2), V(:, idx), '.')
 axis tight
 axis square
@@ -142,7 +142,7 @@ dt_burst = 1e-6;
 
 [~, idx] = max(abs(corr(V, data_init(:,2))));
 
-make_fig(6, 6);
+make_fig(3, 3);
 plot(data_init(:,2), V(:, idx), '.')
 axis tight
 axis square
@@ -162,7 +162,7 @@ dt_burst = 1e-2;
 
 [~, idx] = max(abs(corr(V, data_init(:,2))));
 
-make_fig(6, 6);
+make_fig(3, 3);
 plot(data_init(:,2), V(:, idx), '.')
 axis tight
 axis square

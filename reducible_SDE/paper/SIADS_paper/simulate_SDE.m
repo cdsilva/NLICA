@@ -40,7 +40,6 @@ nsteps_burst_per_step = round(nsteps_burst_per_step);
 
 data_burst_init = zeros(nsteps_burst, dim, nsteps);
 for i=1:nsteps
-    i
     SDE = sde(DriftFn, DiffnFn, 'StartState', data_init(i, :)');
     [data_tmp, ~, ~] = SDE.simulate(1, 'DeltaTime', dt_burst, 'NSTEPS', nsteps_burst_per_step, 'ntrials', nsteps_burst);
     data_burst_init(:, :, i) = squeeze(data_tmp(end, :, :))';

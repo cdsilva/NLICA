@@ -30,7 +30,7 @@ axis square
 xlabel('x_1')
 ylabel('x_2')
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data1(:,1),data1(:,2),50,t, '.')
 axis tight
 axis square
@@ -46,7 +46,7 @@ W = squareform(pdist(data1)).^2;
 sigma = median(W(:))*100;
 [V, D] = dmaps(W, sigma, 10);
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data1(:,1),data1(:,2),50,V(:,2), '.')
 axis tight
 axis square
@@ -63,7 +63,7 @@ dim = 2;
 
 [V, D, eps, Dis] = NIV_return_dist(data1, inv_c, 0.01, 10, 0);
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data1(:,1),data1(:,2),50,V(:,2), '.')
 axis tight
 axis square
@@ -78,7 +78,7 @@ saveas(gcf, 'data_nonlinear_NIV.eps', 'epsc');
 dt_tmp = 10.^(-9:-2);
 dt_tmp2 = logspace(-9, -2, 100);
 
-make_fig(6, 6);
+make_fig(3, 3);
 loglog(dt_tmp2, (1+4/epsilon+1/epsilon)*ones(size(dt_tmp2)), '-b')
 hold on
 loglog(dt_tmp2, 8*sqrt(dt_tmp2)/epsilon^(3/2), '-r')
@@ -118,7 +118,7 @@ for i=1:length(dt_tmp)
 end
 
 %%
-make_fig(6.5, 6);
+make_fig(3, 3);
 loglog(dt_tmp, mean(norm_c, 2),'.')
 % axis([10^-6 10^-2 10^0 10^5])
 % loglog(dt_tmp2, (1+4/epsilon+1/epsilon)+8*sqrt(dt_tmp2)/epsilon^(3/2))
@@ -157,7 +157,7 @@ end
 
 dy = logspace(-4, 2, 100);
 
-make_fig(6, 6);
+make_fig(3, 3);
 loglog(dy, (1+4+epsilon)*dy.^2,'-b')
 hold on
 loglog(dy, -(epsilon-1)*dy.^4,'-r')
@@ -188,7 +188,7 @@ for i=1:length(dy2)
     end
 end
 
-make_fig(6, 6);
+make_fig(3, 3);
 rand_idx = randperm(nsteps^2, 2000);
 loglog(dy2, Dis_avg, '.')
 % hold on
@@ -218,7 +218,7 @@ end
 
 [V, D, eps, Dis] = NIV_return_dist(data1, inv_c, eps_NIV, 10, 0);
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data1(:,1),data1(:,2),50,V(:,2), '.')
 axis tight
 axis square
@@ -233,7 +233,7 @@ eps_NIV = 10^1;
 
 [V, D, eps, Dis] = NIV_return_dist(data1, inv_c, eps_NIV, 10, 0);
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data1(:,1),data1(:,2),50,V(:,2), '.')
 axis tight
 axis square
@@ -262,7 +262,7 @@ end
 [V, D, eps, Dis] = NIV_return_dist(data1, inv_c, eps_NIV, 10, 0);
 
 
-make_fig(6, 6);
+make_fig(3, 3);
 scatter(data1(:,1),data1(:,2),50,V(:,2), '.')
 axis tight
 axis square
