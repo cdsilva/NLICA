@@ -128,8 +128,8 @@ We offer rigorous analysis for the method that gives the conditions (for our met
 We consider the following two-scale SDE. 
 \begin{equation} \label{eq:general_SDE}
 \begin{aligned}
-dx_i &= a_i(\vec{x}) dt + dW_i, \: 1 \le i \le m \\
-dx_i &= -\frac{a_i(\vec{x})}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i , \: m+1 \le i \le n
+dx_i &= a_i(\vec{x}) dt + dW_i, & \: 1 \le i \le m \\
+dx_i &= -\frac{a_i(\vec{x})}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i , & \: m+1 \le i \le n
 \end{aligned}
 \end{equation}
 where $W_i$ are independent Brownian motions, $\vec{x} = \begin{bmatrix} x_1 \dots x_n \end{bmatrix}^T$, and $\epsilon \ll 1$.
@@ -198,7 +198,7 @@ It can be shown that the Mahalanobis distance locally approximates:
 \begin{equation} \label{eq:mahalanobis}
 \| \mathbf{f}(\vec{x}_1) - \mathbf{f}(\vec{x}_2) \|^2_M = \| \vec{z}_1 - \vec{z}_2 \|^2_2 + \mathcal{O}(\| \mathbf{f}(\vec{x}_1) - \mathbf{f}(\vec{x}_2) \|^4_2)
 \end{equation}
-where the components of $\Xi$ are sampled from a stochastic process with uncoupled noise with unit variance,
+where the components of $\vec{z}$ are sampled from a stochastic process with uncoupled noise with unit variance,
 i.e., $\vec{z} = \begin{bmatrix} z_1 & z_2& \cdots & z_n \end{bmatrix}^T$, where $z_1, \dots, z_n$ are governed by the following SDEs:
 \begin{equation} \label{eq:NIV_formulation}
 dz_i = b_i(\vec{z}) dt + dW_i
@@ -207,16 +207,16 @@ dz_i = b_i(\vec{z}) dt + dW_i
 In particular, for SDEs of the form in \eqref{eq:general_SDE}, consider the transformation
 \begin{equation} \label{eq:general_rescale}
 \begin{aligned}
-x_i = z_i, \: &1 \le i \le m \\
-x_i = \frac{z_i}{\sqrt{\epsilon}}, \: &m+1 \le i \le n
+x_i &= z_i, \: &1 \le i \le m \\
+x_i &= \frac{z_i}{\sqrt{\epsilon}}, \: &m+1 \le i \le n
 \end{aligned}
 \end{equation}
 
 Then, \eqref{eq:general_SDE} becomes
 \begin{equation} 
 \begin{aligned}
-dz_i &= b_i(\vec{z}) dt + dW_i, \: 1 \le i \le m \\
-dz_i &= -\frac{b_i(\vec{z})}{\sqrt{\epsilon}} dt + dW_i , \: m+1 \le i \le n
+dz_i &= b_i(\vec{z}) dt + dW_i, & \: 1 \le i \le m \\
+dz_i &= -\frac{b_i(\vec{z})}{\sqrt{\epsilon}} dt + dW_i , & \: m+1 \le i \le n
 \end{aligned}
 \end{equation}
 where $b_i(\vec{z}) = a_i (\vec{x})$.
@@ -286,13 +286,13 @@ We will present both analytical results for the error bounds, as well as an empi
 
 \subsection{Error analysis of the Mahalanobis distance}
 
-We want to calculate the distance $\|\vec{z}_2 - \vec{z}_1\|$ in terms of the observations $\mathbf{f}(\vec{x})$. 
+We want to calculate the distance $\|\vec{z}_2 - \vec{z}_1\|$ in terms of the observations $\vec{y} = \mathbf{f}(\vec{x})$. 
 %
 Let $\mathbf{g} = \mathbf{f}^{-1}: \mathbb{R}^d \mapsto \mathbb{R}^n$, such that
 \begin{equation}
 \begin{aligned}
-g_i(\vec{y}) = x_i = z_i,& \: 1 \le i \le m \\
-\sqrt{\epsilon} g_i(\vec{y}) = \sqrt{\epsilon} x_i = z_i,& \: m+1 \le i \le n
+g_i(\vec{y}) &=& x_i &=& z_i, & \: 1 \le i \le m \\
+\sqrt{\epsilon} g_i(\vec{y}) &=& \sqrt{\epsilon} x_i &=& z_i, & \: m+1 \le i \le n
 \end{aligned}
 \end{equation}
 %
@@ -348,14 +348,14 @@ However, we note that $\left. J I_\epsilon J^T\right|_Y$ is the local covariance
 %
 Therefore, we choose to truncate the distance approximation at the first order term.
 %
-We call this distance the {\em Mahalanobis distance}, 
+We call this distance the {\em Mahalanobis distance} \footnote{We would like to note that the Mahalanobis distance is traditionally defined for a fixed covariance matrix. However, following \cite{...}, we will define our Mahalanobis distance locally, using the local covariance at each point.}, 
 \begin{equation} \label{eq:mahalanobis_distance}
  \| \vec{y}_2 - \vec{y}_1 \|^2_M = \frac{1}{2} (\vec{y}_2 - \vec{y}_1 )^T \left(\left.(J I_\epsilon J^T)^{-1}\right|_{\vec{y}_1} + \left.(J I_\epsilon J^T)^{-1}\right|_{\vec{y}_2}\right) (\vec{y}_2 - \vec{y}_1 )
 \end{equation}
 %
 and we define the error incurred by using the Mahalanobis distance to approximate the true distance between the points as
 \begin{equation} \label{eq:mahanaobis_error}
-e_M(\vec{y}_1, \vec{y}_2) = \| \vec{z}_2 - \vec{z}_1 \|^2_2 - \| \vec{y}_2 - \vec{y}_1 \|^2_M 
+e_M(\vec{y}_1, \vec{y}_2) \equiv \| \vec{z}_2 - \vec{z}_1 \|^2_2 - \| \vec{y}_2 - \vec{y}_1 \|^2_M 
 \end{equation}
 
 %We can bound the error by
@@ -393,39 +393,39 @@ C_{jk}(\vec{x}_t) =
 
 We will use local simulation bursts to estimate the local covariance.
 %
-Let $X_\tau$ denote samples at time $\tau > t$. 
+Let $\vec{x}_{t + \delta t}$ denote samples at time $t + \delta t> t$. 
 %
 For the general SDE formulation outlined in \eqref{eq:general_SDE}, the estimated covariance $\hat{C}$ is \cite{...} as
 \begin{equation} \label{eq:estimated_cov}
 \begin{aligned}
-\hat{C}_{jk} (\vec{x}_t, \tau - t) = & 
-\frac{1}{\tau - t} \left(  \mathbb{E} \left[ f_j(\vec{x}_\tau) f_k(\vec{x}_\tau) \right] - \mathbb{E}[f_j(\vec{x}_\tau)]\mathbb{E}[f_k(\vec{x}_\tau)]   \right)\\
-= & \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \\
-& + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t} \\
-& + \frac{1}{\tau - t} \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^\tau dW_s^i  \right) \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_k}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
-& + \frac{1}{\epsilon^{3/2} (\tau - t)} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^\tau dW_s^i  \right) \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_k}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
-& + \frac{1}{\tau - t} \sum_{i=1}^m \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left( \int_t^\tau dW_s^i \right)  \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_j}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
-& + \frac{1}{\epsilon^{3/2} (\tau - t)} \sum_{i=m+1}^n \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left( \int_t^\tau dW_s^i \right)  \left( \int_t^\tau \int_t^{s_2} \frac{\partial^2 f_j}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
-&+ \mathcal{O} ((\tau - t) ) 
+\hat{C}_{jk} (\vec{x}_t, \delta t) = & 
+\frac{1}{\delta t} \left(  \mathbb{E} \left[ f_j(\vec{x}_{t+\delta t}) f_k(\vec{x}_{t+\delta t}) \right] - \mathbb{E}[f_j(\vec{x}_{t+\delta t})]\mathbb{E}[f_k(\vec{x}_{t+\delta t})]   \right)\\
+= & \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  
+ + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t} \\
+& + \frac{1}{\delta t} \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^\tau dW_s^i  \right) \left( \int_t^{t + \delta t} \int_t^{s_2} \frac{\partial^2 f_k}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
+& + \frac{1}{\epsilon^{3/2} \delta t} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s^i  \right) \left( \int_t^{t + \delta t} \int_t^{s_2} \frac{\partial^2 f_k}{\partial x_i^2} dW_{s_1}^i dW_{s_2}^i  \right) \right] \\
+& + \frac{1}{\delta t} \sum_{i=1}^m \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s^i \right)  \left( \int_t^{t + \delta t} \int_t^{s_2} \frac{\partial^2 f_j}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
+& + \frac{1}{\epsilon^{3/2} \delta t} \sum_{i=m+1}^n \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s^i \right)  \left( \int_t^{t + \delta t} \int_t^{s_2} \frac{\partial^2 f_j}{\partial x_i^2}  dW_{s_1}^i dW_{s_2}^i \right) \right] \\
+&+ \mathcal{O} (\delta t) 
 \end{aligned}
 \end{equation}
 %
-However, for the specific case when $\mathbf{f}$ is linear, the $\mathcal{O}((\tau - t)^{3/2})$ terms go to 0, and we must consider higher-order terms. 
+However, for the specific case when $\mathbf{f}$ is linear, the $\mathcal{O}(\sqrt{\delta t})$ drop out, and we must consider higher-order terms. 
 %
 In this case, 
 %
 {\small 
 \begin{equation} \label{eq:estimated_cov_linear_f}
 \begin{aligned}
-\hat{C}_{jk} (\vec{x}_t, \tau - t) = & 
-\frac{1}{\tau - t} \left(  \mathbb{E} \left[ f_j(\vec{x}_\tau) f_k\vec{x}X_\tau) \right] - \mathbb{E}[f_j(\vec{x}_\tau)]\mathbb{E}[f_k(\vec{x}_\tau)]   \right)\\
-= & \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \\
-& + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t} \\
- & + \frac{1}{\tau - t} \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
- & + \frac{1}{\epsilon (\tau - t)} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_k}{\partial x_l} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
- & + \frac{1}{\tau - t} \sum_{i=1}^m  \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_j}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_j}{\partial x_l} \right) dW_{s_1}^i ds_2 \right) \right] \\
-& + \frac{1}{\epsilon (\tau - t)} \sum_{i=m+1}^n  \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^\tau dW_s^i \right)  \left(\int_t^\tau \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_j}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_j}{\partial x_l} \right) dW_{s_1}^i ds_2 \right) \right] \\
-& + \mathcal{O} ((\tau - t)^{3/2})
+\hat{C}_{jk} (\vec{x}_t, \delta t) = & 
+\frac{1}{\delta t} \left(  \mathbb{E} \left[ f_j(\vec{x}_{t + \delta t}) f_k(\vec{x}_{t + \delta t}) \right] - \mathbb{E}[f_j(\vec{x}_{t + \delta t})]\mathbb{E}[f_k(\vec{x}_{t + \delta t})]   \right)\\
+= & \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  
+ + \frac{1}{\epsilon} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t} \\
+ & + \frac{1}{\delta t} \sum_{i=1}^m \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^{t + \delta t} dW_s^i \right)  \left(\int_t^{t + \delta t} \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
+ & + \frac{1}{\epsilon \delta t} \sum_{i=m+1}^n \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^{t + \delta t} dW_s^i \right)  \left(\int_t^{t + \delta t} \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_k}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_k}{\partial x_l} \right)  dW_{s_1}^i ds_2 \right) \right] \\ 
+ & + \frac{1}{\delta t} \sum_{i=1}^m  \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^{t + \delta t} dW_s^i \right)  \left(\int_t^{t + \delta t} \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_j}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_j}{\partial x_l} \right) dW_{s_1}^i ds_2 \right) \right] \\
+& + \frac{1}{\epsilon \delta t} \sum_{i=m+1}^n  \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t}  \mathbb{E} \left[ \left(\int_t^{t + \delta t} dW_s^i \right)  \left(\int_t^{t + \delta t} \int_{t}^{s_2} \left(  \sum_{l=1}^m \frac{\partial a_l}{\partial x_i} \frac{\partial f_j}{\partial x_l}  + \frac{1}{\epsilon} \sum_{l=m+1}^m \frac{\partial a_l }{\partial x_i} \frac{\partial f_j}{\partial x_l} \right) dW_{s_1}^i ds_2 \right) \right] \\
+& + \mathcal{O} (\delta t^{3/2})
  \end{aligned}
 \end{equation}
 }
@@ -434,11 +434,13 @@ For both cases, we define the error in the covariance estimation as
 %
 \begin{equation} \label{eq:cov_error}
 \begin{aligned}
-e_C (\vec{x}_t, \tau - t) = \hat{C} (\vec{x}_t, \tau - t)  - C(\vec{x}_t) 
+e_C (\vec{x}_t, \delta t) \equiv \hat{C} (\vec{x}_t, \delta t)  - C(\vec{x}_t) 
 \end{aligned}
 \end{equation}
 
 \section{Empirical Estimation of Parameters}
+
+TODO: explain more
 
 We would like to empirically set the simulation and analysis parameters so that we can accurately recover the slow variables from data. 
 %
@@ -450,7 +452,7 @@ Therefore, we want the Mahalanobis distance approximation to be accurate within 
 %
 From \eqref{eq:distance_taylor_expansion}, we can see that, for $e_M$ to be small, we want $\|Y_2 - Y_1 \|^2_M$ to vary quadratically with $\|Y_2 - Y_1\|_2$.
 
-From \eqref{eq:estimated_cov} and \eqref{eq:estimated_cov_linear_f}, for $e_C$ to be accurate, we want $\hat{C}$ to be constant with $\tau - t$. 
+From \eqref{eq:estimated_cov} and \eqref{eq:estimated_cov_linear_f}, for $e_C$ to be accurate, we want $\hat{C}$ to be constant with $\delta t$. 
 
 We can use simulations to check both of these conditions empirically. 
 
@@ -459,8 +461,8 @@ We can use simulations to check both of these conditions empirically.
 For illustrative purposes, we will consider the following two-dimensional SDE as a specific example of \eqref{eq:general_SDE}. 
 \begin{equation} \label{eq:specific_SDE}
 \begin{aligned}
-dx_1 &= adt + dW_1\\
-dx_2 &= -\frac{x_2}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_2
+dx_1 &=& adt &+& dW_1\\
+dx_2 &=& -\frac{x_2}{\epsilon} dt &+& \frac{1}{\sqrt{\epsilon}} dW_2
 \end{aligned}
 \end{equation}
 %
@@ -473,6 +475,7 @@ Figure~\ref{fig:initial_data} shows data simulated from this SDE, colored by tim
 We would like to recover $x_1$ (the slow variable) using data-driven techniques.
 
 \begin{figure}[h]
+\centering
 \epsfig{width=0.5\textwidth, file=data_init.eps}
 \caption{The original data, simulated from \eqref{eq:specific_SDE} with $\epsilon = 10^{-3}$. We take $3000$ timesteps with $dt = 10^{-4}$. The data is colored by time. }
 \label{fig:initial_data}
@@ -524,34 +527,34 @@ In contrast, DMAPS does not recover the slow variable.
 From \eqref{eq:estimated_cov_linear_f}, we find that 
 \begin{equation}
 \begin{aligned}
-e_{C, 11}(\vec{x}_t, \tau - t) = 
-e_{C, 12}(\vec{x}_t, \tau - t) = 
-e_{C, 21}(\vec{x}_t, \tau - t) = 0 \\
-e_{C, 22}(\vec{x}_t, \tau - t) = 
-\frac{-2}{\epsilon^2 (\tau - t)} \mathbb{E} \left[ \left(\int_t^\tau dW_s^2 \right)  \left(\int_t^\tau \int_{t}^{s_2} -dW_{s_1}^2 ds_2 \right) \right]  
-+ \mathcal{O} ((\tau - t)^{3/2})
+e_{C, 11}(\vec{x}_t, \delta t) &= 
+e_{C, 12}(\vec{x}_t, \delta t) = 
+e_{C, 21}(\vec{x}_t, \delta t) = 0 \\
+e_{C, 22}(\vec{x}_t, \delta t) &= 
+\frac{-2}{\epsilon^2 \delta t} \mathbb{E} \left[ \left(\int_t^{t + \delta t} dW_s^2 \right)  \left(\int_t^{t + \delta t} \int_{t}^{s_2} -dW_{s_1}^2 ds_2 \right) \right]  
++ \mathcal{O} (\delta t^{3/2})
 \end{aligned}
 \end{equation}
 %
-Therefore, $\|e_C \| = \mathcal{O}\left(\frac{\tau - t}{\epsilon^2} \right)$ and so we need to choose $\tau - t < \epsilon^2$ so that the covariance estimation is accurate. 
+Therefore, $\|e_C \| = \mathcal{O}\left(\frac{\delta t}{\epsilon^2} \right)$ and so we need to choose $\delta t < \epsilon^2$ so that the covariance estimation is accurate. 
 %
-To empirically find this regime, we can plot $\|\hat{C}\|$ as a function of $\tau - t$. 
+To empirically find this regime, we can plot $\|\hat{C}\|$ as a function of $\delta t$. 
 %
 We know 
 \begin{equation}
-\hat{C}(\vec{x}_t, \tau - t) = C(\vec{x}_t) + e_C(\vec{x}_t, \tau - t) = C(\vec{x}_t) + \mathcal{O}\left(\frac{\tau - t}{\epsilon^2} \right)
+\hat{C}(\vec{x}_t, \delta t) = C(\vec{x}_t) + e_C(\vec{x}_t, \delta t) = C(\vec{x}_t) + \mathcal{O}\left(\frac{\delta t}{\epsilon^2} \right)
 \end{equation} 
 %
-Therefore, when $e_C$ is small, $\hat{C}$ will be constant as a function of $\tau - t$, and when $e_C$ is large, $\hat{C}$ will be linear in $\tau - t$.
+Therefore, when $e_C$ is small, $\hat{C}$ will be constant as a function of $\delta t$, and when $e_C$ is large, $\hat{C}$ will be linear in $\delta t$.
 %
 This is shown in Figure~\ref{fig:cov_error}, and we can see (both analytically and empirically)
-$\tau - t < 10^{-5}$ corresponds to the constant regime.
+$\delta t < 10^{-5}$ corresponds to the constant regime.
 
 \begin{figure}[t]
 \epsfig{width=0.5\textwidth, file=C_dt_analytical_linear.eps}
 \epsfig{width=0.5\textwidth, file=C_dt_linear.eps}
 %\epsfig{width=0.5\textwidth, file=data_linear_NIV_smalldt.eps}
-\caption{(a) The analytical expressions for the contibutions to the covariance as a function of the time burst. (b) The average estimated covariance $\| \hat{C} \|$ as a function of the time burst $\tau - t$. }
+\caption{(a) The analytical expressions for the contibutions to the covariance as a function of the time burst. (b) The average estimated covariance $\| \hat{C} \|$ as a function of the time burst $\delta t$. }
 \label{fig:cov_error}
 \end{figure}
 
@@ -560,7 +563,7 @@ $\tau - t < 10^{-5}$ corresponds to the constant regime.
 
 Note that, for this linear example, $e_C$ is a diagonal matrix. 
 %
-Therefore, taking $\tau - t$ ``too large'' will not lead to mixing of the fast/slow variables, or nonlinear effects, but rather, only affect the ''perceived'' timescales of the fast/slow. 
+Therefore, taking $\delta t$ ``too large'' will not lead to mixing of the fast/slow variables, or nonlinear effects, but rather, only affect the ''perceived'' timescales of the fast/slow. 
 %
 When the time scale of the burst is smaller than that of the equilibration time of the fast variable, the estimated covariance is constant and the fast variable is collapsed significantly relative to the slow variable.
 %
@@ -571,10 +574,23 @@ However, if the time scale of the burst is {\em longer} than the saturation time
 This means that the collapse of the fast variable is less pronounced relative to the slow variable, and the fast variable is recovered in a higher eigenvector. 
 
 \begin{figure}[t]
+\epsfig{width=0.3\textwidth, file=data_linear_burst1.eps}
+\epsfig{width=0.3\textwidth, file=data_linear_burst2.eps}
+\epsfig{width=0.3\textwidth, file=data_linear_burst3.eps}
+
+\epsfig{width=0.3\textwidth, file=data_linear_slow1.eps}
+\epsfig{width=0.3\textwidth, file=data_linear_slow2.eps}
+\epsfig{width=0.3\textwidth, file=data_linear_slow3.eps}
+
 \epsfig{width=0.3\textwidth, file=data_linear_fast1.eps}
 \epsfig{width=0.3\textwidth, file=data_linear_fast2.eps}
 \epsfig{width=0.3\textwidth, file=data_linear_fast3.eps}
-\caption{Correlation between dmaps coordinate and fast variable for $\tau - t = 10^{-9}, 10^{-6},$ and $10^{-3}$. }
+
+\epsfig{width=0.3\textwidth, file=data_linear_evals1.eps}
+\epsfig{width=0.3\textwidth, file=data_linear_evals2.eps}
+\epsfig{width=0.3\textwidth, file=data_linear_evals3.eps}
+
+\caption{Correlation between dmaps coordinate and fast variable for $\delta t = 10^{-9}, 10^{-6},$ and $10^{-3}$. }
 \label{fig:recover_fast}
 \end{figure}
 
@@ -601,6 +617,19 @@ C(\vec{x}) = \begin{bmatrix}
 \end{bmatrix}
 \end{equation}
 
+\begin{equation}
+C^{-1}(\vec{x}) = 
+\epsilon
+\begin{bmatrix}
+\frac{1}{\epsilon} & -\frac{2 x_2}{\epsilon} \\
+-\frac{2 x_2}{\epsilon} & 1+ \frac{4 x_2^2}{\epsilon}
+\end{bmatrix} = 
+\begin{bmatrix}
+1 & -2 x_2 \\
+-2 x_2 & \epsilon+ 4 x_2^2
+\end{bmatrix} 
+\end{equation}
+
 \begin{figure}[t]
 \epsfig{width=0.3\textwidth, file=data_init_nonlinear.eps}
 \epsfig{width=0.3\textwidth, file=data_nonlinear_NIV.eps}\epsfig{width=0.3\textwidth, file=data_nonlinear_DMAPS.eps}\caption{(a) The data, simulated from \eqref{eq:specific_SDE} and transformed by $\mathbf{f}$,  with $\epsilon = 10^{-3}$. We take $3000$ timesteps with $dt = 10^{-4}$. (b) The data from (a), colored by the first NIV. (c) The data from (a), colored by the first DM variable.}
@@ -612,7 +641,7 @@ C(\vec{x}) = \begin{bmatrix}
 
 From \eqref{eq:distance_taylor_expansion}, we have 
 \begin{equation}
-e_M(\vec{y}_1, \vec{y}_2) = (\epsilon-1) (y_{2,2} - y_{1,2})^4 
+e_M(\vec{y}_1, \vec{y}_2) = 3 (y_{2,2} - y_{1,2})^4 
 + \mathcal{O} (\|\vec{y}_1 - \vec{y}_2 \|^6 ) 
 \end{equation}
 %
@@ -620,8 +649,12 @@ Therefore, $\|e_M \| = \mathcal{O}\left(\| \vec{y}_2 - \vec{y}_1\|^4 \right)$
 %
 We know 
 \begin{equation}
-\| \vec{z}_2 - \vec{z}_1 \|^2_2 = \| \vec{y}_2 - \vec{y}_1 \|_M^2 + e_M(\vec{y}_1, \vec{y}_2) = \frac{1}{2} (\vec{y}_2 - \vec{y}_1 )^T \left(\left.(J I_\epsilon J^T)^{-1}\right|_{\vec{y}_1} + \left.(J I_\epsilon J^T)^{-1}\right|_{\vec{y}_2}\right) (\vec{y}_2 - \vec{y}_1 ) 
+\begin{aligned}
+\| \vec{z}_2 - \vec{z}_1 \|^2_2 
+& = \| \vec{y}_2 - \vec{y}_1 \|_M^2 + e_M(\vec{y}_1, \vec{y}_2) \\
+& = \frac{1}{2} (\vec{y}_2 - \vec{y}_1 )^T \left(\left.(J I_\epsilon J^T)^{-1}\right|_{\vec{y}_1} + \left.(J I_\epsilon J^T)^{-1}\right|_{\vec{y}_2}\right) (\vec{y}_2 - \vec{y}_1 ) 
 + \mathcal{O} (\|\vec{y}_1 - \vec{y}_2 \|^4 ) 
+\end{aligned}
 \end{equation} 
 %
 Therefore, when $e_M$ is small, $\|\vec{y}_2 - \vec{y}_1 \|_M^2$ will vary quadratically as a function of $\|\vec{y}_1 - \vec{y}_2 \|_2$.
@@ -635,21 +668,20 @@ We therefore want to choose $\sigma_{kernel} < 1$ in the diffusion maps calculat
 
 \subsubsection{Errors in covariance estimation}
 
-% TODO: FIX THIS
 From \eqref{eq:estimated_cov}, we find that
 \begin{equation}
 \begin{aligned}
-e_{C,11}(\vec{x}_t, \tau-t) &=& \frac{8}{\epsilon^{3/2} (\tau - t)} \vec{x}_t \mathbb{E} \left[ \left( \int_t^\tau dW_s^2  \right) \left( \int_t^\tau \int_t^{s_2} dW_{s_1}^2 dW_{s_2}^2  \right) \right] 
-+ \mathcal{O} ((\tau - t) ) \\
-e_{C,12}(\vec{x}_t, \tau-t) &=& \frac{2}{\epsilon^{3/2} (\tau - t)}  \mathbb{E} \left[ \left( \int_t^\tau dW_s^2 \right)  \left( \int_t^\tau \int_t^{s_2}  dW_{s_1}^2 dW_{s_2}^2 \right) \right] 
-+ \mathcal{O} ((\tau - t) ) \\
-e_{C,21}(\vec{x}_t, \tau-t) &=& \frac{2}{\epsilon^{3/2} (\tau - t)} \mathbb{E} \left[ \left( \int_t^\tau dW_s^2  \right) \left( \int_t^\tau \int_t^{s_2} dW_{s_1}^2 dW_{s_2}^2  \right) \right] 
-+ \mathcal{O} ((\tau - t) ) \\
-e_{C,22}(\vec{x}_t, \tau-t) &=& \mathcal{O} ((\tau - t) ) 
+ e_{C,11}(\vec{x}_t, \delta t) =& \frac{4}{\epsilon^{3/2} \delta t} x_{t,2} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s^2  \right) \left( \int_t^{t + \delta t} \int_t^{s_2} dW_{s_1}^2 dW_{s_2}^2  \right) \right] 
++ \mathcal{O} (\delta t) \\
+e_{C,12}(\vec{x}_t, \delta t) =
+e_{C,21}(\vec{x}_t, \delta t)  =&
+\frac{2}{\epsilon^{3/2} \delta t}  \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s^2 \right)  \left( \int_t^\tau \int_t^{s_2}  dW_{s_1}^2 dW_{s_2}^2 \right) \right] 
++ \mathcal{O} (\delta t) \\
+ e_{C,22}(\vec{x}_t, \delta t) =& \mathcal{O} (\delta t) 
 \end{aligned}
 \end{equation}
 %
-Again, we plot $\| \hat{C} \|$ as a function of $\tau -t$, and look for the constant regime, which indicates where $e_C$ is small.
+Again, we plot $\| \hat{C} \|$ as a function of $\delta t$, and look for the constant regime, which indicates where $e_C$ is small.
 %
 This is shown in Figure~\ref{fig:initial_data_nonlinear}. 
 
@@ -664,7 +696,7 @@ This is shown in Figure~\ref{fig:initial_data_nonlinear}.
 \epsfig{width=0.3\textwidth, file=data_nonlinear_NIV_bad_kernel.eps}
 \epsfig{width=0.3\textwidth, file=data_nonlinear_NIV_bad_dt.eps}
 
-\caption{(a) The analytical expressions for the contributions to the distance approximation as a function of $\| \vec{y}_2 - \vec{y}_1\|_2$. (b) The average estimated Mahalanobis distance $\| \vec{y}_2 - \vec{y}_1\|^2_M$ as a function of the distance $\| \vec{y}_2 - \vec{y}_1\|_2$. (c) The analytical expressions for the contibutions to the covariance as a function of the time burst. (d) The average estimated covariance $\| \hat{C} \|$ as a function of the time burst $\tau - t$. (e) Data, colored by the first NIV, when $\sigma_{kernel}$ and $\tau - t$ are chosen appropriately. (f) Data, colored by the first NIV, when $\sigma_{kernel}$  is too large.  (e) Data, colored by the first NIV, when $\tau - t$ is too large. }
+\caption{(a) The analytical expressions for the contributions to the distance approximation as a function of $\| \vec{y}_2 - \vec{y}_1\|_2$. (b) The average estimated Mahalanobis distance $\| \vec{y}_2 - \vec{y}_1\|^2_M$ as a function of the distance $\| \vec{y}_2 - \vec{y}_1\|_2$. (c) The analytical expressions for the contibutions to the covariance as a function of the time burst. (d) The average estimated covariance $\| \hat{C} \|$ as a function of the time burst $\delta t$. (e) Data, colored by the first NIV, when $\sigma_{kernel}$ and $\delta t$ are chosen appropriately. (f) Data, colored by the first NIV, when $\sigma_{kernel}$  is too large.  (e) Data, colored by the first NIV, when $\delta t$ is too large. }
 \label{fig:cov_error_nonlinear}
 \end{figure}
 
