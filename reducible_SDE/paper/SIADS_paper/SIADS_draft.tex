@@ -216,9 +216,7 @@ We then consider the transformation
 \begin{equation} \label{eq:general_rescale}
 x_i = \frac{z_i}{\sqrt{e_i}}
 \end{equation}
-of the SDE in  \eqref{eq:general_SDE}. 
-%
-\eqref{eq:general_SDE} now becomes
+so that \eqref{eq:general_SDE} now becomes
 \begin{equation} 
 \begin{aligned}
 dz_i &= a_i(\vec{z}) dt + dW_i, & \: 1 \le i \le m \\
@@ -238,15 +236,6 @@ One, rescaling the data so that all variables have unit diffusion terms means th
 Two, the righthandside of \eqref{eq:mahalanobis} is invariant (to fourth order) to the function $\mathbf{f}$ and allows for the approximation of the Euclidean distance between samples of the slow variables in the ``decoupled" SDE space.
 
 
-%For the specific example \eqref{eq:fast_slow_SDE}, the change of variables gives the following system:
-%\begin{equation}
-%\begin{aligned}
-%d\xi_1 &= adt + dW_1\\
-%d\xi_2 &= -\frac{\xi}{\epsilon} dt +  dW_2
-%\end{aligned}
-%\end{equation}
-
-
 \section{Diffusion Maps for Global Parameterization}
 
 Our goal is to extract a {\em global} parameterization of the data that respects the slow variables. 
@@ -255,9 +244,9 @@ We will use diffusion maps, a kernel-based manifold learning technique, to extra
 %
 Given data $\vec{v}_1, \dots, \vec{v}_N \in \mathbb{R}^d$, we first construct the matrix $W \in \mathbb{R}^{N \times N}$, where 
 \begin{equation} \label{eq:dmaps_kernel}
-W_{ij} = \exp \left( -\frac{\|\vec{v}_i - \vec{v}_j \|_M^2}{\sigma_{kernel}^2} \right)
+W_{ij} = \exp \left( -\frac{\|\vec{v}_i - \vec{v}_j \|^2}{\sigma_{kernel}^2} \right)
 \end{equation}
-where $\| \cdot \|_M$ denotes the appropriate norm (in our case, the Mahalanobis distance \eqref{eq:mahalanobis}), and $\sigma_{kernel}$ is the kernel scale and denotes a characteristic distance within the data set (we often set $\sigma_{kernel}$ to be the median of the pairwise distances). 
+where $\| \cdot \|$ denotes the appropriate norm (in our case, the Mahalanobis distance \eqref{eq:mahalanobis}), and $\sigma_{kernel}$ is the kernel scale and denotes a characteristic distance within the data set. 
 %
 We then construct the diagonal matrix $D \in \mathbb{R}^{N \times N}$, with 
 \begin{equation}
@@ -284,10 +273,7 @@ Accordingly, we will address the accuracy of our method from two standpoints: (1
 %
 We will present both analytical results for the error bounds, as well as an empirical methodology to set the appropriate parameters for our method to accurately recover the intrinsic slow variable(s). 
 
-%TODO: change ``curvature'' in figure to ``nonlinearity'' in $\sigma_{kernel}$
-%TODO: emphasize that if $\delta t$ is too large, then data does not look Gaussian
 %TODO: change strip to look different than other data
-
 
 \subsection{Error analysis of the Mahalanobis distance}
 
@@ -350,7 +336,7 @@ However, we note that
 \end{aligned}
 \end{equation}
 %
-where $C(\vec{y})$ is the local covariance of observed stochastic process at $\vec{y}$, which we can empirically estimate from data (this will be discussed in a subsequent section), and $C^{\dagger}(\vec{y})$ denotes the rank-$d$ Moose-Penrose pseudoinverse (since, in general, $d \ge n$).
+where $C(\vec{y})$ is the local covariance of observed stochastic process at $\vec{y}$, which we can empirically estimate from data (this will be discussed in a subsequent section), and $C^{\dagger}(\vec{y})$ denotes the rank-$n$ Moose-Penrose pseudoinverse (since, in general, $d \ge n$).
 %
 Therefore, we choose to truncate the distance approximation in \eqref{eq:distance_taylor_expansion} at the first order term.
 %
@@ -365,8 +351,13 @@ We define the error incurred by using the Mahalanobis distance to approximate th
 e_M(\vec{y}_1, \vec{y}_2) \equiv \| \vec{z}_2 - \vec{z}_1 \|^2_2 - \| \vec{y}_2 - \vec{y}_1 \|^2_M 
 \end{equation}
 
-
-
+The parameter $\sigma_{kernel}$ in the DMAPS calculation determines how much $e_M$ contrinubutes to our overall analysis. 
+%
+From \eqref{eq:dmaps_kernel}, we can see that distances which are greater than $\sigma_{kernel}$ are ``not important'' in the computation; their weight goes to 0 because of the exponential kernel. 
+%
+Therefore, we want to choose $\sigma_{kernel}^2$ on the order of $\|\vec{y}_2 - \vec{y}_1\|^2$ in a regime where $e_M \ll \|\vec{y}_2 - \vec{y}_1\|^2$. 
+%
+This will ensure that the errors in the Mahalanobis distance approximation do not contribute greatly to our overall analysis. 
 
 \subsection{Error analysis of the covariance estimation}
 
@@ -422,6 +413,8 @@ e_C (\vec{x}_t, \delta t) \equiv \hat{C} (\vec{x}_t, \delta t)  - C(\vec{x}_t)
 \end{equation}
 
 In practice, we will compute $\hat{C}$ using \eqref{eq:estimated_cov} or \eqref{eq:estimated_cov_linear_f} by running many simulations of length $\delta t$ starting at point $\vec{x}_t$, and using the sample average to approximate the expected values. 
+%
+We want to set $\delta t$ such that $\|e_C \| \ll \|C \|$. 
 
 \section{Results}
 
@@ -638,7 +631,7 @@ e_M(\vec{y}_1, \vec{y}_2) = 3 (y_{2,2} - y_{1,2})^4
 We can bound the Mahalanobis distance by the eigenvalues of $C^{\dagger}$, 
 \begin{equation}
 \lambda_1 (C^{\dagger}) \| \vec{y}_2 - \vec{y}_1 \|^2 
-= 1 \| \vec{y}_2 - \vec{y}_1 \|^2 
+= \| \vec{y}_2 - \vec{y}_1 \|^2 
 \le 
 (\vec{y}_2 - \vec{y}_1) C^{\dagger} (\vec{y}_2 - \vec{y}_1) 
 \le 
