@@ -6,6 +6,7 @@ a = 3;
 DriftFn = @(t, x) [a; -x(2)/epsilon];
 DiffnFn = @(t, x) [1 0; 0 1/sqrt(epsilon)];
 
+%%
 % min_dt = 1e-5;
 min_dt = epsilon^2;
 step_tol = 1e-4;
@@ -29,6 +30,10 @@ else
     nsteps = size(data_init, 1);
     t = (1:nsteps)';
 end
+
+%%
+
+min_dt = epsilon/10;
 
 dt_burst_step = min(dt_burst, min_dt);
 nsteps_burst_per_step = round(dt_burst / dt_burst_step);
