@@ -146,9 +146,9 @@ Assuming that the functions $a_i$ are bounded and Lipschitz, and that we can fin
 \begin{equation}
 \mathbb{E} \left| \frac{1}{T} \int_t^{t + T} a_i(x_1, \dots, x_m, x_{m+1}(s), \dots, x_n(s)) ds - \overline{a} (x_1, \dots, x_m) \right| < \kappa_i (T), 
 \end{equation}
-where $\kappa_i((T) \rightarrow 0 $ as $T \rightarrow \infty$, then the averaging principle \cite{...} states that we can write an effective SDE in {\em only} the slow variables $x_1, \dots, x_m$. 
+with $\kappa_i(T) \rightarrow 0 $ as $T \rightarrow \infty$, then the averaging principle \cite{...} states that we can write an effective SDE in {\em only} the slow variables $x_1, \dots, x_m$. 
 
-We will consider observing the the SDE in \eqref{eq:general_SDE} through a deterministic (perhaps nonlinear) function $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$, where $d \ge n$, and the image of $\mathbf{f}$ is an $n$-dimensional manifold in $\mathbb{R}^d$. 
+We will consider observing the the SDE in \eqref{eq:general_SDE} through a deterministic (perhaps nonlinear) function $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$, where $d \ge n$ and the image of $\mathbf{f}$ is an $n$-dimensional manifold in $\mathbb{R}^d$. 
 %
 We require the $\mathbf{g} = \mathbf{f}^{-1}$ to be well-defined, and both $\mathbf{f}$ and $\mathbf{g}$ to be continuously differentiable to fourth order. 
 %
@@ -284,7 +284,7 @@ where $C(\vec{y})$ is the local covariance of observed stochastic process at $\v
 %
 Therefore, we choose to truncate the distance approximation in \eqref{eq:distance_taylor_expansion} at the first order term.
 %
-We call this distance the {\em Mahalanobis distance} \footnote{We would like to note that the Mahalanobis distance is traditionally defined for a fixed covariance matrix. However, following \cite{...}, we will define our Mahalanobis distance locally, using the local covariance at each point.}, 
+We call this distance the Mahalanobis distance \footnote{We would like to note that the Mahalanobis distance is traditionally defined for a fixed covariance matrix. However, following \cite{...}, we will define our Mahalanobis distance locally, using the local covariance at each point.}, 
 \begin{equation} \label{eq:mahalanobis_distance}
  \| \vec{y}_2 - \vec{y}_1 \|^2_M = 
  \frac{1}{2} (\vec{y}_2 - \vec{y}_1)^T \left( C^{\dagger}(\vec{y}_1) + C^{\dagger}(\vec{y}_2) \right) (\vec{y}_2 - \vec{y}_1)
@@ -295,9 +295,9 @@ We define the error incurred by using the Mahalanobis distance to approximate th
 e_M(\vec{y}_1, \vec{y}_2) \equiv \| \vec{z}_2 - \vec{z}_1 \|^2_2 - \| \vec{y}_2 - \vec{y}_1 \|^2_M 
 \end{equation}
 
-The parameter $\sigma_{kernel}$ in the DMAPS calculation determines how much $e_M$ contrinubutes to our overall analysis. 
+The parameter $\sigma_{kernel}$ in the DMAPS calculation determines how much $e_M$ contributes to our overall analysis. 
 %
-From \eqref{eq:dmaps_kernel}, we can see that distances which are greater than $\sigma_{kernel}$ are ``not important'' in the computation; their weight goes to 0 because of the exponential kernel. 
+From \eqref{eq:dmaps_kernel}, we can see that distances which are greater than $\sigma_{kernel}$ are ``not important'' in the computation, as their weight goes to 0 because of the exponential kernel. 
 %
 Therefore, we want to choose $\sigma_{kernel}^2$ on the order of $\|\vec{y}_2 - \vec{y}_1\|^2$ in a regime where $e_M \ll \|\vec{y}_2 - \vec{y}_1\|^2$. 
 %
@@ -311,21 +311,23 @@ Therefore, we would like to estimate the local covariance at a point $\vec{x}_t$
 
 We know that, for a stochastic process following \eqref{eq:general_SDE} and observed through a function $\mathbf{f}$, the covariance $C$ is given by 
 \begin{equation}
-C_{jk}(\vec{x}_t) = 
-\sum_{i=1}^n \frac{1}{e_i} \left. \frac{\partial f_j}{\partial x_i} \right|_{\vec{x}_t} \left. \frac{\partial f_k}{\partial x_i} \right|_{\vec{x}_t} 
+C_{i_1 i_2}(\vec{x}_t) = 
+\sum_{j=1}^n \frac{1}{e_j} \left. \frac{\partial f_{i_1}}{\partial x_j} \right|_{\vec{x}_t} \left. \frac{\partial f_{i_2}}{\partial x_j} \right|_{\vec{x}_t} 
 \end{equation}
 %
-We will use local simulation bursts to estimate the local covariance.
+We will use local simulation bursts to estimate the local covariance,
+\begin{equation} \label{eq:est_cov}
+\hat{C}_{i_1 i_2}(\vec{x}_t, \delta t) =
+\frac{1}{\delta t} \left( \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \right)
+\end{equation}
 %
-Let $\delta t > 0$ be the length of the simulation burst used to estimate the covariance. 
+where $\delta t > 0$ is the length of the simulation burst. 
 %
 For the general SDE formulation outlined in \eqref{eq:general_SDE}, the estimated covariance $\hat{C}$ is 
 \begin{equation}\label{eq:estimated_cov}
 \begin{aligned}
 \hat{C}_{i_1 i_2}(\vec{x}_t, \delta t) 
-= &
-\frac{1}{\delta t} \left( \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \right) \\
 =& 
 \sum_{j=1}^n  \frac{1}{e_j} \left. \frac{\partial f_{i_1}}{\partial x_j} \right|_{\vec{x}_t} \left. \frac{\partial f_{i_2}}{\partial x_j} \right|_{\vec{x}_t} \\
 &+ \frac{1}{\delta t} \sum_{j,k,l=1}^n \frac{1}{\sqrt{e_j e_k e_l}} \left. \frac{\partial f_{i_1}}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} \left. \frac{\partial^2 f_{i_2}}{\partial x_k \partial x_l} \right|_{\vec{x}_{s_1}} dW_{s_1, k} dW_{s_2, l} \right) \right] \\
@@ -341,9 +343,6 @@ In this case,
 \begin{equation} \label{eq:estimated_cov_linear_f}
 \begin{aligned}
 \hat{C}_{i_1 i_2}(\vec{x}_t, \delta t) 
-=&
-\frac{1}{\delta t} \left( \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\vec{x}_{t + \delta t}) \right]\right) \\ 
 =& 
 \sum_{j=1}^n  \frac{1}{e_j} \frac{\partial f_{i_1}}{\partial x_j} \frac{\partial f_{i_2}}{\partial x_j} \\
 &+ \frac{1}{\delta t} \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \frac{\partial f_{i_1}}{\partial x_j} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_2}}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
@@ -360,7 +359,7 @@ e_C (\vec{x}_t, \delta t) \equiv \hat{C} (\vec{x}_t, \delta t)  - C(\vec{x}_t)
 \end{aligned}
 \end{equation}
 
-In practice, we will compute $\hat{C}$ using \eqref{eq:estimated_cov} or \eqref{eq:estimated_cov_linear_f} by running many simulations of length $\delta t$ starting at point $\vec{x}_t$, and using the sample average to approximate the expected values. 
+In practice, we will compute $\hat{C}$ using \eqref{eq:est_cov} by running many simulations of length $\delta t$ starting at point $\vec{x}_t$, and using the sample average to approximate the expected values. 
 %
 We want to set $\delta t$ such that $\|e_C \| \ll \|C \|$. 
 
@@ -441,10 +440,10 @@ In contrast, using the Euclidean distance does not allow us recover the slow var
 From \eqref{eq:estimated_cov_linear_f}, we calculate
 \begin{equation}
 \begin{aligned}
-e_{C, 11}(\vec{x}_t, \delta t) &=& \mathcal{O} (\delta t^{3/2}) \\
-e_{C, 12}(\vec{x}_t, \delta t) &=&  -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
-e_{C, 21}(\vec{x}_t, \delta t) &=& -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
-e_{C, 22}(\vec{x}_t, \delta t) &=& -\frac{2}{\delta t \epsilon^2} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,2} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2}) 
+e_{C, 11}(\vec{x}_t, \delta t) =& \mathcal{O} (\delta t^{3/2}) \\
+e_{C, 12}(\vec{x}_t, \delta t) =&  -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
+e_{C, 21}(\vec{x}_t, \delta t) =& -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
+e_{C, 22}(\vec{x}_t, \delta t) =& -\frac{2}{\delta t \epsilon^2} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,2} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2}) 
 \end{aligned}
 \end{equation}
 %
@@ -462,9 +461,7 @@ This will provide an estimate of $\hat{C} = C + e_C$ as a function of $\delta t$
 %
 From Figure~\ref{fig:cov_error}(a), we can see that there should be a kink in the plot of $\| \hat{C} \|$ versus $\delta t$ when $\| e_C \|$ becomes larger than $\|C\|$. 
 %
-Figure~\ref{fig:cov_error}(b) shows the empirical $\| \hat{C} \|$ as a function of $\delta t$.
-%
-Clearly, the kink in this curve is consistent with the crossover point in Figure~\ref{fig:cov_error}(a). 
+Figure~\ref{fig:cov_error}(b) shows the empirical $\| \hat{C} \|$ as a function of $\delta t$, and the kink in this curve is consistent with the crossover point in Figure~\ref{fig:cov_error}(a). 
 
 \begin{figure}[t]
 \epsfig{width=0.5\textwidth, file=C_dt_analytical_linear.eps}
@@ -476,7 +473,7 @@ Clearly, the kink in this curve is consistent with the crossover point in Figure
 
 \subsubsection{Recovery of fast variable}
 
-Note that, for this linear example, $e_C$ is constant a diagonal matrix. 
+Note that, for this linear example, $e_C$ is essentially a constant a diagonal matrix (the $e_{C,22} = \mathcal{O}(\frac{\delta t}{\epsilon^2})$ term dominates). 
 %
 Therefore, taking $\delta t$ ``too large'' will not lead to nonlinear effect or mixing of the fast and slow variables. %
 Rather, changing $\delta t$, will only affect the ``perceived'' timescales of the fast/slow. 
@@ -485,11 +482,11 @@ Figure~\ref{fig:recover_fast} shows results for three different values of $\delt
 %
 When the time scale of the simulation burst used to estimate the local covariance (indicated by the red clouds in the top row of figures) is smaller than that of the equilibration time of the fast variable, the estimated covariance is constant and the fast variable is collapsed significantly relative to the slow variable.
 %
-This means that the fast variable is recovered {\em very} far down in the DMAPS eigenvectors; the left two columns show that, for this example, the fast variable is recovered as the $10^{th}$ DMAP coordinate.
+This means that the fast variable is recovered {\em very} far down in the DMAPS eigenvectors; the left two columns show that, for this example, the fast variable is recovered as $\phi_{10}$.
 %
 However, if the time scale of the burst is {\em longer} than the saturation time of the fast variable, the estimated covariance changes: the variance in the slow direction continues to grow, while the variance in the fast direction is fixed.
 %
-This means that the collapse of the fast variable is less pronounced relative to the slow variable, and the fast variable is recovered in a higher eigenvector; the right column shows that, when the burst is now longer than the equilibration time, the fast variable is recovered as the $6^{th}$ DMAP coordinate.
+This means that the collapse of the fast variable is less pronounced relative to the slow variable, and the fast variable is recovered in a higher eigenvector; the right column shows that, when the burst is now longer than the equilibration time, the fast variable appears higher in the eigenvalue spectrum and is recovered as $\phi_6$.
 
 \begin{figure}[t]
 \epsfig{width=0.3\textwidth, file=data_linear_burst1.eps}
@@ -508,11 +505,11 @@ This means that the collapse of the fast variable is less pronounced relative to
 \epsfig{width=0.3\textwidth, file=data_linear_evals2.eps}
 \epsfig{width=0.3\textwidth, file=data_linear_evals3.eps}
 
-\caption{Relationship between changing $\delta t$ and recovery of the variables. From left to right, the columns correspond to $\delta t = 10^{-6}, 10^{-5}, 10^{-3}$.  (Row 1) Data (gray) and representative burst (red) used to estimate the local covariance. (Row 2) Correlation between first DMAP coordinate and the slow variable $x_1$. (Row 3) Correlation between DMAP coordinate and the fast variable $x_2$. Note that for $\delta t = 10^{-6}, 10^{-5}$, $x_2$ is correlated with $\phi_{10}$, whereas when $\delta t = 10^{-3}$, $x_2$ is correlated with $\phi_6$. (Row 4) DMAPS eigenvalue spectra. The eigenvalues corresponding to the coordinates for the fast and slow modes are indicated by red circles. }
+\caption{Relationship between changing $\delta t$ and recovery of the variables. From left to right, the columns correspond to $\delta t = 10^{-6}, 10^{-5}, 10^{-3}$.  (Row 1) Data (gray) and representative burst (red) used to estimate the local covariance. (Row 2) Correlation between first diffusion maps coordinate and the slow variable $x_1$. (Row 3) Correlation between diffusion maps coordinate and the fast variable $x_2$. Note that for $\delta t = 10^{-6}, 10^{-5}$, $x_2$ is correlated with $\phi_{10}$, whereas when $\delta t = 10^{-3}$, $x_2$ is correlated with $\phi_6$. (Row 4) Diffusion maps eigenvalue spectra. The eigenvalues corresponding to the coordinates for the fast and slow modes are indicated by red circles. }
 \label{fig:recover_fast}
 \end{figure}
 
-\subsection{Nonlinear functions}
+\subsection{Nonlinear functions} \label{subsec:nonlinear_example}
 
 In the second example, our data will be warped into half-moon shapes via the function 
 \begin{equation} \label{eq:nonlinear_function}
@@ -577,12 +574,10 @@ e_M(\vec{y}_1, \vec{y}_2) = - (y_{2,2} - y_{1,2})^4
 We can bound the Mahalanobis distance by the eigenvalues of $C^{\dagger}$, 
 \begin{equation}
 \lambda_1 (C^{\dagger}) \| \vec{y}_2 - \vec{y}_1 \|^2 
-= \| \vec{y}_2 - \vec{y}_1 \|^2 
 \le 
 (\vec{y}_2 - \vec{y}_1) C^{\dagger} (\vec{y}_2 - \vec{y}_1) 
 \le 
-(2 + \epsilon) \| \vec{y}_2 - \vec{y}_1 \|^2 
-= \lambda_2 (C^{\dagger}) \| \vec{y}_2 - \vec{y}_1 \|^2  
+\lambda_2 (C^{\dagger}) \| \vec{y}_2 - \vec{y}_1 \|^2  
 \end{equation}
 where $\lambda_1 (C^{\dagger}) \le \lambda_2 (C^{\dagger})$ are the two eigenvalues of $C^{\dagger}$. 
 
@@ -590,17 +585,17 @@ Figure~\ref{fig:cov_error_nonlinear}(a) shows $\| \vec{y}_2 - \vec{y}_1 \|^2_M$ 
 %
 The Mahalanobis distance is an accurate approximation to the true intrinsic distance $\| \vec{z}_2 - \vec{z}_1 \|_2$ when $e_M \ll \| \vec{y}_2 - \vec{y}_1 \|^2_M$. 
 %
-We want to choose $\sigma_{kernel}^2$ in a regime where $e_M \ll \| \vec{y}_2 - \vec{y}_1 \|^2_M$, so that the distances we utilize in the DMAPS calculation are accurate. 
+We want to choose $\sigma_{kernel}^2$ in a regime where $e_M \ll \| \vec{y}_2 - \vec{y}_1 \|^2_M$, so that the distances we utilize in the diffusion maps calculation are accurate. 
 
 We can find such a regime empirically by plotting $\| \vec{y}_2 - \vec{y}_1 \|^2_M$ as a function of $\| \vec{y}_2 - \vec{y}_1 \|_2$, and assessing when the relationship deviates from quadratic. 
 %
 This is shown in Figure~\ref{fig:cov_error_nonlinear}(b). 
 
-Figures~\ref{fig:colored_data_nonlinear_cases}(a) and (c) show the data from Figure~\ref{fig:initial_data_nonlinear}, colored by the first DMAPS coordinate for two different values of $\sigma_{kernel}$. 
+Figures~\ref{fig:colored_data_nonlinear_cases}(a) and (c) show the data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ for two different values of $\sigma_{kernel}$. 
 %
 The corresponding values of $\sigma_{kernel}^2$ are indicated by the dashed lines in Figure~\ref{fig:cov_error_nonlinear}(a)~and~(b). 
 %
-When $\sigma_{kernel}^2$ corresponds to a region where $\|e_M \| \ll \|\vec{y}_2 - \vec{y}_1 \|_M^2$, the slow variable is recovered by the first DMAPS coordinate.
+When $\sigma_{kernel}^2$ corresponds to a region where $\|e_M \| \ll \|\vec{y}_2 - \vec{y}_1 \|_M^2$, $\phi_1$ is well correlated with the slow variable.
 %
 However, when $\sigma_{kernel}^2$ corresponds to a region where $\|e_M \| \gg \|\vec{y}_2 - \vec{y}_1 \|_M^2$, the slow variable is no longer recovered. 
 
@@ -624,7 +619,7 @@ As in the previous example, we can find where $\| e_c \| \ll \| C \|$  by plotti
 %
 These results are shown in Figure~\ref{fig:cov_error_nonlinear}(d). 
 
-Figures~\ref{fig:colored_data_nonlinear_cases}(a) and (d) show the data from Figure~\ref{fig:initial_data_nonlinear}, colored by the first DMAPS coordinate for two different values of $\delta t$. 
+Figures~\ref{fig:colored_data_nonlinear_cases}(a) and (d) show the data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ for two different values of $\delta t$. 
 %
 The corresponding values of $\delta t$ are indicated by the dashed lines in Figure~\ref{fig:cov_error_nonlinear}(c)~and~(d). 
 %
@@ -717,8 +712,8 @@ Therefore,
 %
 \begin{equation}
 \begin{aligned}
-(z_{2,i} - z_{1,i})^2 =& 
-\left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) \right) \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) \right) \\
+& (z_{2,i} - z_{1,i})^2 = \\ 
+& \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) \right) \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) \right) \\
 &+ 2 \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) \right) \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) (y_{2,k}-y_{1,k}) \right) \\
 &+ 2 \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) \right) \left( \frac{\sqrt{e_i}}{6} \sum_{jkl=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) (y_{2,k}-y_{1,k}) (y_{2,l}-y_{1,l}) \right) \\
 &+ \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) (y_{2,k}-y_{1,k}) \right) \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}_1} (y_{2,j}-y_{1,j}) (y_{2,k}-y_{1,k}) \right) \\
@@ -753,8 +748,8 @@ We can average expansions around $\vec{y}_1$ and $\vec{y}_2$ to gain one order o
 %
 \begin{equation} 
 \begin{aligned}
-\|\vec{z}_2 - \vec{z}_1\|_2^2 &=
-\frac{1}{2} \left( \|\vec{z}_2 - \vec{z}_1\|_{2, \text{expanded at } \vec{y}_1}^2  + \|\vec{z}_2 - \vec{z}_1\|_{2, \text{expanded at } \vec{y}_2}^2 \right) \\
+& \|\vec{z}_2 - \vec{z}_1\|_2^2 \\
+=& \frac{1}{2} \left( \|\vec{z}_2 - \vec{z}_1\|_{2, \text{expanded at } \vec{y}_1}^2  + \|\vec{z}_2 - \vec{z}_1\|_{2, \text{expanded at } \vec{y}_2}^2 \right) \\
 =& \frac{1}{2} \sum_{i=1}^n e_i \sum_{jk=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} \left. \frac{\partial g_i}{\partial y_k} \right|_{\vec{y}_1} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_2} \left. \frac{\partial g_i}{\partial y_k} \right|_{\vec{y}_2} \right) (y_{2,j}-y_{1,j}) (y_{2,k}-y_{1,k}) \\
 &+ \frac{1}{2} \sum_{i=1}^n e_i \sum_{jkl=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}_1} - \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_2} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}_2} \right) (y_{2,j}-y_{1,j})  (y_{2,k}-y_{1,k}) (y_{2,l}-y_{1,l}) \\
 &+ \frac{1}{6} \sum_{i=1}^n e_i \sum_{jklm=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_1} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}_1} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}_2} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}_2} \right) (y_{2,j}-y_{1,j}) (y_{2,k}-y_{1,k}) (y_{2,l}-y_{1,l})(y_{2,m}-y_{1,m}) \\
@@ -861,7 +856,8 @@ f(\vec{x}_t) \\
 %
 \begin{equation}
 \begin{aligned}
-\mathbb{E} [f_1(\vec{x}_{t+\delta t})] \mathbb{E} [f_2(\vec{x}_{t+\delta t})] =&
+&\mathbb{E} [f_1(\vec{x}_{t+\delta t})] \mathbb{E} [f_2(\vec{x}_{t+\delta t})] \\
+=&
 f_1(\vec{x}_t) f_2(\vec{x}_t) \\
 &+  f_1(\vec{x}_t)f_{2,(0)}(\vec{x}_t) \delta t
 + f_1(\vec{x}_t)\sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right] \\
@@ -883,7 +879,7 @@ f_1(\vec{x}_t) f_2(\vec{x}_t) \\
 %
 \begin{equation}
 \begin{aligned}
-f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \\
+&f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \\
 =& 
 f_1(\vec{x}_t) f_2(\vec{x}_t) 
 +  f_1(\vec{x}_t) \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \\
@@ -893,15 +889,15 @@ f_1(\vec{x}_t) f_2(\vec{x}_t)
 + f_1(\vec{x}_t) \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{2, (0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j} \\
 &+ f_1(\vec{x}_t) \int_t^{t+\delta t} \int_t^{s_2} f_{2, (0,0)}(\vec{x}_{s_1}) ds_1 ds_2 
 + \left( \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right) f_2(\vec{x}_t) \\
-&+ \left( \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right) \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \\
-&+  \left(\sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right)f_{2,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \\
+&+ \left( \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right) \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} 
++  \left(\sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right)f_{2,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \\
 &+ \left(\sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right) \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \\
 &+ \left(\sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right)\sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \\
 &+ \left(\sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \right)\sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j} \\
 &+\left( f_{1,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \right) f_2(\vec{x}_t) 
 +  \left( f_{1,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \right)\sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \\
-&+  \left( f_{1,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \right)f_{2,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds\\
-&+ \left( f_{1,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \right)\sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \\
+&+  \left( f_{1,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \right)f_{2,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds
++ \left( f_{1,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \right)\sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \\
 &+\left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) f_2(\vec{x}_t) \\
 &+  \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \int_t^{t + \delta t} dW_{s,j} \\
 &+ \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) f_{2,(0)}(\vec{x}_t) \int_t^{t + \delta t} ds \\
@@ -919,21 +915,21 @@ Taking expectations, and using independence, we obtain
 %
 \begin{equation}
 \begin{aligned}
-\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] \\
 =& 
 f_1(\vec{x}_t) f_2(\vec{x}_t) \\
 &+  f_1(\vec{x}_t) f_{2,(0)}(\vec{x}_t) \delta t
 + f_1(\vec{x}_t) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2, (j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right] \\
-&+ f_1(\vec{x}_t) \sum_{j=1}^n \mathbb{E}  \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2, (j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right] \\
-&+ f_1(\vec{x}_t) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2, (0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j} \right] \\
+&+ f_1(\vec{x}_t) \sum_{j=1}^n \mathbb{E}  \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2, (j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right] 
++ f_1(\vec{x}_t) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2, (0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j} \right] \\
 &+ f_1(\vec{x}_t) \int_t^{t+\delta t} \mathbb{E} \left[ \int_t^{s_2} f_{2, (0,0)}(\vec{x}_{s_1}) ds_1 ds_2 \right]
-&+  \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
++  \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
 &+ \sum_{j,k,l=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,l)}(\vec{x}_{s_1}) dW_{s_1, k} dW_{s_2, l} \right) \right] \\
 &+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,0)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2 \right) \right]\\
 &+ \sum_{j, k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,k)}(\vec{x}_{s_1}) ds_1 dW_{s_2, k} \right) \right] \\
 &+f_{1,(0)}(\vec{x}_t) f_2(\vec{x}_t) \delta t
-&+  f_{1,(0)}(\vec{x}_t)f_{2,(0)}(\vec{x}_t) \delta t^2\\
-&+  f_{1,(0)}(\vec{x}_t) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right] \\
++  f_{1,(0)}(\vec{x}_t)f_{2,(0)}(\vec{x}_t) \delta t^2
++  f_{1,(0)}(\vec{x}_t) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right] \\
 &+f_2(\vec{x}_t) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right] \\
 &+  \sum_{j, k, l=1}^n  f_{2,(l)}(\vec{x}_t)\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
 &+ f_{2,(0)}(\vec{x}_t) \delta t  \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right]  \\
@@ -951,8 +947,8 @@ Therefore,
 %
 \begin{equation}
 \begin{aligned}
-\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
--& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
 =& 
  \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
 &+ \sum_{j,k,l=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,l)}(\vec{x}_{s_1}) dW_{s_1, k} dW_{s_2, l} \right) \right] \\
@@ -971,7 +967,7 @@ For the case when $f$ is nonlinear, we need only consider up to $\mathcal{O}(\de
 \begin{equation}
 \begin{aligned}
 \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
-=& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+-& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
 =& 
 \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
 &+ \sum_{j,k,l=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,l)}(\vec{x}_{s_1}) dW_{s_1, k} dW_{s_2, l} \right) \right] \\
@@ -1033,7 +1029,7 @@ e_{C, i_1 i_2}(\vec{x}_t, \delta t)
 \end{aligned}
 \end{equation}
 
-For the example, 
+For the example in Section~\ref{subsec:linear_example}, 
 \begin{equation}
 \begin{aligned}
 \frac{\partial f_1}{\partial x_1} = \frac{\partial f_2}{\partial x_2} &=& 1 \\
@@ -1077,7 +1073,7 @@ e_M =&
 \end{aligned}
 \end{equation}
 
-For our specific example, 
+For our specific example in in Section~\ref{subsec:nonlinear_example}, 
 \begin{equation}
 \begin{aligned}
 \frac{\partial g_1}{\partial y_1} = \frac{\partial g_2}{\partial y_2} &=& 1 \\
@@ -1108,7 +1104,7 @@ e_C
 \end{aligned}
 \end{equation}
 %
-For our specific example, 
+For our specific example in in Section~\ref{subsec:nonlinear_example}, 
 \begin{equation}
 \begin{aligned}
 \frac{\partial f_1}{\partial x_1} = \frac{\partial f_2}{\partial x_2} &=& 1 \\
@@ -1130,7 +1126,7 @@ e_{C, 21}(\vec{x}_t, \delta t) =& \frac{2}{\delta t \epsilon^{3/2}} \mathbb{E} \
 e_{C, 22}(\vec{x}_t, \delta t) =& \mathcal{O}(\delta t)
 \end{aligned}
 \end{equation}
-
+%
 
 
 \end{document}

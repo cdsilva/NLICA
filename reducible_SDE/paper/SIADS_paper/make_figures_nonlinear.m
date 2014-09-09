@@ -100,8 +100,8 @@ dy = logspace(-4, 1.5, 100);
 make_fig(3, 3.5);
 loglog(dy, 1.5*dy.^2,'-b')
 hold on
-loglog(dy, 3*dy.^4,'-r')
-loglog(dy, 1.5*dy.^2+3*dy.^4,'-k')
+loglog(dy, 1*dy.^4,'-r')
+loglog(dy, 1.5*dy.^2+1*dy.^4,'-k')
 for i=1:length(kernel_samplepoints)
     loglog(dy, kernel_samplepoints(i)*ones(size(dy)), 'linestyle', ':', 'color', 0.5*ones(1,3))
 end
@@ -114,7 +114,7 @@ set(h,'Interpreter','latex');
 set(h,'fontsize', 4);
 saveas(gcf, 'dist_dy_analytical_nonlinear.eps', 'epsc');
 
-
+return
 %%
 W = squareform(pdist(data1));
 minW = min(W(W > 0));

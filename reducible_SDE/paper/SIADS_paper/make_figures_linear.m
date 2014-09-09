@@ -69,8 +69,8 @@ dt_burst_samplepoints = [1e-6 1e-5 1e-3];
 make_fig(3, 3);
 loglog(dt_tmp2, (1+1/epsilon)*ones(size(dt_tmp2)), '-b')
 hold on
-loglog(dt_tmp2, dt_tmp2/epsilon^2, '-r')
-loglog(dt_tmp2, 1+1/epsilon+dt_tmp2/epsilon^2, '-k')
+loglog(dt_tmp2, 2*dt_tmp2/epsilon^2, '-r')
+loglog(dt_tmp2, 1+1/epsilon+2*dt_tmp2/epsilon^2, '-k')
 for i=1:length(dt_burst_samplepoints)
     loglog(dt_burst_samplepoints(i)*ones(size(dt_tmp2)), dt_tmp2/epsilon^2, 'linestyle', ':', 'color', 0.5*ones(1,3))
 end
