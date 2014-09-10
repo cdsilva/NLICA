@@ -962,6 +962,28 @@ Therefore,
 &+ \mathcal{O} (\delta t^{5/2})
 \end{aligned}
 \end{equation}
+%
+%Using the Ito isometry
+%$$ \int_t^{t+ \delta t} X_s dW_{s,i} \int_t^{t+ \delta t} Y_s dW_{s,j} = \int_t^{t+ \delta t} X_s Y_s \delta_{ij} ds$$ 
+%%
+%we can write
+%\begin{equation}
+%\begin{aligned}
+%&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+%- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+%=& 
+% \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \delta t \\
+%&+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,j)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2  \right] \\
+%&+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,0)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2 \right) \right]\\
+%&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2 \right] \\
+%&+  \sum_{j, k=1}^n  f_{2,(k)}(\vec{x}_t)\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right] \\
+%&+ \sum_{j, k, l=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j}  \right) \left(  \int_t^{s_2} f_{2,(l,k)}(\vec{x}_{s_1}) dW_{s_1, l} \right) ds_2 \right] \\
+%&- \sum_{j, k, l, m =1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right] \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2,(l,m)}(\vec{x}_{s_1}) dW_{s_1, l} dW_{s_2, m} \right] \\
+%&+  \sum_{j, k=1}^n f_{2,(k)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2  \right) \left( \int_t^{t + \delta t} dW_{s,k} \right) \right]\\
+%&+   \sum_{j=1}^n  f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2 \right] \\
+%&+ \mathcal{O} (\delta t^{5/2})
+%\end{aligned}
+%\end{equation}
 
 For the case when $f$ is nonlinear, we need only consider up to $\mathcal{O}(\delta t^{3/2})$ terms. 
 \begin{equation}
@@ -1061,6 +1083,8 @@ e_{C, 22}(\vec{x}_t, \delta t) &=& -\frac{2}{\delta t \epsilon^2} \mathbb{E} \le
 \end{aligned}
 \end{equation}
 
+
+
 \subsection{Nonlinear functions}
 
 The error in the Mahalanobis distance is given by \begin{equation}
@@ -1128,5 +1152,13 @@ e_{C, 22}(\vec{x}_t, \delta t) =& \mathcal{O}(\delta t)
 \end{equation}
 %
 
+Using the relationship $\int_0^t W_s dW_s = \frac{1}{2}W_t^2 - \frac{1}{2} t$, we know that
+\begin{equation}
+\begin{aligned}
+\int_t^{t+\delta t} dW_s &=& W_{\delta t} \\
+\int_t^{t+\delta t} \int_t^{s_2} dW_{s_1} dW_{s_2} =
+\int_t^{t+\delta t} W_{s_2} dW_{s_2} &=& \frac{1}{2} W_{\delta t}^2 - \frac{1}{2} \delta t  
+\end{aligned}
+\end{equation}
 
 \end{document}
