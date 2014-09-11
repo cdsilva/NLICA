@@ -1036,73 +1036,80 @@ Rearranging terms, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_
 &+ \mathcal{O} (\delta t^{5/2})
 \end{aligned}
 \end{equation}
-
-
-For the case when $f$ is nonlinear, we need only consider up to $\mathcal{O}(\delta t^{3/2})$ terms. 
-\begin{equation}
-\begin{aligned}
-\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
--& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
-=& 
-\sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
-&+ \sum_{j,k,l=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,l)}(\vec{x}_{s_1}) dW_{s_1, k} dW_{s_2, l} \right) \right] \\
-&+  \sum_{j, k, l=1}^n  f_{2,(l)}(\vec{x}_t)\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
-&+ \mathcal{O} (\delta t^2)
-\end{aligned}
-\end{equation}
 %
-We then substitute expressions for $f$ and its derivatives, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s \right)^2 \right] = \delta t$, we obtain
-\begin{equation}
-\begin{aligned}
-\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
--& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
-=& 
-\sum_{j=1}^n  \frac{1}{e_j} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \delta t \\
-&+ \sum_{j,k,l=1}^n \frac{1}{\sqrt{e_j e_k e_l}} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} \left. \frac{\partial^2 f_2}{\partial x_k \partial x_l} \right|_{\vec{x}_{s_1}} dW_{s_1, k} dW_{s_2, l} \right) \right] \\
-&+ \sum_{j,k,l=1}^n \frac{1}{\sqrt{e_j e_k e_l}} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} \left. \frac{\partial^2 f_1}{\partial x_k \partial x_l} \right|_{\vec{x}_{s_1}} dW_{s_1, k} dW_{s_2, l} \right) \right] \\
-&+ \mathcal{O} (\delta t^2)
-\end{aligned}
-\end{equation}
+where
+\begin{itemize}
+\item $f_{(j)} = \frac{1}{\sqrt{e_j}} \frac{\partial f}{\partial x_j}$ for $j \ge 1$
+\item $f_{(j, k)} = \frac{1}{\sqrt{e_j e_k}} \frac{\partial^2 f}{\partial x_j \partial x_k}$ for $j,k \ge 1$
+\item $f_{(j,0)} = \frac{1}{\sqrt{e_j}} \left( \sum_{k=1}^n \frac{\partial}{\partial x_j} \left( \frac{a_k(\vec{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 e_k} \frac{\partial^3 f}{\partial x_j \partial x_k^2} \right)$
+\item $f_{(0, j)} = \frac{1}{\sqrt{e_j}} \sum_{k=1}^n \frac{a_k(\vec{x})}{e_k} \frac{\partial^2 f}{\partial x_j \partial x_k} +\frac{1}{2 e_k}  \frac{\partial^3 f}{\partial x_j \partial^2 x_k}$
+\end{itemize}
 
-For the case when $f$ is linear, $f_{(j,k)} = f_{(0,j)} = 0$, and so
-\begin{equation}
-\begin{aligned}
-\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
--& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
-=& 
- \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
-&+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,0)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2 \right) \right]\\
-&+  \sum_{j, k=1}^n f_{2,(k)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2  \right) \left( \int_t^{t + \delta t} dW_{s,k} \right) \right]\\
-&+ \mathcal{O} (\delta t^{5/2})
-\end{aligned}
-\end{equation}
+%For the case when $f$ is nonlinear, we need only consider up to $\mathcal{O}(\delta t^{3/2})$ terms. 
+%\begin{equation}
+%\begin{aligned}
+%\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+%-& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+%=& 
+%\sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
+%&+ \sum_{j,k,l=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,l)}(\vec{x}_{s_1}) dW_{s_1, k} dW_{s_2, l} \right) \right] \\
+%&+  \sum_{j, k, l=1}^n  f_{2,(l)}(\vec{x}_t)\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
+%&+ \mathcal{O} (\delta t^2)
+%\end{aligned}
+%\end{equation}
+%%
+%We then substitute expressions for $f$ and its derivatives, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s \right)^2 \right] = \delta t$, we obtain
+%\begin{equation}
+%\begin{aligned}
+%\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+%-& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+%=& 
+%\sum_{j=1}^n  \frac{1}{e_j} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \delta t \\
+%&+ \sum_{j,k,l=1}^n \frac{1}{\sqrt{e_j e_k e_l}} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} \left. \frac{\partial^2 f_2}{\partial x_k \partial x_l} \right|_{\vec{x}_{s_1}} dW_{s_1, k} dW_{s_2, l} \right) \right] \\
+%&+ \sum_{j,k,l=1}^n \frac{1}{\sqrt{e_j e_k e_l}} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} \left. \frac{\partial^2 f_1}{\partial x_k \partial x_l} \right|_{\vec{x}_{s_1}} dW_{s_1, k} dW_{s_2, l} \right) \right] \\
+%&+ \mathcal{O} (\delta t^2)
+%\end{aligned}
+%\end{equation}
 %
-Substituting in expressions for $f$ and its derivatives, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s \right)^2 \right] = \delta t$, we obtain
-\begin{equation}
-\begin{aligned}
-\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
--& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
-=& 
-\sum_{j=1}^n  \frac{1}{e_j} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \delta t \\
-&+ \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_2}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
-&+ \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_1}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
-&+ \mathcal{O} (\delta t^{5/2})
-\end{aligned}
-\end{equation}
+%For the case when $f$ is linear, $f_{(j,k)} = f_{(0,j)} = 0$, and so
+%\begin{equation}
+%\begin{aligned}
+%\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+%-& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+%=& 
+% \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
+%&+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,0)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2 \right) \right]\\
+%&+  \sum_{j, k=1}^n f_{2,(k)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2  \right) \left( \int_t^{t + \delta t} dW_{s,k} \right) \right]\\
+%&+ \mathcal{O} (\delta t^{5/2})
+%\end{aligned}
+%\end{equation}
+%%
+%Substituting in expressions for $f$ and its derivatives, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_s \right)^2 \right] = \delta t$, we obtain
+%\begin{equation}
+%\begin{aligned}
+%\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+%-& \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+%=& 
+%\sum_{j=1}^n  \frac{1}{e_j} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \delta t \\
+%&+ \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \left. \frac{\partial f_1}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_2}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
+%&+ \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \left. \frac{\partial f_2}{\partial x_j} \right|_{\vec{x}_t} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_1}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
+%&+ \mathcal{O} (\delta t^{5/2})
+%\end{aligned}
+%\end{equation}
 
 \section{Results}
 
 \subsection{Linear functions}
 
-For the linear case, 
-\begin{equation}
-\begin{aligned}
-e_{C, i_1 i_2}(\vec{x}_t, \delta t) 
-=& \frac{1}{\delta t} \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \frac{\partial f_{i_1}}{\partial x_j} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_2}}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
-&+ \frac{1}{\delta t} \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \frac{\partial f_{i_2}}{\partial x_j}  \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_1}}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
-&+ \mathcal{O} (\delta t^{3/2})
-\end{aligned}
-\end{equation}
+%For the linear case, 
+%\begin{equation}
+%\begin{aligned}
+%e_{C, i_1 i_2}(\vec{x}_t, \delta t) 
+%=& \frac{1}{\delta t} \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \frac{\partial f_{i_1}}{\partial x_j} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_2}}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
+%&+ \frac{1}{\delta t} \sum_{j,k,l=1}^n \frac{1}{e_l \sqrt{e_j e_k}} \frac{\partial f_{i_2}}{\partial x_j}  \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_1}}{\partial x_l} \left. \frac{\partial a_l(\vec{x})}{\partial x_k} \right|_{\vec{x}_{s_1}} dW_{s_1, k} ds_2 \right) \right]\\
+%&+ \mathcal{O} (\delta t^{3/2})
+%\end{aligned}
+%\end{equation}
 
 For the example in Section~\ref{subsec:linear_example}, 
 \begin{equation}
@@ -1111,30 +1118,56 @@ For the example in Section~\ref{subsec:linear_example},
 \frac{\partial f_2}{\partial x_1} = \frac{\partial f_1}{\partial x_2} &=& 0 \\
 \frac{\partial a_1}{\partial x_i} &=& 0 \\
 \frac{\partial a_2}{\partial x_1} &=& 0 \\
-\frac{\partial a_2}{\partial x_2} &=& -1
+\frac{\partial a_2}{\partial x_2} &=& -2 x_2 \\
+\frac{\partial^2 a_2}{\partial x_2^2} &=& -2
 \end{aligned}
 \end{equation}
 
-Therefore, we need only consider $k=l=2$
+Therefore, 
 %
+\begin{itemize}
+\item $f_{1, (1)} = 1 $
+\item $f_{2,(2)} = \frac{1}{\sqrt{\epsilon}}$
+\item $f_{1, (2)} = f_{2,(1)} = 0 $
+\item $f_{(j, k)} = 0 $
+\item $f_{1,(1,0)} = f_{1, (2,0)} = 0$
+\item $f_{2,(1,0)} = 0$
+\item $f_{2,(2,0)} = \frac{-2x_2}{\epsilon^{3/2}} $
+\item $f_{(0, j)} =0$
+\end{itemize}
+%
+and we have
 \begin{equation}
 \begin{aligned}
-e_{C, i_1 i_2}(\vec{x}_t, \delta t) 
-=& -\frac{1}{\delta t \epsilon^{3/2}} \sum_{j=1}^n \frac{1}{\sqrt{e_j}} \frac{\partial f_{i_1}}{\partial x_j} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_2}}{\partial x_2} dW_{s_1, 2} ds_2 \right) \right]\\
-&- \frac{1}{\delta t \epsilon^{3/2}} \sum_{j=1}^n \frac{1}{\sqrt{e_j}} \frac{\partial f_{i_2}}{\partial x_j}  \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_1}}{\partial x_2} dW_{s_1, 2} ds_2 \right) \right]\\
-&+ \mathcal{O} (\delta t^{3/2})
+e_{C, 11} =& \mathcal{O} (\delta t^{3/2}) \\
+e_{C,12} =& \mathcal{O} (\delta t^{3/2}) \\
+e_{C,21} =& \mathcal{O} (\delta t^{3/2}) \\
+e_{C,22} =&
+ -\frac{4}{\epsilon^2 \delta t} \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} x_{s_2,2} ds_2 ds_1 \right] + \mathcal{O} (\delta t^{3/2})
 \end{aligned}
 \end{equation}
-%
-Reducing terms further results in
-\begin{equation}
-\begin{aligned}
-e_{C, 11}(\vec{x}_t, \delta t) &=& \mathcal{O} (\delta t^{3/2}) \\
-e_{C, 12}(\vec{x}_t, \delta t) &=&  -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
-e_{C, 21}(\vec{x}_t, \delta t) &=& -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
-e_{C, 22}(\vec{x}_t, \delta t) &=& -\frac{2}{\delta t \epsilon^2} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,2} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2}) 
-\end{aligned}
-\end{equation}
+
+
+%Therefore, we need only consider $k=l=2$
+%%
+%\begin{equation}
+%\begin{aligned}
+%e_{C, i_1 i_2}(\vec{x}_t, \delta t) 
+%=& -\frac{1}{\delta t \epsilon^{3/2}} \sum_{j=1}^n \frac{1}{\sqrt{e_j}} \frac{\partial f_{i_1}}{\partial x_j} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_2}}{\partial x_2} dW_{s_1, 2} ds_2 \right) \right]\\
+%&- \frac{1}{\delta t \epsilon^{3/2}} \sum_{j=1}^n \frac{1}{\sqrt{e_j}} \frac{\partial f_{i_2}}{\partial x_j}  \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  \frac{\partial f_{i_1}}{\partial x_2} dW_{s_1, 2} ds_2 \right) \right]\\
+%&+ \mathcal{O} (\delta t^{3/2})
+%\end{aligned}
+%\end{equation}
+%%
+%Reducing terms further results in
+%\begin{equation}
+%\begin{aligned}
+%e_{C, 11}(\vec{x}_t, \delta t) &=& \mathcal{O} (\delta t^{3/2}) \\
+%e_{C, 12}(\vec{x}_t, \delta t) &=&  -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
+%e_{C, 21}(\vec{x}_t, \delta t) &=& -\frac{1}{\delta t \epsilon^{3/2}} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,1} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2})\\
+%e_{C, 22}(\vec{x}_t, \delta t) &=& -\frac{2}{\delta t \epsilon^2} \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,2} \right)\left( \int_t^{t+\delta t} \int_t^{s_2}  dW_{s_1, 2} ds_2 \right) \right] + \mathcal{O} (\delta t^{3/2}) 
+%\end{aligned}
+%\end{equation}
 
 
 
@@ -1171,6 +1204,42 @@ e_M =
 \end{equation}
 
 The errors in the covariance are given by
+\begin{equation}
+\begin{aligned}
+e_C
+=& 
+ \sum_{j,k=1}^n f_{1,(k)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right] \\
+&+  \sum_{j, k=1}^n  f_{2,(k)}(\vec{x}_t)\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right]\\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right] 
++ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2\right] \right) \\
+&+  \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{1,(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]
++ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2 \right] \right) \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j}  \right) \left(  \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} \right) ds_2 \right] \\
+&+ \mathcal{O} (\delta t^{5/2})
+\end{aligned}
+\end{equation}
+%
+where
+\begin{itemize}
+\item $f_{1,(1)} = 1$
+\item $f_{1,(2)} = \frac{2 x_2}{\sqrt{\epsilon}} $
+\item $f_{2,(1)} = 0 $
+\item $f_{2,(2)} = \frac{1}{\sqrt{\epsilon}} $
+\item $f_{1,(1,1)} = f_{1,(1,2)} = f_{1,(2,1)} = 0$
+\item $f_{1,(2,2)} = \frac{2}{\sqrt{\epsilon}}$
+\item $f_{2,(j, k)} = 0$
+\item $f_{1,(1,0)}  = 0$
+\item $f_{1, (2,0)} = \frac{-4}{\epsilon^{3/2}} x_2$
+\item $f_{2,(1,0)} = f_{2,(2,0)}  = 0$
+\item $f_{1, (0, 1)} = 0$
+\item $f_{1,(0, 2)} = \frac{-2}{\epsilon^{3/2}} x_2$
+\item $f_{2, (0, 1)} = f_{2, (0, 2)} = 0$
+\end{itemize}
+%
+
+
+
+
 \begin{equation}
 \begin{aligned}
 e_C 
