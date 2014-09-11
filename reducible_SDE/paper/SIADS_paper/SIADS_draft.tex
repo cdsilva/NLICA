@@ -963,27 +963,80 @@ Therefore,
 \end{aligned}
 \end{equation}
 %
-%Using the Ito isometry
-%$$ \int_t^{t+ \delta t} X_s dW_{s,i} \int_t^{t+ \delta t} Y_s dW_{s,j} = \int_t^{t+ \delta t} X_s Y_s \delta_{ij} ds$$ 
-%%
-%we can write
-%\begin{equation}
-%\begin{aligned}
-%&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
-%- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
-%=& 
-% \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \delta t \\
-%&+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,j)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2  \right] \\
-%&+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,0)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2 \right) \right]\\
-%&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2 \right] \\
-%&+  \sum_{j, k=1}^n  f_{2,(k)}(\vec{x}_t)\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right] \\
-%&+ \sum_{j, k, l=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j}  \right) \left(  \int_t^{s_2} f_{2,(l,k)}(\vec{x}_{s_1}) dW_{s_1, l} \right) ds_2 \right] \\
-%&- \sum_{j, k, l, m =1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right] \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{2,(l,m)}(\vec{x}_{s_1}) dW_{s_1, l} dW_{s_2, m} \right] \\
-%&+  \sum_{j, k=1}^n f_{2,(k)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2  \right) \left( \int_t^{t + \delta t} dW_{s,k} \right) \right]\\
-%&+   \sum_{j=1}^n  f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2 \right] \\
-%&+ \mathcal{O} (\delta t^{5/2})
-%\end{aligned}
-%\end{equation}
+From page 190-191 of Kloden and Platen, some terms go to 0:
+%
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+=& 
+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
+&+ \sum_{j,k,l=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,l)}(\vec{x}_{s_1}) dW_{s_1, k} dW_{s_2, l} \right) \right] \\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right) \right]\\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j} \right) \right] \\
+&+  \sum_{j, k, l=1}^n  f_{2,(l)}(\vec{x}_t)\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2,k} \right) \right] \\
+&+  \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,0)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2  \right) \left( \int_t^{t + \delta t} dW_{s,j} \right) \right]\\
+&+   \sum_{j=1}^n  f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j}  \right) \left(\int_t^{t + \delta t} dW_{s,j} \right) \right] \\
+&+ \mathcal{O} (\delta t^{5/2})
+\end{aligned}
+\end{equation}
+%
+Exchanging the order of integration, we obtain
+%
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+=& 
+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
+&+ \sum_{j,k,l=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,l)}(\vec{x}_{s_1}) dW_{s_1, k} dW_{s_2, l} \right) \right] \\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)\left( \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(j,0)}(\vec{x}_{s_2}) ds_2 dW_{s_1, j}  \right) \right]\\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j} \right) \right] \\
+&+  \sum_{j, k, l=1}^n  f_{2,(l)}(\vec{x}_t)\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2, k} \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} dW_{s_2,k} \right) \right] \\
+&+  \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{1,(j,0)}(\vec{x}_{s_2}) ds_2 dW_{s_1, j}   \right) \left( \int_t^{t + \delta t} dW_{s,j} \right) \right]\\
+&+   \sum_{j=1}^n  f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,j)}(\vec{x}_{s_1}) ds_1 dW_{s_2, j}  \right) \left(\int_t^{t + \delta t} dW_{s,j} \right) \right] \\
+&+ \mathcal{O} (\delta t^{5/2})
+\end{aligned}
+\end{equation}
+%
+By the Ito isometry $\mathbb{E} \left[ \int_0^t f(X) dW_{i,t} \int_0^t g(X) dW_{j,t} \right] = \mathbb{E} \left[ \int_0^t f(X) g(X) \delta_{ij} dt \right]$, we have
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+=& 
+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] \\
+&+ \sum_{j,k=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(k,j)}(\vec{x}_{s_1}) dW_{s_1, k} ds_2 \right] \\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]\\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2\right] \\
+&+  \sum_{j, k=1}^n  f_{2,(k)}(\vec{x}_t)\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right] \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j}  \right) \left(  \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} \right) ds_2 \right] \\
+&+  \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{1,(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]\\
+&+   \sum_{j=1}^n  f_{2,(j)}(\vec{x}_t) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2 \right] \\
+&+ \mathcal{O} (\delta t^{5/2})
+\end{aligned}
+\end{equation}
+%
+Rearranging terms, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_{s,j} \right)^2 \right] = \delta t$, we obtain
+\begin{equation}
+\begin{aligned}
+&\mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) f_2(\vec{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_1(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_2(\vec{x}_{t + \delta t}) \right] \\
+=& 
+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) f_{2,(j)}(\vec{x}_t) \delta t \\
+&+ \sum_{j,k=1}^n f_{1,(k)}(\vec{x}_t) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right] \\
+&+  \sum_{j, k=1}^n  f_{2,(k)}(\vec{x}_t)\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} ds_2 \right]\\
+&+ \sum_{j=1}^n f_{1,(j)}(\vec{x}_t) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right] 
++ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{2,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2\right] \right) \\
+&+  \sum_{j=1}^n f_{2,(j)}(\vec{x}_t) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{1,(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]
++ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,j)}(\vec{x}_{s_1}) ds_1 ds_2 \right] \right) \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{1,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j}  \right) \left(  \int_t^{s_2} f_{2,(j,k)}(\vec{x}_{s_1}) dW_{s_1, j} \right) ds_2 \right] \\
+&+ \mathcal{O} (\delta t^{5/2})
+\end{aligned}
+\end{equation}
+
 
 For the case when $f$ is nonlinear, we need only consider up to $\mathcal{O}(\delta t^{3/2})$ terms. 
 \begin{equation}
