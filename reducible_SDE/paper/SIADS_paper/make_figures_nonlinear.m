@@ -111,7 +111,7 @@ xlabel('$\|\vec{y}_2 - \vec{y}_1\|_2$', 'interpreter','latex')
 ylabel('Analytical distance contributions')
 h = legend('$\|\vec{y}_2 - \vec{y}_1\|_M^2$', '$\| $e$_M\|$',  '$ \|\vec{y}_2 - \vec{y}_1\|_M^2 + \|$e$_M \|$', 'location','southeast');
 set(h,'Interpreter','latex');
-set(h,'fontsize', 4);
+set(h,'fontsize', 6);
 saveas(gcf, 'dist_dy_analytical_nonlinear.eps', 'epsc');
 
 %%

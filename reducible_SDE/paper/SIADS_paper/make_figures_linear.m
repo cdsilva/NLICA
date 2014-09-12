@@ -79,7 +79,7 @@ axis([10^-7 10^-2 10^0 10^4])
 axis square
 xlabel('\delta t')
 ylabel('Analytical covariance contributions')
-h = legend('$\|C\|$', '$\| $e$_C\|$', '$\| C\| + \|$e$_C \|$', 'location','southwest');
+h = legend('$\|C\|$', '$\| $e$_C\|$', '$\| C\| + \|$e$_C \|$', 'location','southeast');
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
 saveas(gcf, 'C_dt_analytical_linear.eps', 'epsc');
