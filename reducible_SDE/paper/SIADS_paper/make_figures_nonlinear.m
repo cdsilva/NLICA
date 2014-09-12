@@ -114,7 +114,6 @@ set(h,'Interpreter','latex');
 set(h,'fontsize', 4);
 saveas(gcf, 'dist_dy_analytical_nonlinear.eps', 'epsc');
 
-return
 %%
 W = squareform(pdist(data1));
 minW = min(W(W > 0));
@@ -153,8 +152,10 @@ dt_tmp2 = logspace(-9, 0, 100);
 make_fig(3, 3);
 loglog(dt_tmp2, (1+4/epsilon+1/epsilon)*ones(size(dt_tmp2)), '-b')
 hold on
-loglog(dt_tmp2, 8*sqrt(dt_tmp2)/epsilon^(3/2), '-r')
-loglog(dt_tmp2, (1+4/epsilon+1/epsilon)+8*sqrt(dt_tmp2)/epsilon^(3/2), '-k')
+% loglog(dt_tmp2, 8*sqrt(dt_tmp2)/epsilon^(3/2), '-r')
+loglog(dt_tmp2, 15*dt_tmp2/epsilon^2, '-r')
+% loglog(dt_tmp2, (1+4/epsilon+1/epsilon)+8*sqrt(dt_tmp2)/epsilon^(3/2), '-k')
+loglog(dt_tmp2, (1+4/epsilon+1/epsilon)+15*dt_tmp2/epsilon^2, '-k')
 for i=1:length(dt_burst_samplepoints)
     loglog(dt_burst_samplepoints(i)*ones(size(dt_tmp2)), 8*sqrt(dt_tmp2)/epsilon^(3/2), 'linestyle', ':', 'color', 0.5*ones(1,3))
 end
@@ -166,6 +167,8 @@ h = legend('$\|C\|$', '$\| $e$_C\|$', '$\| C\| + \|$e$_C \|$', 'location','south
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
 saveas(gcf, 'C_dt_analytical_nonlinear.eps', 'epsc');
+
+return
 
 %%
 
