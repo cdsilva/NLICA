@@ -109,7 +109,7 @@ axis([1e-2 1e1 1e-6 1e2])
 axis square
 xlabel('$\|\vec{y}_2 - \vec{y}_1\|_2$', 'interpreter','latex')
 ylabel('Analytical distance contributions')
-h = legend('$\|\vec{y}_2 - \vec{y}_1\|_M^2$', '$\| $e$_M\|$',  '$ \|\vec{y}_2 - \vec{y}_1\|_M^2 + \|$e$_M \|$', 'location','southeast');
+h = legend('$\|\vec{y}_2 - \vec{y}_1\|_M^2$', '$\| $E$_M\|$',  '$ \|\vec{y}_2 - \vec{y}_1\|_M^2 + \|$E$_M \|$', 'location','southeast');
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
 saveas(gcf, 'dist_dy_analytical_nonlinear.eps', 'epsc');
@@ -163,7 +163,7 @@ axis([1e-9 1e-2 1e1 1e5])
 axis square
 xlabel('\delta t')
 ylabel('Analytical covariance contributions')
-h = legend('$\|C\|$', '$\| $e$_C\|$', '$\| C\| + \|$e$_C \|$', 'location','southeast');
+h = legend('$\|C\|$', '$\| $E$_C\|$', '$\| C\| + \|$E$_C \|$', 'location','southeast');
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
 saveas(gcf, 'C_dt_analytical_nonlinear.eps', 'epsc');
