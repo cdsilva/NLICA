@@ -22,7 +22,7 @@ xlabel('x_1')
 ylabel('x_2')
 h = colorbar;
 xlabel(h,'t');
-saveas(gcf, 'data_init.eps', 'epsc');
+% saveas(gcf, 'data_init.eps', 'epsc');
 
 make_fig(3, 3);
 scatter(data_init(:,1),sqrt(epsilon)*data_init(:,2),50,t, '.')
@@ -32,9 +32,9 @@ xlabel('z_1')
 ylabel('z_2')
 h = colorbar;
 xlabel(h,'t');
-saveas(gcf, 'data_rescaled.eps', 'epsc');
+% saveas(gcf, 'data_rescaled.eps', 'epsc');
 
-return
+
 %%
 
 W = squareform(pdist(data_init)).^2;
@@ -51,7 +51,7 @@ xlabel('x_1')
 ylabel('x_2')
 h = colorbar;
 xlabel(h,'\phi_1');
-saveas(gcf, 'data_linear_DMAPS.eps','epsc');
+% saveas(gcf, 'data_linear_DMAPS.eps','epsc');
 
 %%
 
@@ -69,7 +69,7 @@ xlabel('x_1')
 ylabel('x_2')
 h = colorbar;
 xlabel(h,'\phi_1');
-saveas(gcf, 'data_linear_NIV.eps','epsc');
+% saveas(gcf, 'data_linear_NIV.eps','epsc');
 
 %%
 
@@ -80,6 +80,7 @@ dt_burst_samplepoints = [1e-6 1e-5 1e-3];
 make_fig(3, 3);
 loglog(dt_tmp2, (1+1/epsilon)*ones(size(dt_tmp2)), '-b')
 hold on
+rectangle('position',[1e-7 1e-2 0.9e-3 1e4], 'facecolor',[1 1 0.8], 'edgecolor','none')
 % loglog(dt_tmp2, 2*dt_tmp2/epsilon^2, '-r')
 loglog(dt_tmp2, dt_tmp2/(epsilon^2), '-r')
 loglog(dt_tmp2, 1+1/epsilon+dt_tmp2/(epsilon^2), '-k')
@@ -93,9 +94,10 @@ ylabel('Analytical covariance contributions')
 h = legend('$\|C\|$', '$\| $E$_C\|$', '$\| C\| + \|$e$_C \|$', 'location','southeast');
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
+loglog(dt_tmp2, (1+1/epsilon)*ones(size(dt_tmp2)), '-b')
+set(gca,'layer','top')
 saveas(gcf, 'C_dt_analytical_linear.eps', 'epsc');
 
-return
 
 %%
 
@@ -115,9 +117,11 @@ end
 make_fig(3.5, 3);
 loglog(dt_tmp, mean(norm_c, 2),'.')
 hold on
+rectangle('position',[1e-7 1e-2 0.9e-3 1e4], 'facecolor',[1 1 0.8], 'edgecolor','none');
 for i=1:length(dt_burst_samplepoints)
     loglog(dt_burst_samplepoints(i)*ones(size(dt_tmp2)), dt_tmp2/epsilon^2, 'linestyle', ':', 'color', 0.5*ones(1,3))
 end
+loglog(dt_tmp, mean(norm_c, 2),'.')
 axis([10^-7 10^-2 10^0 10^4])
 % loglog(dt_tmp2, 1+1/epsilon+dt_tmp2/epsilon^2)
 % hold on
@@ -131,7 +135,10 @@ axis([10^-7 10^-2 10^0 10^4])
 axis square
 xlabel('\delta t')
 ylabel('$\| \hat{C} \|$', 'interpreter','latex')
+set(gca,'layer','top')
 saveas(gcf, 'C_dt_linear.eps', 'epsc');
+
+return
 
 %%
 
