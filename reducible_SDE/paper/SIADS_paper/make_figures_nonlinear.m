@@ -1,4 +1,4 @@
-clear all
+% clear all
 close all
 
 %%
@@ -116,7 +116,6 @@ set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
 set(gca,'layer','top')
 saveas(gcf, 'dist_dy_analytical_nonlinear.eps', 'epsc');
-return
 
 %%
 W = squareform(pdist(data1));
@@ -177,8 +176,6 @@ set(h,'fontsize', 6);
 loglog(dt_tmp2, (1+4/epsilon+1/epsilon)*ones(size(dt_tmp2)), '-b')
 set(gca,'layer','top')
 saveas(gcf, 'C_dt_analytical_nonlinear.eps', 'epsc');
-
-return
 
 %%
 
@@ -252,20 +249,21 @@ for j=1:length(dt_burst_samplepoints)
 %         xlabel(h,'\phi_1');
 %         saveas(gcf, sprintf('data_nonlinear_NIV_dt%d_kernel%d.eps', j, j2), 'epsc');
         
-        make_fig(3, 3);
+        make_fig(2.5, 2);
         loglog(dt_tmp, mean(norm_c, 2),'.')
         hold on
-        loglog(dt_burst_samplepoints(j)*ones(size(dt_tmp2)), dt_tmp2/epsilon^2, 'linestyle', ':', 'color', 'r')
+        loglog(dt_burst_samplepoints(j)*ones(size(dt_tmp2)), dt_tmp2/epsilon^2, 'linestyle', '--', 'color', 'r')
         axis([1e-9 1e-2 1e1 1e5])
         axis square
         xlabel('\delta t')
         ylabel('$\| \hat{C} \|$', 'interpreter','latex')
         saveas(gcf, sprintf('C_dt_nonlinear_dt%d_kernel%d.eps', j, j2), 'epsc');
         
-        make_fig(3, 3);
+        make_fig(2.25, 2);
         loglog(dy2, Dis_avg, '.')
         hold on
-        loglog(dy, kernel_samplepoints(j2)*ones(size(dy)), 'linestyle', ':', 'color', 'r')
+        loglog(dy2, 0.5*dy2.^2, '-b')
+        loglog(dy, kernel_samplepoints(j2)*ones(size(dy)), 'linestyle', '--', 'color', 'r')
         axis([1e-2 1e1 1e-6 1e2])
         axis square
         xlabel('$\| \vec{y}_2 - \vec{y}_1 \|_2$', 'interpreter','latex')

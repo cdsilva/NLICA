@@ -33,16 +33,16 @@ saveas(gcf, 'schematic_DS1.eps', 'epsc');
 
 %%
 
-npoints = 2000;
+npoints = 4000;
 
 x = linspace(0, 1, npoints);
-y = randn(size(x));
+y = randn(size(x)) .* (1+8*exp(-4*x));
 
 make_fig(3, 3);
 scatter(x, smooth(y, 11), 50, -x,'.')
 set(gca, 'xtick', [])
 set(gca, 'ytick', [])
-set(gca, 'ylim', [-1 1])
+set(gca, 'ylim', [-8 8])
 % axis off
 saveas(gcf, 'schematic_DS2.eps', 'epsc');
 

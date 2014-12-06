@@ -117,8 +117,14 @@ We show how to use data analysis methods that are typically applied to data sets
 \item
 The method is based mostly on local analysis that combines geometry and dynamics.
 
+\item 
+We construct a metric which is insensitive to the fast variables, and is more sophisticated/general than simple averaging (e.g., computing the mean). 
+
 \item
 We offer rigorous analysis for the method that gives the conditions (for our method to successfully recover the ``right" slow variables), intuition.
+
+\item 
+Here, we will discuss two-scale stochastic systems. Our framework and analysis extends to multi scale systems
 
 \end{itemize}
 
@@ -147,13 +153,19 @@ dx_i(t) &= \frac{a_i(\vec{x}(t))}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i(
 \end{equation}
 where $W_i(t)$ are independent standard Brownian motions, $\vec{x}(t)  = \begin{bmatrix} x_1(t) & \cdots & x_n(t) \end{bmatrix}^T \in \mathbb{R}^n$, and $\epsilon \ll 1$.
 %
-In the simple case $a_i(\vec{x}(t)) = \mu _i x_i$ the solution for that component of \eqref{eq:general_SDE}, the pdf of $x_i$ approaches a Gaussian. 
+In the simple case of a linear drift function, where $a_i(\vec{x}(t)) = \mu _i x_i$, the probability density function of $x_i$ approaches a Gaussian. 
 %
-If $\mu_i$ is negative, then the variance is bounded by $\mu_i$ while the time constant of the approach of the variance to equilibrium is $-1/\mu_i, i=1,\ldots,m$ and $-\epsilon/\mu_i, i=m+1,\ldots,n$. Thus the last $n-m$ variables of \eqref{eq:general_SDE} are fast and approach a local equilibrium rapidly, while the first $m$ are slow, so that a short burst of simulation will yield a cloud of points that are spread far in the fast directions but and less so in the slow ones.
+If $\mu_i$ is negative, then the variance of $x_i$ is bounded by $\mu_i$, and the time constant of the approach of the variance to equilibrium is $-1/\mu_i, i=1,\ldots,m$ and $-\epsilon/\mu_i, i=m+1,\ldots,n$. 
 %
-Under reasonable conditions on $a_i(\vec{x})$, the same can be said when the $\mu_i$ are the eigenvalues of the Jacobian of $a(\vec{x})$.
+Thus the last $n-m$ variables of \eqref{eq:general_SDE} are fast and approach a local equilibrium rapidly, while the first $m$ are slow, so that a short burst of simulation will yield a cloud of points that are widely distributed in the fast directions and narrowly distributed in the slow ones.
+%
+Under reasonable conditions on $a_i(\vec{x})$, the same can be said for a general drift function, where the $\mu_i$ are the eigenvalues of the Jacobian of $a(\vec{x})$.
 %
 Therefore, \eqref{eq:general_SDE} defines an $n$-dimensional stochastic system with $m$ slow variables and $n-m$ fast variables.
+%
+If $a_i(\vec{x})$ are adequately well behaved, then by the averaging principal \cite{...}, we can write a reduced SDE in {\em only} the $m$ slow variables. 
+%
+The aim of our work is to show how we can detect such slow variables {\em automatically} from data, in order to help inform modeling efforts and aid in the writing of such reduced stochastic models. 
 
 %
 %The ratio of the drift and diffusion terms in \eqref{eq:general_SDE} is essential, as we need the square of the diffusivity to be of the same order as the drift.
@@ -176,10 +188,12 @@ Therefore, \eqref{eq:general_SDE} defines an $n$-dimensional stochastic system w
 
 The ratio of the powers of $\epsilon$ in the drift and diffusion terms in \eqref{eq:general_SDE} is essential, as we need the square of the diffusivity to be of the same order as the drift as $\epsilon \rightarrow 0$. If the diffusivity is larger, then, as $\epsilon \rightarrow 0$, the equilibrium measure will be unbounded. Conversely, if the diffusivity is smaller, the equilibrium measure will go to $0$ as $\epsilon \rightarrow 0$.
 
-In general, we do not have access to data $\vec{x}(t)$ from the original SDE system, but instead, we have $\vec{y}(t) = \mathbf{f} (\vec{x}(t))$. We assume that $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$, $n \le d$, is a deterministic (possibly nonlinear) function whose image is an $n$-dimensional manifold $\mathcal{M}$ in $\mathbb{R}^d$.
+In general, we do not have access to data $\vec{x}(t)$ from the original SDE system, but instead, we are given some observations $\vec{y}(t) = \mathbf{f} (\vec{x}(t))$. 
+%
+We assume that $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$, $n \le d$, is a deterministic (possibly nonlinear) function whose image is an $n$-dimensional manifold $\mathcal{M}$ in $\mathbb{R}^d$.
 %
 % TODO: check whether the inverse condition is not too strong (and we only need it to apply to the domain of the samples)
-For our analysis, we require $\mathbf{g} = \mathbf{f} ^{-1}$ be well-defined on $\mathcal{M}$, and both $\mathbf{f}$ and $\mathbf{g}$ to be continuously differentiable to fourth order. Given data $\vec{y}(t_1),\ldots,\vec{y}(t_N)$ on $\mathcal{M}$ that comes from \eqref{eq:general_SDE} we would like to recover a parametrization of the data that is one-to-one with the slow variables, $x_i$, $1 \le i \le m$.
+For our analysis, we require $\mathbf{g} = \mathbf{f} ^{-1}$ be well-defined on $\mathcal{M}$, and both $\mathbf{f}$ and $\mathbf{g}$ to be continuously differentiable to fourth order. Given data $\vec{y}(t_1),\ldots,\vec{y}(t_N)$ on $\mathcal{M}$ that comes from \eqref{eq:general_SDE} we would like to recover a parametrization of the data that is one-to-one with the slow variables $x_i$, $1 \le i \le m$.
 
 \section{Local Invariant Metrics}
 
@@ -187,21 +201,23 @@ In order to recover the slow variables, we will build a local metric that collap
 %
 Typically, such a metric averages out the fast variables.
 %
-We propose to do this using the Mahalanobis distance that measures distances relative to the variances in each principal direction.
+However, simple averages are inadequate to describe data which is observed through a complex nonlinear function. 
+%
+Instead, we propose to use the Mahalanobis distance that measures distances relative to the variances in each principal direction.
 
 If two points $\vec{x}_1$ and $\vec{x}_2$ are drawn from an n-dimensional
-random distribution with covariance $C$, the Mahalanobis distance between the points is
+random distribution with covariance $C_x$, the Mahalanobis distance between the points is defined as
 \begin{equation}
-	\| \vec{x}_1 - \vec{x}_2 \| _M = \sqrt{ (\vec{x}_1 - \vec{x}_2)^T C^{-1} (\vec{x}_1 - \vec{x}_2)  }
+	\| \vec{x}_1 - \vec{x}_2 \| _M = \sqrt{ (\vec{x}_1 - \vec{x}_2)^T C_x^{-1} (\vec{x}_1 - \vec{x}_2)  }
 \end{equation}
-In particular, if $\vec{x}_1$ and $\vec{x}_2$ are samples of \eqref{eq:general_SDE}, then $C = \mathrm{diag}(e_1, \ldots, e_n)$ where
+In particular, if $\vec{x}_1$ and $\vec{x}_2$ are samples of \eqref{eq:general_SDE}, then $C_x = \mathrm{diag}(e_1, \ldots, e_n)$ where
 \begin{equation}
 \begin{aligned}
 e_i =& 1, \: & 1 \le i \le m \\
 e_i =& \epsilon, \: & m+1 \le i \le n
 \end{aligned}
 \end{equation}
-Therefore, the Mahalanobis distance is
+Therefore, the Mahalanobis distance between samples from the SDE presented in \eqref{eq:general_SDE} is
 \begin{equation} \label{eq:rescale_x_dist}
 \| \vec{x}(t_2) - \vec{x}(t_1) \|^2_M = \sum_{i=1}^n e_i \left( x_i(t_2) - x_i(t_1) \right)^2
 \end{equation}
@@ -227,7 +243,7 @@ As previously mentioned, we do not have access to data $\vec{x}(t)$ from the ori
 \end{equation}
 and so we can recover a parameterization of the data which is consistent with the underlying, reducible SDE, even when the data are obscured by a function $\mathbf{f}$.
 %
-We will show how we can approximate the Mahalanobis distance from data in Section~\ref{sec:analysis}.
+We will show how we can approximate the Mahalanobis distance from data $\vec{y}(t)$ in Section~\ref{sec:analysis}.
 
 \section{Diffusion Maps for Global Parametrization}
 
@@ -253,25 +269,25 @@ We compute the eigenvalues $\lambda_0, \dots, \lambda_{N-1}$ and eigenvectors $\
 $\phi_0$ is a constant trivial eigenvector; the next few eigenvectors give a parameterization/embedding coordinates for the data (modulo higher harmonics which characterize the same direction in the data).
 %
 
-\section{Analysis} \label{sec:analysis}
+\section{Estimation of the Mahalanobis Distance} \label{sec:analysis}
 
 \begin{figure}[t]
 \epsfig{width=\textwidth, file=schematic.eps}
-\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligible. }
+\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligible. TODO: make curves different (intrinsic vs. observations) }
 \label{fig:schematic}
 \end{figure}
 
-The traditional Mahalanobis distance is defined for a fixed distribution, whereas we are dealing with a distribution that possibly changes because of any non-linearities in the observation function $\mathbf{f}$ and in the drift $a(\vec{x})$. Consequently we use the following modified definition for the Mahalanobis distance between two points
+The traditional Mahalanobis distance is defined for a fixed distribution, whereas we are dealing with a distribution that possibly changes because of any non-linearities in the observation function $\mathbf{f}$ and in the drift $\mathbf{a}(\vec{x})$. Consequently we use the following modified definition for the Mahalanobis distance between two points
 \begin{equation} \label{eq:mahalanobis_distance}
- \| \vec{y}_2 - \vec{y}_1 \|^2_M =
- \frac{1}{2} (\vec{y}_2 - \vec{y}_1)^T \left( C^{\dagger}(\vec{y}_1) + C^{\dagger}(\vec{y}_2) \right) (\vec{y}_2 - \vec{y}_1)
+ \| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M =
+ \frac{1}{2} (\vec{y}(t_2) - \vec{y}(t_1))^T \left( C^{\dagger}(\vec{y}(t_1)) + C^{\dagger}(\vec{y}(t_2)) \right) (\vec{y}(t_2) - \vec{y}(t_1))
  \end{equation}
 where $C(\vec{y}(t))$ is the covariance of the observed stochastic process at the point $\vec{y}(t)$, $\dagger$ denotes the Moose-Penrose pseudoinverse (since $d$ may exceed $n$).
 
-In the simple case, that $\mathbf{f} (\vec{x}) = A \vec{x}$, the covariance of the accessible sample is given by $C_y=AC_xA^T$. Let $A=U \Lambda V^T$ be the singular value decomposition (SVD) of $A$, where TODO. By the SVD, the pseudoinverse of the covariance matrix is $C^{\dagger}_y = U \Lambda^{-1} V^T C_x^{-1} V \Lambda ^{-1} U^T$. Consequently, the Mahalanobis distance \eqref{eq:mahalanobis_distance} is reduced to
+In the simple linear case where $\mathbf{f} (\vec{x}) = A \vec{x}$, the covariance of the accessible sample is given by $C=AC_xA^T$. Let $A=U \Lambda V^T$ be the singular value decomposition (SVD) of $A$, where TODO. By the SVD, the pseudoinverse of the covariance matrix is $C^{\dagger} = U \Lambda^{-1} V^T C_x^{-1} V \Lambda ^{-1} U^T$. Consequently, the Mahalanobis distance \eqref{eq:mahalanobis_distance} is reduced to
 \begin{align} 
-\| \vec{y}_2 - \vec{y}_1 \|^2_M &= (\vec{y}_2 - \vec{y}_1)^T  C^{\dagger}_y  (\vec{y}_2 - \vec{y}_1) \\
- &= (\vec{x}_2 - \vec{x}_1)^T A^T C^{\dagger}_y A (\vec{x}_2 - \vec{x}_1) \\
+\| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M &= (\vec{y}_2 - \vec{y}_1)^T  C^{\dagger} (\vec{y}_2 - \vec{y}_1) \\
+ &= (\vec{x}_2 - \vec{x}_1)^T A^T C^{\dagger} A (\vec{x}_2 - \vec{x}_1) \\
  &= (\vec{x}_2 - \vec{x}_1)^T V \Lambda U^T  U \Lambda^{-1} V^T C_x^{-1} V \Lambda ^{-1} U^T U \Lambda V^T (\vec{x}_2 - \vec{x}_1) \\
  &= (\vec{x}_2 - \vec{x}_1)^T C_x^{-1}  (\vec{x}_2 - \vec{x}_1) \\
  &= \| \vec{x}_2 - \vec{x}_1 \|^2_M =  \| \vec{z}_2 - \vec{z}_1 \|^2_2
@@ -291,47 +307,43 @@ values $\vec{y}(t_i) , i = 1, \ldots , q$ and then estimate the covariance of th
 $\Delta \vec{y}(t_i) = \vec{y}(t_i) -\vec{y}(t_{i-1})$. It can be shown that if $q \delta t$ is sufficiently small, the errors introduced
 are of lower order than needed.
 
+Errors in our estimation of the Mahalanobis distance arise from two sources. 
+%
+One source of error is truncating the Taylor expansion and approximating the function $\mathbf{f}$ locally as a linear function. 
+%
+The other source of error arises from disregarding the drift in the stochastic process, and assuming that samples are drawn from a Gaussian distribution. 
+%
 We will address the accuracy of our method from two standpoints: (1) the accuracy of the Taylor expansion, and (2) the accuracy of the covariance estimation.
 %
 Figure~\ref{fig:schematic} illustrates some of the issues in choosing the sizes $\delta t$ (or $q \delta t$ if the alternate method is used) and the parameter $\sigma_{kernel}$.
 %
 We will present both analytical results for the error bounds, as well as an empirical methodology to set the appropriate parameters for our method to accurately recover the slow variable(s).
 
-\subsection{Error analysis of the Mahalanobis distance}
+\subsection{Error due to the measurement function $\mathbf{f}$}
 
-We want to calculate the distance $\|\vec{z}(t_2) - \vec{z}(t_1)\|_2$ in terms of the observations $\vec{y}(t) = \mathbf{f}(\vec{x}(t))$.
+We want to relate the distance in the rescaled space, $\|\vec{z}(t_2) - \vec{z}(t_1)\|_2$, to the estimated Mahalanobis distance between the observations $\vec{y}(t) = \mathbf{f}(\vec{x}(t))$.
 %
-Let $\mathbf{g} = \mathbf{f}^{-1}: \mathbb{R}^d \mapsto \mathbb{R}^n$, such that
-\begin{equation} \label{eq:variable_rescaling}
-\sqrt{e_i} g_i(\vec{y}(t)) = \sqrt{e_i} x_i(t) = z_i(t)
+We define the error incurred by using the Mahalanobis distance to approximate the true distance as
+\begin{equation}
+E_M(\vec{y}(t_1) \vec{y}(t_2)) = \|\vec{z}(t_2) - \vec{z}(t_1)\|_2^2 - \| \vec{y}(t_2) - \vec{y}(t_1)\|^2_M
 \end{equation}
 %
-By Taylor expansion of $\mathbf{g}(y)$ around $\vec{y}(t_1)$ and $\vec{y}(t_2)$ and averaging the two expansions,
+By Taylor expansion of $\mathbf{g}(y) = \mathbf{f}^{-1}(y)$ around $\vec{y}(t_1)$ and $\vec{y}(t_2)$ and averaging the two expansions,
 %
-\begin{equation} \label{eq:distance_taylor_expansion}
-\begin{aligned}
-\| \vec{z}(t_2) - \vec{z}(t_1) \|^2_2 =&
-\frac{1}{2} \left(\vec{y}(t_2)-\vec{y}(t_1)\right)^T \left(C^\dagger (\vec{y}(t_1)) + C^\dagger (\vec{y}(t_2)) \right) (\vec{y}(t_2)-\vec{y}(t_1)) \\
-&+ E_M \left(\vec{y}(t_1), \vec{y}(t_2) \right) \\
-&+ \mathcal{O} \left(\| \vec{y}(t_2) - \vec{y}(t_1) \|^6_2 \right)
-\end{aligned}
-\end{equation}
- and $E_M$ is a fourth-order error term.
+%\begin{equation} \label{eq:distance_taylor_expansion}
+%\begin{aligned}
+%\| \vec{z}(t_2) - \vec{z}(t_1) \|^2_2 =&
+%\frac{1}{2} \left(\vec{y}(t_2)-\vec{y}(t_1)\right)^T \left(C^\dagger (\vec{y}(t_1)) + C^\dagger (\vec{y}(t_2)) \right) (\vec{y}(t_2)-\vec{y}(t_1)) \\
+%&+ E_M \left(\vec{y}(t_1), \vec{y}(t_2) \right) \\
+%&+ \mathcal{O} \left(\| \vec{y}(t_2) - \vec{y}(t_1) \|^6_2 \right)
+%\end{aligned}
+%\end{equation}
+% and $E_M$ is a fourth-order error term.
+%%
+%Because we can empirically estimate $C(\vec{y}(t))$ from data (this will be discussed in Section~\ref{subsec:cov_est}), we choose to truncate the distance approximation in \eqref{eq:distance_taylor_expansion} at the second order term;
+%we call this distance the Mahalanobis distance \footnote{We would like to note that the Mahalanobis distance is traditionally defined for a fixed covariance matrix. However, following \cite{...}, we will define our Mahalanobis distance locally, using the local covariance at each point.},
 %
-Because we can empirically estimate $C(\vec{y}(t))$ from data (this will be discussed in Section~\ref{subsec:cov_est}), we choose to truncate the distance approximation in \eqref{eq:distance_taylor_expansion} at the second order term;
-we call this distance the Mahalanobis distance \footnote{We would like to note that the Mahalanobis distance is traditionally defined for a fixed covariance matrix. However, following \cite{...}, we will define our Mahalanobis distance locally, using the local covariance at each point.},
-
-
-
-
-
-
-
-
-
-
-%
-The error incurred by using the Mahalanobis distance to approximate the true distance between points, $E_M$, can be shown to be
+%The error incurred by using the Mahalanobis distance to approximate the true distance between points, $E_M$, can be shown to be
 %
 \begin{equation}
 \begin{aligned} \label{eq:mahanaobis_error}
@@ -345,7 +357,8 @@ E_M\left( \vec{y}(t_1), \vec{y}(t_2) \right)
 &(\vec{y}_j(t_2) - \vec{y}_j(t_1))  (\vec{y}_k(t_2) - \vec{y}_k(t_1))(\vec{y}_l(t_2) - \vec{y}_l(t_1)) (\vec{y}_m(t_2) - \vec{y}_m(t_1)) \\
 + \frac{1}{6} \sum_{i=1}^n \sum_{jklm=1}^d &
 \left( g_{i, (j)} (\vec{y}(t_1)) g_{i, (k,l,m)} (\vec{y}(t_1)) +  g_{i, (j)} (\vec{y}(t_2)) g_{i, (k,l,m)} (\vec{y}(t_2)) \right) \\
-& (\vec{y}_j(t_2) - \vec{y}_j(t_1))  (\vec{y}_k(t_2) - \vec{y}_k(t_1))(\vec{y}_l(t_2) - \vec{y}_l(t_1))(\vec{y}_m(t_2) - \vec{y}_m(t_1))
+& (\vec{y}_j(t_2) - \vec{y}_j(t_1))  (\vec{y}_k(t_2) - \vec{y}_k(t_1))(\vec{y}_l(t_2) - \vec{y}_l(t_1))(\vec{y}_m(t_2) - \vec{y}_m(t_1)) \\
++ & \mathcal{O} \left(\| \vec{y}(t_2) - \vec{y}(t_1) \|^6_2 \right)
 \end{aligned}
 \end{equation}
 %
@@ -377,6 +390,8 @@ g_{i,(j,k,l)} &= \sqrt{e_i}  \frac{\partial^3 g_i}{\partial y_j \partial y_k \pa
 %
 From this expression, the error incurred by using the Mahalanobis distance to approximate the $L_2$-distance between points $\vec{z}(t)$ is a function of the second- and higher-order derivatives of $\mathbf{g}$, as well as the distance between samples $\| \vec{y}(t_2) - \vec{y}(t_1) \|_2$.
 %
+We would like to note that this error does not depend on the dynamics of the underlying stochastic process (as we are assuming we are given the analytic covariances at each point on the manifold), but is only a function of the measurement function $\mathbf{f}$. 
+%
 The parameter $\sigma_{kernel}$ in the diffusion maps calculation determines how much $E_M$ contributes to the overall analysis.
 %
 From \eqref{eq:dmaps_kernel}, distances which are greater than $\sigma_{kernel}$ are ``not important'' in the computation because of the exponential kernel.
@@ -387,7 +402,7 @@ This is illustrated in Figure~\ref{fig:schematic}, where we want to choose $\sig
 %
 This will ensure that the errors in the Mahalanobis distance approximation do not greatly effect our overall analysis.
 
-\subsection{Error analysis of the covariance estimation} \label{subsec:cov_est}
+\subsection{Error due to the dynamics} \label{subsec:cov_est}
 
 To compute the Mahalanobis distance in \eqref{eq:mahalanobis_distance}, we require $C$, the covariance of the observed stochastic process.
 %
@@ -404,23 +419,32 @@ We then write the estimated covariance $\hat{C}(\vec{y}(t), \delta t)$, as
 \end{equation}
 %
 where $\delta t > 0$ is the length of the simulation burst.
+%
+We therefore explicitly use the dynamics to estimate the covariance, and use simulation bursts to locally explore the dynamics on the manifold of observations. 
 
-We know that, for a stochastic process following \eqref{eq:general_SDE} and observed through a function $\mathbf{f}$, the covariance $C$ is given by
-\begin{equation} \label{eq:analytical_cov}
-C_{ij}(\vec{y}(t)) =
-\sum_{k=1}^n \frac{1}{e_k} \left. \frac{\partial f_{i}}{\partial x_k} \right|_{\vec{x}(t)} \left. \frac{\partial f_{j}}{\partial x_k} \right|_{\vec{x}(t)}
+Due to the drift in the stochastic process and the (perhaps nonlinear) measurement function $\mathbf{f}$, we incur some error by approximating the covariance at a point $t$ using simulations of length $\delta t > 0$. 
+%
+Define the error in this approximation as
+\begin{equation}
+E_C(\vec{y}(t), \delta t) = \hat{C}(\vec{y}(t), \delta t) - C(\vec{y}(t)).
 \end{equation}
 %
+%We know that, for a stochastic process following \eqref{eq:general_SDE} and observed through a function $\mathbf{f}$, the covariance $C$ is given by
+%\begin{equation} \label{eq:analytical_cov}
+%C_{ij}(\vec{y}(t)) =
+%\sum_{k=1}^n \frac{1}{e_k} \left. \frac{\partial f_{i}}{\partial x_k} \right|_{\vec{x}(t)} \left. \frac{\partial f_{j}}{\partial x_k} \right|_{\vec{x}(t)}
+%\end{equation}
+%
 By It\={o}-Taylor expansion of $\mathbf{f}$ and $\vec{x}(t)$,
-\begin{equation}\label{eq:estimated_cov}
-\begin{aligned}
-\hat{C}_{ij} (\vec{x}_t, \delta t)
-=&
-\frac{1}{\delta t} \left( \mathbb{E} \left[ y_i (t+\delta t) y_j (t+ \delta t) \mid \vec{y}(t) \right]
-- \mathbb{E} \left[ y_i (t+\delta t) \mid \vec{y}(t) \right] \mathbb{E} \left[ y_j (t+\delta t) \mid \vec{y}(t) \right] \right)
-\\
-=& \sum_{k=1}^n \frac{1}{e_k} \left. \frac{\partial f_{i}}{\partial x_k} \right|_{\vec{x}(t)} \left. \frac{\partial f_{j}}{\partial x_k} \right|_{\vec{x}(t)}
-+ E_{C, ij} (\vec{x}(t), \delta t) + \mathcal{O}(\delta t^{3/2})
+%\begin{equation}\label{eq:estimated_cov}
+%\begin{aligned}
+%\hat{C}_{ij} (\vec{x}_t, \delta t)
+%=&
+%\frac{1}{\delta t} \left( \mathbb{E} \left[ y_i (t+\delta t) y_j (t+ \delta t) \mid \vec{y}(t) \right]
+%- \mathbb{E} \left[ y_i (t+\delta t) \mid \vec{y}(t) \right] \mathbb{E} \left[ y_j (t+\delta t) \mid \vec{y}(t) \right] \right)
+%\\
+%=& \sum_{k=1}^n \frac{1}{e_k} \left. \frac{\partial f_{i}}{\partial x_k} \right|_{\vec{x}(t)} \left. \frac{\partial f_{j}}{\partial x_k} \right|_{\vec{x}(t)}
+%+ E_{C, ij} (\vec{x}(t), \delta t) + \mathcal{O}(\delta t^{3/2})
 %=& \sum_{k=1}^n \frac{1}{e_k} \left. \frac{\partial f_{i}}{\partial x_k} \right|_{\vec{x}(t)} \left. \frac{\partial f_{j}}{\partial x_k} \right|_{\vec{x}(t)} \\
 %&+ \frac{1}{\delta t} \sum_{k=1}^n f_{i,(k)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{j,(k,0)}(\vec{x}(s_2)) ds_2 ds_1 \right]
 %+ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{j,(0,k)}(\vec{x}(s_1)) ds_1 ds_2\right] \right) \\
@@ -428,10 +452,10 @@ By It\={o}-Taylor expansion of $\mathbf{f}$ and $\vec{x}(t)$,
 %+ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{i,(0,k)}(\vec{x}(s_1)) ds_1 ds_2 \right] \right) \\
 %&+  \frac{1}{\delta t} \sum_{k,l=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{i,(k,l)}(\vec{x}(s_1)) dW_{s_1, k}  \right) \left(  \int_t^{s_2} f_{j,(k,l)}(\vec{x}(s_1)) dW_{s_1, k} \right) ds_2 \right] \\
 %&+ \mathcal{O} (\delta t^{3/2}),
-\end{aligned}
-\end{equation}
+%\end{aligned}
+%\end{equation}
 %
-where $E_C = \mathcal{O} (\delta t)$ is an error term, with
+%where $E_C = \mathcal{O} (\delta t)$ is an error term, with
 %
 \begin{equation} \label{eq:cov_error}
 \begin{aligned}
@@ -440,7 +464,8 @@ E_{C, ij} (\vec{x}(t), \delta t) =&
 + \int_t^{s_2} f_{j,(0,k)}(\vec{x}(s_1)) ds_1 \right) ds_2 \right] \\
 &+  \frac{1}{\delta t} \sum_{k=1}^n f_{j,(k)}(\vec{x}(t))  \mathbb{E} \left[ \int_t^{t+\delta t} \left( \int_{s_2}^{t + \delta t} f_{i,(k,0)}(\vec{x}(s_1)) ds_1
 +  \int_t^{s_2} f_{i,(0,k)}(\vec{x}(s_1)) ds_1 \right) ds_2 \right] \\
-&+  \frac{1}{\delta t} \sum_{k,l=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{i,(k,l)}(\vec{x}(s_1)) dW_{s_1, k}  \right) \left(  \int_t^{s_2} f_{j,(k,l)}(\vec{x}(s_1)) dW_{s_1, k} \right) ds_2 \right]
+&+  \frac{1}{\delta t} \sum_{k,l=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{i,(k,l)}(\vec{x}(s_1)) dW_{s_1, k}  \right) \left(  \int_t^{s_2} f_{j,(k,l)}(\vec{x}(s_1)) dW_{s_1, k} \right) ds_2 \right] \\
+&+ \mathcal{O} (\delta t^{3/2})
 \end{aligned}
 \end{equation}
 %
@@ -463,6 +488,8 @@ We want to set $\delta t$ such that $\|E_C \| \ll \|C \|$
 (this is illustrated in Figure~\ref{fig:schematic}).
 %
 In practice, we compute $\hat{C}$ by running many simulations of length $\delta t$ starting from $\vec{x}(t)$, and using the sample average to approximate the expected values in \eqref{eq:estimated_cov_expected_value}.
+%
+We therefore incur additional error due to finite sampling; this sampling error is ignored for the purposes of this analysis, and quantifying this error is the subject of future research. 
 
 \section{Results}
 
@@ -701,9 +728,9 @@ E_M(\vec{y}(t_1), \vec{y}(t_2)) = - (y_2(t_2) - y_2(t_1))^4
 
 Figure~\ref{fig:cov_error_nonlinear}(a) shows $\| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M$ and $E_M$ as a function of $\| \vec{y}(t_2) - \vec{y}(t_1) \|_2$.
 %
-The Mahalanobis distance is an accurate approximation to the true intrinsic distance $\| \vec{z}(t_2) - \vec{z}(t_1) \|_2$ when $E_M \ll \| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M$.
+The Mahalanobis distance is an accurate approximation to the true intrinsic distance $\| \vec{z}(t_2) - \vec{z}(t_1) \|_2$ when $|E_M| \ll \| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M$.
 %
-We want to choose $\sigma_{kernel}^2$ in a regime where $E_M(\vec{y}(t_1), \vec{y}(t_2)) \ll \| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M$, so that the distances we utilize in the diffusion maps calculation are accurate.
+We want to choose $\sigma_{kernel}^2$ in a regime where $|E_M(\vec{y}(t_1), \vec{y}(t_2))| \ll \| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M$, so that the distances we utilize in the diffusion maps calculation are accurate.
 %
 We can find such a regime empirically by plotting $\| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M$ as a function of $\| \vec{y}(t_2) - \vec{y}(t_1) \|_2$, and assessing when the relationship deviates from quadratic.
 %
@@ -713,9 +740,9 @@ Figures~\ref{fig:colored_data_nonlinear_cases}(a) and (c) show the data from Fig
 %
 The corresponding values of $\sigma_{kernel}^2$ are indicated by the dashed lines in Figure~\ref{fig:cov_error_nonlinear}(a)~and~(b).
 %
-When $\sigma_{kernel}^2$ corresponds to a region where $\|E_M \| \ll \|\vec{y}(t_2) - \vec{y}(t_1) \|_M^2$, $\phi_1$ is well correlated with the slow variable.
+When $\sigma_{kernel}^2$ corresponds to a region where $ |E_M | \ll \|\vec{y}(t_2) - \vec{y}(t_1) \|_M^2$, $\phi_1$ is well correlated with the slow variable.
 %
-However, when $\sigma_{kernel}^2$ corresponds to a region where $\|E_M \| \gg \|\vec{y}(t_2) - \vec{y}(t_1) \|_M^2$, the slow variable is no longer recovered.
+However, when $\sigma_{kernel}^2$ corresponds to a region where $|E_M | \gg \|\vec{y}(t_2) - \vec{y}(t_1) \|_M^2$, the slow variable is no longer recovered.
 
 \begin{figure}[t]
 
@@ -768,6 +795,10 @@ E_{C, 22} (\vec{x}(t), \delta t)
 \end{aligned}
 \end{equation}
 %
+As expected, the error in the covariance increases with the time scale of the simulation bursts $\delta t$. 
+%
+Furthermore, we can see the explicit dependence of the covariance error on the time scale separation $\epsilon$; larger time scale separation results in a larger covariance error, as a more refined simulation burst is required to estimate the covariance of the fast directions. 
+%
 $\|C \|$ and $\| E_C\|  $ are plotted as a function of $\delta t$ in Figure~\ref{fig:cov_error_nonlinear}(c).
 %
 As in the previous example, we can empirically find where $\| E_C \| \ll \| C \|$  by plotting $\| \hat{C} \|$ as a function of $\delta t $ and looking for a kink in the plot.
@@ -785,20 +816,30 @@ However, when $\delta t$ corresponds to a region where $\|E_C \| \gg \|C \|$, th
 
 
 
+\def \figheight {1.6in}
+
 \begin{figure}[t]
-\epsfig{height=1.5in, file=C_dt_nonlinear_dt1_kernel1.eps}
-\epsfig{height=1.5in, file=dist_dy_nonlinear_dt1_kernel1.eps}
-\epsfig{height=1.5in, file=data_nonlinear_NIV_dt1_kernel1.eps}
 
-\epsfig{height=1.5in, file=C_dt_nonlinear_dt1_kernel2.eps}
-\epsfig{height=1.5in, file=dist_dy_nonlinear_dt1_kernel2.eps}
-\epsfig{height=1.5in, file=data_nonlinear_NIV_dt1_kernel2.eps}
+\centering
+\epsfig{height=\figheight, file=C_dt_nonlinear_dt1_kernel1.eps}
+\hfill
+\epsfig{height=\figheight, file=dist_dy_nonlinear_dt1_kernel1.eps}
+\hfill
+\epsfig{height=\figheight, file=data_nonlinear_NIV_dt1_kernel1.eps}
 
-\epsfig{height=1.5in, file=C_dt_nonlinear_dt2_kernel1.eps}
-\epsfig{height=1.5in, file=dist_dy_nonlinear_dt2_kernel1.eps}
-\epsfig{height=1.5in, file=data_nonlinear_NIV_dt2_kernel1.eps}
+\epsfig{height=\figheight, file=C_dt_nonlinear_dt1_kernel2.eps}
+\hfill
+\epsfig{height=\figheight, file=dist_dy_nonlinear_dt1_kernel2.eps}
+\hfill
+\epsfig{height=\figheight, file=data_nonlinear_NIV_dt1_kernel2.eps}
 
-\caption{(a) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by the first diffusion maps variable $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{-2}$. Note that the parametrization is one-to-one with the slow variable. (b) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ using the Euclidean distance. We do not recover the slow variable, because the Euclidean distance is not informative as to the dynamics of the data. (c) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{1}$. We do not recover the slow variable because $\sigma_{kernel}$ is too large. (d) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-3}$ and $\sigma_{kernel}^2 = 10^{-2}$. We do not recover the slow variable because $\delta t$ is too large.  }
+\epsfig{height=\figheight, file=C_dt_nonlinear_dt2_kernel1.eps}
+\hfill
+\epsfig{height=\figheight, file=dist_dy_nonlinear_dt2_kernel1.eps}
+\hfill
+\epsfig{height=\figheight, file=data_nonlinear_NIV_dt2_kernel1.eps}
+
+\caption{(a) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by the first diffusion maps variable $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{-2}$. Note that the parametrization is one-to-one with the slow variable.  (b) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{1}$. We do not recover the slow variable because $\sigma_{kernel}$ is too large. (c) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-3}$ and $\sigma_{kernel}^2 = 10^{-2}$. We do not recover the slow variable because $\delta t$ is too large.  }
 \label{fig:colored_data_nonlinear_cases}
 \end{figure}
 
