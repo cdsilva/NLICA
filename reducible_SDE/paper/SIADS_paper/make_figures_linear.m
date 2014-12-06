@@ -24,6 +24,17 @@ h = colorbar;
 xlabel(h,'t');
 saveas(gcf, 'data_init.eps', 'epsc');
 
+make_fig(3, 3);
+scatter(data_init(:,1),sqrt(epsilon)*data_init(:,2),50,t, '.')
+% axis square
+axis equal
+xlabel('z_1')
+ylabel('z_2')
+h = colorbar;
+xlabel(h,'t');
+saveas(gcf, 'data_rescaled.eps', 'epsc');
+
+return
 %%
 
 W = squareform(pdist(data_init)).^2;
