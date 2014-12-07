@@ -139,7 +139,7 @@ Here, we will discuss two-scale stochastic systems. Our framework and analysis e
 
 \vspace{0.25in}
 
-\caption{(Left) Schematic of multiscale system where the value of one variable becomes slaved to the other variable. (Right) Schematic of multiscale system where the statistics of one variable become slaved to the other variable.}
+\caption{(Left) Schematic of multiscale system where the value of one variable becomes slaved to the other variable. In such an example, traditional data mining algorithms are sufficient to recover the slow variable. (Right) Schematic of multiscale system where the statistics of one variable become slaved to the other variable. In such an example, traditional data mining algorithms will not recover the slow variable if the variance in the fast variable is too large. }
 \end{figure}
 
 \subsection{Multiscale Stochastic Systems} \label{subsec:multiscale_SDE}
@@ -627,7 +627,7 @@ Figure~\ref{fig:cov_error}(b) shows the empirical $\| \hat{C} \|$ as a function 
 \hspace{0.45\textwidth}
 (b)
 
-\caption{Errors in covariance estimation for linear example. (a) The analytical expressions for the contributions to the covariance for the example in Section~\ref{subsec:linear_example} as a function of $\delta t$. (b) The average estimated covariance $\| \hat{C} \|$ as a function of $\delta t$. The average is computed over $10$ test points and using $50$ sample points to estimate the covariance.}
+\caption{Errors in covariance estimation for linear example. (a) The analytical expressions for the contributions to the covariance for the example in Section~\ref{subsec:linear_example} as a function of $\delta t$. (b) The average estimated covariance $\| \hat{C} \|$ as a function of $\delta t$. The average is computed over $10$ test points and using $50$ sample points to estimate the covariance. The yellow region indicates the range of $\delta t$ over which the errors in the estimated covariance are small. }
 \label{fig:cov_error}
 \end{figure}
 
@@ -778,7 +778,7 @@ However, when $\sigma_{kernel}^2$ corresponds to a region where $|E_M | \gg \|\v
 \hspace{0.45\textwidth}
 (d)
 
-\caption{Errors in the Mahalanobis distance and the covariance estimation for the nonlinear example. (a) The analytical expressions for the contributions to the distance approximation as a function of $\| \vec{y}_2 - \vec{y}_1\|_2$. (b) The average estimated Mahalanobis distance $\| \vec{y}_2 - \vec{y}_1\|^2_M$ as a function of the distance $\| \vec{y}_2 - \vec{y}_1\|_2$. The line $\| \vec{y}_2 - \vec{y}_1\|^2_M = \| \vec{y}_2 - \vec{y}_1\|_2$ is shown for reference. (c) The analytical expressions for the contributions to the covariance as a function of $\delta t$. (d) The average estimated covariance $\| \hat{C} \|$ as a function of $\delta t$. }
+\caption{Errors in the Mahalanobis distance and the covariance estimation for the nonlinear example. (a) The analytical expressions for the contributions to the distance approximation as a function of $\| \vec{y}_2 - \vec{y}_1\|_2$. (b) The average estimated Mahalanobis distance $\| \vec{y}_2 - \vec{y}_1\|^2_M$ as a function of the distance $\| \vec{y}_2 - \vec{y}_1\|_2$. The line $\| \vec{y}_2 - \vec{y}_1\|^2_M = \| \vec{y}_2 - \vec{y}_1\|_2$ is shown for reference. The yellow region indicates the range in which $\sigma_{kernel}$ should be chosen. (c) The analytical expressions for the contributions to the covariance as a function of $\delta t$. (d) The average estimated covariance $\| \hat{C} \|$ as a function of $\delta t$. The yellow region indicates the range of $\delta t$ over which the errors in the estimated covariance are small. }
 \label{fig:cov_error_nonlinear}
 \end{figure}
 
@@ -853,7 +853,7 @@ However, when $\delta t$ corresponds to a region where $\|E_C \| \gg \|C \|$, th
 \hfill
 \epsfig{height=\figheight, file=data_nonlinear_NIV_dt2_kernel1.eps}
 
-\caption{(a) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by the first diffusion maps variable $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{-2}$. Note that the parametrization is one-to-one with the slow variable.  (b) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{1}$. We do not recover the slow variable because $\sigma_{kernel}$ is too large. (c) Data from Figure~\ref{fig:initial_data_nonlinear}, colored by $\phi_1$ using the Mahalanobis distance with $\delta t = 10^{-3}$ and $\sigma_{kernel}^2 = 10^{-2}$. We do not recover the slow variable because $\delta t$ is too large.  }
+\caption{Data from Figure~\ref{fig:initial_data_nonlinear}, colored by the first diffusion maps variable $\phi_1$ using the Mahalanobis distance for three different parameter settings. The relevant values of $\delta t$ and $\sigma_{kernel}$ are indicated by the red dashed lines on the corresponding plots.  (a) $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{-2}$. Note that the parametrization is one-to-one with the slow variable.  (b) $\delta t = 10^{-7}$ and $\sigma_{kernel}^2 = 10^{1}$. We do not recover the slow variable because $\sigma_{kernel}$ is too large. (c)  $\delta t = 10^{-3}$ and $\sigma_{kernel}^2 = 10^{-2}$. We do not recover the slow variable because $\delta t$ is too large.  }
 \label{fig:colored_data_nonlinear_cases}
 \end{figure}
 
