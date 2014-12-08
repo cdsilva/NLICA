@@ -6,14 +6,13 @@ rng(123);
 
 %%
 
-ntraj = 10;
+ntraj = 2;
 npoints = 1000;
 x = repmat(linspace(0, 1, npoints), ntraj, 1);
 
 y = zeros(size(x));
-for i=1:ntraj
-    y(i, :) = randn * exp(-10*x(i,:));
-end
+y(1, :) = exp(-20*x(1,:));
+y(2, :) = -exp(-20*x(2,:));
 
 % figure;
 % plot(x, y, '.')
@@ -36,13 +35,13 @@ saveas(gcf, 'schematic_DS1.eps', 'epsc');
 npoints = 4000;
 
 x = linspace(0, 1, npoints);
-y = randn(size(x)) .* (1+8*exp(-4*x));
+y = randn(size(x)) .* max(10*exp(-7*x), 2);
 
 make_fig(3, 3);
 scatter(x, smooth(y, 11), 50, -x,'.')
 set(gca, 'xtick', [])
 set(gca, 'ytick', [])
-set(gca, 'ylim', [-8 8])
+set(gca, 'ylim', [-3 3])
 % axis off
 saveas(gcf, 'schematic_DS2.eps', 'epsc');
 
