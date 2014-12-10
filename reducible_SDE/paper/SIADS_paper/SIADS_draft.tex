@@ -70,9 +70,71 @@ supported by ....}}
 
 \begin{abstract}
 
+Multiscale stochastic systems are ubiquitous in science and engineering, and reduction of such systems to only their slow components is often essential for simulation and further analysis. 
+%
+We will focus on applying and adapting data mining and manifold learning techniques to analyze data from such systems.
+%
+Typical off-the-shelf data-driven methods are based on metrics and geometry which are not informed about the underlying system dynamics, and therefore do not successfully recover the slow variables from a spatiotemporal data set.
+%
+Here, we propose a data-driven method for recovering the slow variable of reducible systems;
+this method utilizes both the local geometry and local dynamics within the data set.
+%
+We construct a metric which is both insensitive to the fast variables and more general than simple statistical averaging. 
+%
+We offer rigorous analysis for our method and provide conditions for our method to successfully recover the underlying slow variables, as well as a empirical protocol to configure the method parameters. 
+
+
+%\begin{itemize}
+%
+%\item
+%Bridge/connect between data mining/analysis and dynamical systems
+%
+%\begin{itemize}
+%
+%\item
+%Main idea and scope: analyze stochastic dynamical systems using data-driven methods.
+%
+%\begin{itemize}
+%
+%\item
+%Reduction in fast-slow systems using manifold learning
+%
+%\end{itemize}
+%
+%\end{itemize}
+%\item
+%We cannot use off-the-shelf data-driven methods because they are typically based on metrics and geometry and are not informed (take into account) the dynamics and time.
+%
+%\item
+%Our contribution:
+%
+%\begin{itemize}
+%
+%\item
+%We show how to use data analysis methods that are typically applied to data sets for analyzing data collected as a time series from a dynamical system. In particular, we ``propose" a data-driven (graph-based) method for recovering the slow variable of reducible systems.
+%
+%\item
+%The method is based mostly on local analysis that combines geometry and local dynamics.
+%
+%\item 
+%We construct a metric which is insensitive to the fast variables, and is more sophisticated/general than simple averaging (e.g., computing the mean). 
+%
+%\item
+%We offer rigorous analysis for the method that gives the conditions (for our method to successfully recover the ``right" slow variables), intuition.
+%
+%\item 
+%Here, we will discuss two-scale stochastic systems. Our framework and analysis extends to multi scale systems
+%
+%\end{itemize}
+%
+%\end{itemize}
+
+
 \end{abstract}
 
-\begin{keywords}\end{keywords}
+\begin{keywords}
+multiscale dynamical systems, Mahalanobis distance, diffusion maps
+\end{keywords}
 
 \begin{AMS}
 37M10, 62-07
@@ -85,48 +147,93 @@ supported by ....}}
 
 \section{Introduction}
 
+Dynamical systems of engineering interest often contain several disparate time scales. 
+%
+When the dynamical modes are highly coupled, resolving the dynamics at all relevant scales can be computationally challenging and pose problems for analysis.
+%
+Often, the goal is to write a reduced system of equations which accurately captures the dynamics on the slow time scales.
+%
+These reduced models can greatly accelerate simulation efforts, and are more appropriate for integration into larger modeling frameworks. 
+
+Following Mori \cite{mori1965transport}, Zwanzig \cite{zwanzig1961memory}, and others \cite{chorin2000optimal}, one can reduce the number of variables needed to describe a system of differential equations.
+%
+However, in general, this reduction introduces memory terms, and transforms a system of differential equations into a system of (lower-dimensional) {\em integro-}differential equations, and thus, does not yield a dramatic reduction in complexity. 
+%
+Here, we will only consider systems of differential equations which contain an inherent time scale separation. 
+%
+In such cases, one can write a reduced system of differential equations (without memory terms) in {\em only} the slow variables.
+%
+However, such a formulation relies on knowing the slow variables within the system. 
+
+When the dynamics are simple, statistics such as moving averages can capture the slow variables within the data.
+%
+However, if the underlying dynamics are sufficiently nonlinear, such statistics will fail to capture the relevant structures and time scales within the data. 
+%
+For well-studied systems, one often has some {\em a priori} knowledge of good slow variables (such as phase field variables) with which to describe the dynamics \cite{chen2002phase, wheeler1992phase}.
+%
+However, the appropriate variables may not be immediately obvious for new complex systems. 
+
+In addition, given the full system of differential equations, one can make numerical approximations (such as the quasi-steady state approximation or the partial equilibrium approximation) to reduce the system.  
+%
+There has been some recent analytical work on extending and generalizing such ideas to more complex systems of equations \cite{ait2008closed, contou2011model, sotiropoulos2009model}. 
+%
+However, in many instances, the model for such a dynamical system is not given explicitly, but can only be inferred from simulation and/or experimental data.
+%
+We therefore turn to data-driven techniques to analyze such data and uncover the relevant dynamical modes.
+%
+In particular, we use a manifold-learning based approach, as such methods can accommodate nonlinear structures in high-dimensional data.
+
+The core of most manifold learning methods is having a notion of similarity between data points usually through a distance metric \cite{Belkin2003, Coifman2006, coifman2005geometric, Roweis2000, Tenenbaum2000}. 
+%
+Then the distances are integrated into a global parameterization of the data through the solution of an eigenvector problem. 
+%
+In this paper, we will analyze multiscale stochastic dynamical systems using data-driven methods.
+%
+Standard ``off-the-shelf'' manifold learning techniques which utilize the Euclidean distance are not appropriate for analyzing data from multiscale dynamical systems, since this metric does not account for the underlying dynamics or the multiple time scales. 
+%
+%However, the Euclidean distance does not appropriately represent similarities, since simulation and experimental data often contain multiple sources of variability, only a few of which are important to describing the essence of the data. 
+%
+Research effort has been dedicated to constructing more informative distance metrics which are less sensitive to noise and can better recover the true underlying structure in the data by suppressing the additional structures arising from unimportant sources of variability. 
+%
+The Mahalanobis distance is one such metric.
+%
+It was shown \cite{dsilva2013nonlinear, singer2008non, talmon2013empirical} that the Mahalanobis distance can remove the effect of observing data through a complex, nonlinear function. 
+%
+Here, we will show the analogy between removing nonlinear observation functions used in the context of data analysis, and reducing the dynamical system to remove the effects of the fast variables. 
+%
+Our methodology will build a parameterization of the data which is consistent with the slow variables. 
+%
+Because our method is data-driven, we require no explicit description of the model and can extract the underlying slow variables from either simulation or experimental data. 
+%
+Furthermore, it implicitly identifies the slow variables within the data and does not require any {\em a priori} knowledge of the fast or slow sources.
+%
+Because the underlying dynamical system can be highly complex, the fast and slow variables may be nonlinearly coupled. 
+%
+Even under such conditions, we will show that our method can isolate the slow variables.
+
+In this paper, we present rigorous analysis for our method and provide conditions under which our method will successfully recover the slow variables. 
+%
+Furthermore, based on this analysis, we show how to utilize data to set the parameters of the method appropriately.
+%
+We note that, although we discuss two-scale stochastic systems, our framework and analysis extends to multiscale systems.
+
+Also include:
 \begin{itemize}
 
 \item
-Bridge/connect between data mining/analysis and dynamical systems
-
-\begin{itemize}
+relate to Mori-Zwanzig, Chorin - do reduction of variables with memory. we do without.
 
 \item
-Main idea and scope: analyze stochastic dynamical systems using data-driven methods.
-
-\begin{itemize}
+reference - averages
 
 \item
-Reduction in fast-slow systems using manifold learning
-
-\end{itemize}
-
-\end{itemize}
-\item
-We cannot use off-the-shelf data-driven methods because they are typically based on metrics and geometry and are not informed (take into account) the dynamics and time.
+reduce SDE - MN papers - they build explicit transforms based on known model
 
 \item
-Our contribution:
-
-\begin{itemize}
+we can also do fusion
 
 \item
-We show how to use data analysis methods that are typically applied to data sets for analyzing data collected as a time series from a dynamical system. In particular, we ``propose" a data-driven (graph-based) method for recovering the slow variable of reducible systems.
-
-\item
-The method is based mostly on local analysis that combines geometry and local dynamics.
-
-\item 
-We construct a metric which is insensitive to the fast variables, and is more sophisticated/general than simple averaging (e.g., computing the mean). 
-
-\item
-We offer rigorous analysis for the method that gives the conditions (for our method to successfully recover the ``right" slow variables), intuition.
-
-\item 
-Here, we will discuss two-scale stochastic systems. Our framework and analysis extends to multi scale systems
-
-\end{itemize}
+phase field variables
 
 \end{itemize}
 
@@ -144,9 +251,9 @@ Refs: ADM, Ronen
 \caption{(Left) Schematic of multiscale system where the value of one variable becomes slaved to the other variable. In such an example, traditional data mining algorithms are sufficient to recover the slow variable. (Right) Schematic of multiscale system where the statistics of one variable become slaved to the other variable. In such an example, traditional data mining algorithms will not recover the slow variable if the variance in the fast variable is too large. }
 \end{figure}
 
-\subsection{Multiscale Stochastic Systems} \label{subsec:multiscale_SDE}
+\section{Multiscale Stochastic Systems} \label{subsec:multiscale_SDE}
 
-We assume we have the following two-scale stochastic differential equation (SDE),
+Consider the following two-scale system of stochastic differential equations (SDEs),
 \begin{equation} \label{eq:general_SDE}
 \begin{aligned}
 dx_i(t) &= a_i(\vec{x}(t)) dt + dW_i(t), & \: 1 \le i \le m \\
@@ -155,24 +262,21 @@ dx_i(t) &= \frac{a_i(\vec{x}(t))}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i(
 \end{equation}
 where $W_i(t)$ are independent standard Brownian motions, $\vec{x}(t)  = \begin{bmatrix} x_1(t) & \cdots & x_n(t) \end{bmatrix}^T \in \mathbb{R}^n$, and $\epsilon \ll 1$.
 %
-
-
-
-In the simple case of a linear drift function, where $a_i(\vec{x}(t)) = -\mu _i x_i$, with $\mu_i > 0$, the probability density function of $x_i$ approaches a Gaussian with variance $\mu_i$. 
+In the simple case of a linear drift function, i.e. when $a_i(\vec{x}(t)) = -\mu _i x_i$, with $\mu_i > 0$, the probability density function of $x_i$ approaches a Gaussian with variance $\mu_i$. 
 %
 The time constant of the approach of the variance to equilibrium is $-1/\mu_i, i=1,\ldots,m$ and $-\epsilon/\mu_i, i=m+1,\ldots,n$ \cite{...}.
 %
 Thus the last $n-m$ variables of \eqref{eq:general_SDE} are fast and approach a local equilibrium rapidly, while the first $m$ are slow, so that a short burst of simulation will yield a cloud of points which is widely distributed in the fast directions and narrowly distributed in the slow ones.
 %
-Under reasonable conditions on $a_i(\vec{x})$, the same can be said for a general drift function, where the $\mu_i$ are the eigenvalues of the Jacobian of $\mathbf{a}(\vec{x})$.
+Under reasonable conditions on $a_i(\vec{x})$, the same can be said for a general drift function, where $\mu_i$ are the eigenvalues of the Jacobian of $\mathbf{a}(\vec{x})$.
 %
 Therefore, \eqref{eq:general_SDE} defines an $n$-dimensional stochastic system with $m$ slow variables and $n-m$ fast variables, and $\epsilon$ defines the time scale separation between the fast and slow variables. 
 %
-The ratio of the powers of $\epsilon$ in the drift and diffusion terms in \eqref{eq:general_SDE} is essential, as we need the square of the diffusivity to be of the same order as the drift as $\epsilon \rightarrow 0$. 
+The ratio of the powers of $\epsilon$ in the drift and diffusion terms in \eqref{eq:general_SDE} is essential; we assume the square of the diffusivity to be of the same order as the drift as $\epsilon \rightarrow 0$. 
 %
 If the diffusivity is larger, then, as $\epsilon \rightarrow 0$, the equilibrium measure will be unbounded. Conversely, if the diffusivity is smaller, the equilibrium measure will go to $0$ as $\epsilon \rightarrow 0$.
 
-If $a_i(\vec{x})$ are sufficiently well behaved, then by the averaging principal \cite{...}, we can write a reduced SDE in {\em only} the slow variables $x_1, \dots, x_m$. 
+Assuming the sample average of $a_i(\vec{x})$ converges to a distribution which is only a function of the slow variables, by the averaging principle \cite{freidlin2012random}, we can write a reduced SDE in {\em only} the slow variables $x_1, \dots, x_m$. 
 %
 The aim of our work is to show how we can detect such slow variables {\em automatically} from data, in order to help inform modeling efforts and aid in the writing of such reduced stochastic models. 
 %
@@ -181,7 +285,7 @@ In general, we do not have access to data $\vec{x}(t)$ from the original SDE sys
 We assume that $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$, $n \le d$, is a deterministic (possibly nonlinear) function whose image is an $n$-dimensional manifold $\mathcal{M}$ in $\mathbb{R}^d$.
 %
 % TODO: check whether the inverse condition is not too strong (and we only need it to apply to the domain of the samples)
-For our analysis, we require $\mathbf{g} = \mathbf{f} ^{-1}$ be well-defined on $\mathcal{M}$, and both $\mathbf{f}$ and $\mathbf{g}$ to be continuously differentiable to fourth order. Given data $\vec{y}(t_1),\ldots,\vec{y}(t_N)$ on $\mathcal{M}$ that comes from \eqref{eq:general_SDE} we would like to recover a parametrization of the data that is one-to-one with the slow variables $x_1, \dots, x_m$.
+For our analysis, we require $\mathbf{g} = \mathbf{f} ^{-1}$ be well-defined on $\mathcal{M}$, and both $\mathbf{f}$ and $\mathbf{g}$ to be continuously differentiable to fourth order. Given data $\vec{y}(t_1),\ldots,\vec{y}(t_N)$ on $\mathcal{M}$ we would like to recover a parametrization of the data that is one-to-one with the slow variables $x_1, \dots, x_m$.
 
 \section{Local Invariant Metrics}
 
@@ -196,7 +300,7 @@ Instead, we propose to use the Mahalanobis distance that measures distances rela
 We therefore still retain information about both the fast and slow directions, and can capture more complex behavior within the data set.
 
 If two points $\vec{x}(t_1)$ and $\vec{x}(t_2)$ are drawn from an n-dimensional
-random distribution with covariance $C_x$, the Mahalanobis distance between the points is defined as \cite{...}
+random distribution with covariance $C_x$, the Mahalanobis distance between the points is defined as \cite{mahalanobis1936generalized}
 \begin{equation}
 	\| \vec{x}(t_1) - \vec{x}(t_2) \| _M = \sqrt{ (\vec{x}(t_1) - \vec{x}(t_2))^T C_x^{-1} (\vec{x}(t_1) - \vec{x}(t_2) )  }.
 \end{equation}
@@ -229,7 +333,7 @@ The Mahalanobis distance incorporates information about the dynamics and relevan
 %
 However, in practice, we never construct $\vec{z}(t)$ explicitly. 
 %
-It was shown in TODO:citeAmit that the Mahalanobis distance can be extended to approximate (to fourth order) the Euclidean distance between the rescaled samples $\vec{z}(t)$ from accessible $\vec{y}(t)$,
+It was shown in \cite{singer2008non} that the Mahalanobis distance can be extended to approximate (to fourth order) the Euclidean distance between the rescaled samples $\vec{z}(t)$ from accessible $\vec{y}(t)$,
 %
 \begin{equation} \label{eq:mahalanobis}
 \| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M = \| \vec{z}(t_2) - \vec{z}(t_1) \|^2_2 + \mathcal{O}(\| \vec{y}(t_2) - \vec{y}(t_1) \|^4_2),
@@ -244,7 +348,7 @@ In Section~\ref{sec:analysis}, we will show how we can approximate this distance
 
 From pairwise distances, we want to extract a {\em global} parametrization of the data that represents the slow variables.
 %
-We will use diffusion maps, a kernel-based manifold learning technique, to extract a global parametrization using the local distances that we described in the previous section.
+We will use diffusion maps \cite{Coifman2006, coifman2005geometric}, a kernel-based manifold learning technique, to extract a global parametrization using the local distances that we described in the previous section.
 %
 Given data $\vec{y}(t_1), \dots, \vec{y}(t_N)$, we first construct the kernel matrix $W \in \mathbb{R}^{N \times N}$, where
 \begin{equation} \label{eq:dmaps_kernel}
@@ -261,14 +365,15 @@ D_{ii} = \sum_{j=1}^N W_{ij}.
 %
 We compute the eigenvalues $\lambda_0, \dots, \lambda_{N-1}$ and eigenvectors $\phi_0, \dots, \phi_{N-1}$ of the matrix $A = D^{-1}W$, and order them such that $|\lambda_0| \ge |\lambda_1| \ge \dots \ge |\lambda_{N-1}|$.
 %
-$\phi_0$ is a constant trivial eigenvector; the next few eigenvectors give a parameterization/embedding coordinates for the data (modulo higher harmonics which characterize the same direction in the data).
+$\phi_0$ is a constant trivial eigenvector; the next few eigenvectors give a parameterization/embedding coordinates for the data (modulo higher harmonics which characterize the same direction in the data \cite{ferguson2010systematic}).
 %
 
 \section{Estimation of the Mahalanobis Distance} \label{sec:analysis}
 
 \begin{figure}[t]
+\centering
 \epsfig{width=\textwidth, file=schematic.eps}
-\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligible. TODO: make curves different (intrinsic vs. observations) }
+\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately. The data shows the evolution of the ``fast'' variable at a fixed value of the ``slow'' variable.  We must choose both parameters so that the curvature effects and other nonlinearities are negligible.}
 \label{fig:schematic}
 \end{figure}
 
@@ -285,7 +390,9 @@ Consequently we use the following modified definition for the Mahalanobis distan
  \end{equation}
 where $C(\vec{y}(t))$ is the covariance of the observed stochastic process at the point $\vec{y}(t)$, and $\dagger$ denotes the Moose-Penrose pseudoinverse (since $d$ may exceed $n$).
 
-In the simple linear case where $\mathbf{f} (\vec{x}) = A \vec{x}$, the covariance of the accessible sample is given by $C=AC_xA^T$. Let $A=U \Lambda V^T$ be the singular value decomposition (SVD) of $A$, where TODO. By the SVD, the pseudoinverse of the covariance matrix is $C^{\dagger} = U \Lambda^{-1} V^T C_x^{-1} V \Lambda ^{-1} U^T$. Consequently, the Mahalanobis distance \eqref{eq:mahalanobis_distance} is reduced to
+In the simple linear case where $\mathbf{f} (\vec{x}) = A \vec{x}$, with $A \in \mathbb{R}^{d \times n}$, the covariance of the accessible sample is given by $C=AC_xA^T$. Let $A=U \Lambda V^T$ be the singular value decomposition (SVD) of $A$, where $U \in \mathbb{R}^{d \times n}$, $\Lambda \in \mathbb{R}^{n \times n}$, and $V \in \mathbb{R}^{n \times n}$. 
+%
+By the SVD, the pseudoinverse of the covariance matrix is $C^{\dagger} = U \Lambda^{-1} V^T C_x^{-1} V \Lambda ^{-1} U^T$. Consequently, the Mahalanobis distance \eqref{eq:mahalanobis_distance} is reduced to
 \begin{equation}
 \begin{aligned} 
 \| \vec{y}(t_2) - \vec{y}(t_1) \|^2_M &= (\vec{y}_2 - \vec{y}_1)^T  C^{\dagger} (\vec{y}_2 - \vec{y}_1) \\
@@ -297,7 +404,7 @@ In the simple linear case where $\mathbf{f} (\vec{x}) = A \vec{x}$, the covarian
 \end{equation} 
 Hence evaluating the Mahalanobis distance of the observations $\mathbf{f}(\vec{x})$ using \eqref{eq:mahalanobis_distance} allows us to estimate the Euclidean distances of the rescaled variables $\vec{z}$ (in which the fast coordinated are collapsed).
 
-Following TODO:Amit, we will show via Taylor expansion that the Mahalanobis distance between the observations \eqref{eq:mahalanobis_distance} approximates the Euclidean distance between the rescaled variables for more general observation functions $\mathbf{f}$. 
+Following \cite{singer2008non}, we will show via Taylor expansion that the Mahalanobis distance between the observations \eqref{eq:mahalanobis_distance} approximates the Euclidean distance between the rescaled variables for more general observation functions $\mathbf{f}$. 
 %Our approximation of the pairwise distances relies on the Taylor expansion of the measurement function $\mathbf{f}$.
 %
 \eqref{eq:mahalanobis_distance} cannot be evaluated directly since we do not have access to the covariance matrices, so we will instead estimate the covariances directly from data.
@@ -850,12 +957,36 @@ However, when $\delta t$ corresponds to a region where $\|E_C \| \gg \|C \|$, th
 
 \section{Conclusion}
 
-We showed that in certain cases (when we do {\em not} have a simulator where we can change $\delta t$), the data cannot be processed as-is (we cannot find the right kernel scale given a fixed $\delta t$ such that we can accurately recover the slow variable).
+We have presented a methodology to compute a parameterization of a data set which respects the slow variables in the underlying dynamical system.
+%
+Our method utilizes diffusion maps, a kernel-based manifold learning technique, coupled with the Mahalanobis distance as our metric. 
+%
+We showed that the Mahalanobis distance collapses the fast directions within a data set, therefore allowing for successful recovery of the slow variables. 
+%
+Furthermore, we showed how to estimate the covariances (required for the Mahalanobis distance) directly from data.
 
-If the cloud of samples is too big then we can observe the cloud of clouds (and those clouds can be histograms, Fourier, scattering, etc.) as a way to get smaller clouds.
+
+In the examples we presented, we had complete control over the time scale of sampling. 
+%
+However, in many settings, it is not uncommon to have a fixed sampling rate, either from a ``black-box'' simulator, or from previously collected historical data. 
+%
+In such cases, the data cannot be processed as-is, as we cannot find an appropriate kernel scale given the fixed $\delta t$ such that we can accurately recover the slow variables.
+%
+For these cases, it would be advantageous to contruct intermediate observers in order to reduce the effects of noise and permit a larger time step.
+%
+Such intermediates could be quantities such as histograms, Fourier coefficients, or scattering transform coefficients. 
+
+In addition, for this analysis, we have ignored the effects of finite sampling on our estimation.
+%
+In reality, both the number of samples used to estimate the covariances, as well as the density of sampled points on the manifold affect the recovered parameterization.
+%
 
 
-Richardson extrapolation could allow us to get an estimate of a second-order term in the covariance estimation, thereby locally approximating the function using a quadratic form, rather than a linear form,  which can lead to a better/improved/more accurate ``Mahalanobis'' metric.
+%Richardson extrapolation could allow us to get an estimate of a second-order term in the covariance estimation, thereby locally approximating the function using a quadratic form, rather than a linear form,  which can lead to a better/improved/more accurate ``Mahalanobis'' metric.
 
+%When we do not have access to a simulator and the bursts come from the data (e.g., from a short time window) then we do not control $\delta t$ and depending on the curvature of the measurement function, we could be in a regime in which there is no ``right" configuration that will give us the good result. Similarly, when we have a finite sample set and the distances between the data are relatively large. In either case, we should find a better (intermediate) representation of the data, which is more regular with respect to the slow variable in order to appropriately reduce the system.
+
+\bibliographystyle{siam}
+\bibliography{../../../../references/references}
 
 \end{document}

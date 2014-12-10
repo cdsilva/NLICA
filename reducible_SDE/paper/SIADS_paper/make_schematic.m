@@ -11,8 +11,8 @@ npoints = 1000;
 x = repmat(linspace(0, 1, npoints), ntraj, 1);
 
 y = zeros(size(x));
-y(1, :) = exp(-20*x(1,:));
-y(2, :) = -exp(-20*x(2,:));
+y(1, :) = exp(-10*x(1,:));
+y(2, :) = -exp(-10*x(2,:));
 
 % figure;
 % plot(x, y, '.')
@@ -35,7 +35,7 @@ saveas(gcf, 'schematic_DS1.eps', 'epsc');
 npoints = 4000;
 
 x = linspace(0, 1, npoints);
-y = randn(size(x)) .* max(10*exp(-7*x), 2);
+y = randn(size(x)) .* max(10*exp(-8*x), 2);
 
 make_fig(3, 3);
 scatter(x, smooth(y, 11), 50, -x,'.')
