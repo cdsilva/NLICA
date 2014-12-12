@@ -111,15 +111,29 @@ All of these considerations (recently developed plus what we propose here) provi
 \subsection{Diffusion maps}
 
 \subsection{Observers}
-Add physical examples, and Amit's bi-spectrum, scattering....
 
-Cite PNAS, stating that the histograms are good since they linearize any noise. 
+\begin{itemize}
+\item Physical examples (e.g., $\alpha$-carbons for molecules)
+\item Amit's bispectrum
+\item Scattering transform
+\item Cite PNAS, stating that the histograms are good since they linearize any noise. 
+\end{itemize}
 
 \subsection{Metric}
-Euclidean (not good, especially for histograms), Mahalanobis (good, cite PNAS, since it noise robust). Here we use EMD since it is multiscale.
-Stability and regularity issues.
 
-\section{Identify the principal components}
+\begin{itemize}
+\item Euclidean (not good, especially for histograms)
+\item Mahalanobis (good, cite PNAS, since it noise robust)
+\item Here we use EMD since it is multiscale.
+\item Emphasize stability and regularity issues.
+\end{itemize}
+
+\section{Identifying the Principal Components}
+
+\begin{itemize}
+\item Discuss the issues: harmonics
+\item Give simple example (Laplacian on strip)
+\end{itemize}
 
 \subsection{Algorithm: Local Linear Regression}
 
@@ -189,20 +203,53 @@ and so looking at the ratio of the log of the eigenvalues (modulo harmonics) sho
 
 \subsubsection{Swiss Roll}
 
-\includegraphics[height=3in]{swissroll1}
-\includegraphics[height=3in]{swissroll2}\\
-\includegraphics[height=2in]{swissroll1_cv}
-\includegraphics[height=2in]{swissroll2_cv}\\
-\includegraphics[height=3in]{swissroll1_color1}
-\includegraphics[height=3in]{swissroll2_color1}\\
-\includegraphics[height=3in]{swissroll1_color2}
-\includegraphics[height=3in]{swissroll2_color2}
+\begin{figure}
+%
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[height=1.5in]{swissroll1}\\
+\includegraphics[height=1.5in]{swissroll1_evals}\\
+\includegraphics[height=1.5in]{swissroll1_color1}\\
+\includegraphics[height=1.5in]{swissroll1_color2}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[height=1.5in]{swissroll2} \\
+\includegraphics[height=1.5in]{swissroll2_evals} \\
+\includegraphics[height=1.5in]{swissroll2_color1}\\
+\includegraphics[height=1.5in]{swissroll2_color2}
+\caption{}
+\end{subfigure}
+%
+\caption{}
+\end{figure}
 
-For first case: $\lambda_1 = 0.9982$, $\lambda_2 = 0.9959$
+%For first case: $\lambda_1 = 0.9982$, $\lambda_2 = 0.9959$
 
-For second case: $\lambda_1 = 0.9977$, $\lambda_5 = 0.9652$.
+%For second case: $\lambda_1 = 0.9977$, $\lambda_5 = 0.9652$.
 
 \subsubsection{Torus}
+
+
+\begin{figure}[t]
+%
+\includegraphics[width=2.5in]{torus1}
+\hfill
+\includegraphics[height=1.5in]{torus1_evals}\\
+%
+\includegraphics[width=2.5in]{torus2}
+\hfill
+\includegraphics[height=1.5in]{torus2_evals}\\
+%
+\includegraphics[width=2.5in]{torus3}
+\hfill
+\includegraphics[height=1.5in]{torus3_evals}
+%
+\caption{}
+\end{figure}
+
 
 \section{Chemotaxis: a case study}
 
@@ -549,18 +596,32 @@ We are confident that such techniques can help inform modeling efforts for syste
 
 \subsection{Detect dimensionality}
 
-\includegraphics[height=2in]{lle_errors1}
-\includegraphics[height=2in]{lle_errors2}
 
-\includegraphics[height=2in]{lle_evals1}
-\includegraphics[height=2in]{lle_evals2}
-
-\includegraphics[height=2in]{lle_embed1_1}
-\includegraphics[height=2in]{lle_embed2_2}
-
-\hfill 
-\includegraphics[height=2in]{lle_embed1_2}
-
+\begin{figure}
+%
+\def\figheight{1.4in}
+%
+\begin{subfigure}[t]{0.31\textwidth}
+\includegraphics[height=\figheight]{chemotaxis1_evals}
+\includegraphics[height=\figheight]{chemotaxis1_embed_good}
+%\includegraphics[height=1.5in]{chemotaxis1_embed_bad}
+\end{subfigure}
+%
+\begin{subfigure}[t]{0.31\textwidth}
+\includegraphics[height=\figheight]{chemotaxis2_evals}
+\includegraphics[height=\figheight]{chemotaxis2_embed_good}
+\includegraphics[height=\figheight]{chemotaxis2_embed_bad}
+\end{subfigure}
+%
+\begin{subfigure}[t]{0.35\textwidth}
+\includegraphics[height=\figheight]{chemotaxis3_evals}
+\includegraphics[height=\figheight]{chemotaxis3_embed_good}
+\includegraphics[height=\figheight]{chemotaxis3_embed_bad}
+\end{subfigure}
+%
+\caption{}
+%
+\end{figure}
 
 \section*{Acknowledgment}
 The authors would like to thank TODO.
