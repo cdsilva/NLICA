@@ -110,6 +110,40 @@ All of these considerations (recently developed plus what we propose here) provi
 
 \subsection{Diffusion maps}
 
+Let $z(t) \in \mathbb{R}^n$ denote an $n$-dimensional observation of the system at time $t$. 
+%
+Assume we are given $m$ observations $z(1), \dots, z(m)$, which lie on a $d$-dimensional, nonlinear manifold $\mathcal{M}_d$, with $d \ll n$. 
+%
+Our goal is to uncover a $d$-dimensional parameterization of the $m$ observations that respects the underlying manifold geometry.
+%
+We first construct the matrix $W \in \mathbb{R}^{m \times m}$, with
+\begin{equation} \label{eq:W}
+W_{ij} = \exp \left( -\frac{\|z(i) - z(j) \|^2}{\epsilon^2} \right), \ i,j=1,\ldots,m
+\end{equation}
+where $\| \cdot \|$ denotes the appropriate norm for the observations, and $\epsilon$ is a characteristic distance between the observations. 
+%
+We typically take $\epsilon$ to be the median of the pairwise distances between the data points.
+%
+We then construct the diagonal matrix $D \in \mathbb{R}^{m \times m}$, with $D_{ii} = \sum_j W_{ij}$, and the matrix $A  = D^{-1} W.$
+%
+The eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ of $A$ provide the embedding coordinates for the data, such that
+$\phi_{j}(i)$ is the $j^{th}$ embedding coordinate for $z(i)$.
+%
+The ``importance'' of coordinate $\phi_j$ is quantified by the corresponding eigenvalue $\mu_j$, e.g., the relative importance of $\phi_1$ versus $\phi_2$ can be measured by comparing $\mu_1$ and $\mu_2$.
+%
+We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$, and if the data are low-dimensional, we only need to retain a few of the leading eigenvectors to adequately describe the data.
+%
+Because the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$),  $\mu_0 = 1$ and $\phi_0$ is a constant vector which is not used as an embedding coordinate.
+
+In the limit of infinite data ($m \rightarrow \infty$ and $\epsilon \rightarrow 0$ with the appropriate rate), the matrix $I-A$ approaches the Laplacian operator on the manifold $\mathcal{M}_d$ \cite{...}. 
+%
+Therefore, the eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ approach the eigenfunctions of the Laplacian (with Neumann boundary conditions) on $\mathcal{M}_d$.
+%
+The eigenvalues are related to the eigenvalues we compute in diffusion maps by 
+\begin{equation}
+\mu_k = e^{-\tilde{\mu}_k t}.
+\end{equation}
+
 \subsection{Observers}
 
 \begin{itemize}
@@ -117,6 +151,9 @@ All of these considerations (recently developed plus what we propose here) provi
 \item Amit's bispectrum
 \item Scattering transform
 \item Cite PNAS, stating that the histograms are good since they linearize any noise. 
+For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
+%
+Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
 \end{itemize}
 
 \subsection{Metric}
@@ -125,6 +162,21 @@ All of these considerations (recently developed plus what we propose here) provi
 \item Euclidean (not good, especially for histograms)
 \item Mahalanobis (good, cite PNAS, since it noise robust)
 \item Here we use EMD since it is multiscale.
+%
+Instead of the standard Euclidean distance, we use the earth mover's distance (EMD) \cite{rubner2000earth} as the metric between pairs of histograms. 
+%
+Conceptually, the EMD measures how much ``work'' it takes to transform one probability density into another.
+%
+It therefore not only considers where the densities are inconsistent, but also how far apart the inconsistencies are.
+%
+Although the brute-force computation of the EMD is computationally expensive, there has been a plethora of work in developing efficient algorithms for its computation \cite{Pele-eccv2008, Pele-iccv2009}.
+%
+For the special case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions \cite{rubner2000perceptual}, which can be estimated from histograms as
+\begin{equation}
+\| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|
+\end{equation}
+where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$. 
+%
 \item Emphasize stability and regularity issues.
 \end{itemize}
 
@@ -134,6 +186,43 @@ All of these considerations (recently developed plus what we propose here) provi
 \item Discuss the issues: harmonics
 \item Give simple example (Laplacian on strip)
 \end{itemize}
+
+
+In diffusion maps, we order the eigenvectors by the magnitude of the corresponding eigenvalues, in the hopes that the top eigenvectors provide us with a parameterization of the underlying manifold.
+%
+However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set. 
+%
+We will illustrate this issue with a simple two-dimensional strip where we know the analytical form of the eigenfunctions and can explicitly highlight the issue at hand. 
+
+Consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x$ and $L_y$. 
+%
+The eigenvalues of the Laplacian with Neumann boundary conditions are given by
+\begin{equation}
+\tilde{\mu}_{k_1, k_2} = \left( \frac{k_1 \pi}{L_x} \right)^2 + \left( \frac{k_2 \pi}{L_y} \right)^2
+\end{equation}
+for $k_1, k_2 = 0, 1, 2, \dots$.
+%
+The corresponding eigenfunctions are 
+\begin{equation}
+\tilde{\phi}_{k_1, k_2} = \cos \left( \frac{k_1 \pi x}{L_x} \right) \cos \left( \frac{k_2 \pi y}{L_y} \right)
+\end{equation}
+where $x$ and $y$ denote the two coordinates of the rectangular domain. 
+%
+We note that $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ are one-to-one with the $x$ and $y$ coordinates, respectively, and so the eigenfunctions of the Laplacian yield a parameterization of the underlying manifold. 
+%
+However, these two eigenvectors $\tilde{\phi}_{1, 0}$ and $\tilde{\phi}_{0, 1}$ are not guaranteed to correspond to the two largest (non-trivial) eigenvalues (the largest eigenvalue will always be $\mu_{0,0} = 1$). 
+%
+In fact, if $L_x > 2 L_y$, then $\mu_{2, 0} > \mu_{0, 1}$, and so the second (non-trivial) eigenvector (when ordered by eigenvalue) will be a harmonic of the first and still parameterize the $x$ direction. 
+%
+We therefore require a methodology to automatically detect which eigenvectors are harmonics of each other. 
+
+%From the eigenvalues, 
+%\begin{equation}
+%\sqrt{\frac{\log(\mu_{1,0})}{\log(\mu_{0,1})}} = 
+%\frac{L_y}{L_x}
+%\end{equation}
+%and so looking at the ratio of the log of the eigenvalues (modulo harmonics) should inform us as to the lengths of the different directions in the manifold. 
+
 
 \subsection{Algorithm: Local Linear Regression}
 
@@ -158,19 +247,20 @@ where $w$ is a weighting function.
 %
 We will use
 %
-\begin{itemize}
-\item $w_i(x) = \exp \left( - \frac{\|\Phi_{k}(x) - \Phi_{k} (x_i) \|^2}{\epsilon^2} \right)$, where $\Phi_k(x) = \begin{bmatrix}
+\begin{equation}
+w_i(x) = \exp \left( - \frac{\|\Phi_{k}(x) - \Phi_{k} (x_i) \|^2}{\epsilon^2} \right), \text{where } \Phi_k(x) = \begin{bmatrix}
 \phi_1(x) \\
 \vdots \\
 \phi_k(x)
-\end{bmatrix} $
-\item $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k}(x)$
-\end{itemize}
+\end{bmatrix} .
+\end{equation}
+%
+We take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k}(x)$.
 
 Let $\hat{f}_{k+1}(\phi_1(x_i), \dots, \phi_k(x_i))$ denote the minimum achieved in \eqref{eq:opt_problem}, when the minimization is performed over $x_j$ with $j \ne i$. 
 %
 We then define the leave-one-out- cross-validation error as
-\begin{equation}
+\begin{equation} \label{eq:cv_error}
 r_{k+1} = \sum_{i=1}^n \left( \phi_{k+1} (x_i) - \hat{f}_{k+1}(\phi_1(x_i), \dots, \phi_k(x_i)) \right)^2
 \end{equation}
 %
@@ -178,52 +268,85 @@ A small value of $r_{k+1}$ means that $\phi_{k+1}$ can be accurately approximate
 %
 A large value of $r_{k+1}$ indicates that $\phi_{k+1}$ parameterizes a new direction in the data.
 
-\subsection{Eigenvalues to Quantify Dimensions}
-
-The eigenvalues of the Laplacian with Neumann boundary conditions on a $d$-dimensional rectangular domain are given by
-\begin{equation}
-\mu_{k,l} = \frac{k^2 \pi^2}{L_l^2}
-\end{equation}
-for $k=1, 2, \dots$ and $l=1, 2, \dots, d$, and $L_l$ is the length of the domain along the $l^{th}$ dimension. 
-%
-These eigenvalues are related to the eigenvalues we compute in diffusion maps by 
-\begin{equation}
-\lambda_{k,l} = e^{-\mu_{k,l} t} = e^{-\frac{k^2 \pi^2}{L_l^2} t}
-\end{equation}
-%
-Therefore, 
-\begin{equation}
-\sqrt{\frac{\log(\lambda_{1,l_1})}{\log(\lambda_{1,l_2})}} = 
-\frac{L_{l_2}}{L_{l_1}}
-\end{equation}
-and so looking at the ratio of the log of the eigenvalues (modulo harmonics) should inform us as to the lengths of the different directions in the manifold. 
-
 \subsection{Illustrative Examples}
 
 
 \subsubsection{Swiss Roll}
 
+Our first illustrative example will consist of two different swiss roll data sets.
+%
+Each data set consists of $m=1500$ points uniformly distributed on the swiss roll. 
+%
+Both swiss rolls are the same in the angular/spiral direction.
+%
+However, height of the first swiss roll is $h = 15 \pi$, while the heigh of the second is $h = 6 \pi$. 
+%
+These two data sets are shown in Figure~\ref{fig:swiss_rolls}(a)~and~(b), respectively.
+%
+We expect to recover the eigenvector which parameterizes the height farther down in the spectrum for the second data set relative to the first, as this second data set is shorter.
+
+Figure~\ref{fig:swiss_rolls}~(c)~and~(d) shows the diffusion maps eigenvalue spectra for the two data sets.
+%
+The bars are colored by the leave-one-out cross-validation error as defined in \eqref{eq:cv_error}; a small value of $r_k$ indicate that the corresponding eigenvector is a harmonic of previous eigenvectors, while a large value of $r_k$ indicates that the corresponding eigenvector describes a new direction in the data. 
+%
+From these plots, one can conclude that the first two eigenvectors $\phi_1$ and $\phi_2$ parameterize the first data set, while $\phi_1$ and $\phi_5$ parameterize the second. 
+%
+Figure~\ref{fig:swiss_rolls}~(e--h) shows the two data sets, colored by the two ``important'' eigenvectors. 
+%
+As expected, these eigenvectors parameterize the arc length along the spiral, and the height of the swiss roll. 
+
 \begin{figure}
 %
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll1}\\
-\includegraphics[height=1.5in]{swissroll1_evals}\\
-\includegraphics[height=1.5in]{swissroll1_color1}\\
+\includegraphics[height=1.5in]{swissroll1}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[height=1.5in]{swissroll2}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[height=1.5in]{swissroll1_evals}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[height=1.5in]{swissroll2_evals}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[height=1.5in]{swissroll1_color1} 
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[height=1.5in]{swissroll2_color1}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
 \includegraphics[height=1.5in]{swissroll1_color2}
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll2} \\
-\includegraphics[height=1.5in]{swissroll2_evals} \\
-\includegraphics[height=1.5in]{swissroll2_color1}\\
 \includegraphics[height=1.5in]{swissroll2_color2}
 \caption{}
 \end{subfigure}
 %
-\caption{}
+\caption{Swiss roll example. (a) Data set 1, with $h=6 \pi$. (b) Data set 2, with $h = 15 \pi$. (c) Diffusion maps eigenvalue spectrum for data set 1. } 
+\label{fig:swiss_rolls}	
 \end{figure}
 
 %For first case: $\lambda_1 = 0.9982$, $\lambda_2 = 0.9959$
@@ -627,6 +750,6 @@ We are confident that such techniques can help inform modeling efforts for syste
 The authors would like to thank TODO.
 
 \bibliographystyle{elsarticle-num}
-\bibliography{papers}
+\bibliography{../../../references/references}
 
 \end{document}

@@ -100,6 +100,51 @@ print('swissroll1_evals.eps','-depsc')
 
 %%
 
+figure;
+
+D1 = pdist(V(:,2:3));
+D2 = pdist(V(:,2:4));
+
+subplot(2,2,1)
+plot(V(:,2),V(:,3),'.')
+xlabel('\phi_2')
+ylabel('\phi_3')
+
+eps = logspace(-8, -3, 100);
+sumA1 = zeros(size(eps));
+sumA2 = zeros(size(eps));
+
+for i=1:length(eps)
+    sumA1(i) = sum(exp(-D1.^2/(2*eps(i))));
+    sumA2(i) = sum(exp(-D2.^2/(2*eps(i))));
+end
+
+subplot(2,2,2)
+loglog(eps, sumA1, '.')
+hold on
+loglog(eps, 1e10*eps)
+p = polyfit(log(eps), log(sumA1), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)*2), 'dim=2 line','location','best')
+xlabel('\epsilon')
+ylabel('$\sum W_{ij}$', 'interpreter','latex')
+
+subplot(2,2,3)
+plot3(V(:,2),V(:,3),V(:,4),'.')
+xlabel('\phi_2')
+ylabel('\phi_3')
+zlabel('\phi_4')
+
+subplot(2,2,4)
+loglog(eps, sumA2, '.r')
+hold on
+loglog(eps, 1e10*eps, 'r')
+p = polyfit(log(eps), log(sumA2), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)*2), 'dim=2 line','location','best')
+xlabel('\epsilon')
+ylabel('$\sum W_{ij}$', 'interpreter','latex')
+
+%%
+
 load swissroll2.mat
 
 make_fig(2,2);
@@ -153,27 +198,47 @@ print('swissroll2_evals.eps','-depsc')
 
 %%
 
-% D1 = pdist(V(:,2:3));
-% D2 = pdist(V(:,[2 6]));
-% 
-% 
-% eps = logspace(-8, -4, 100);
-% sumA1 = zeros(size(eps));
-% sumA2 = zeros(size(eps));
-% 
-% for i=1:length(eps)
-%     sumA1(i) = sum(exp(-D1.^2/(2*eps(i))));
-%     sumA2(i) = sum(exp(-D2.^2/(2*eps(i))));
-% end
-% 
-% figure;
-% loglog(eps, sumA1, '.')
-% hold on
-% loglog(eps, sumA2, '.r')
-% loglog(eps, 1e7*eps.^(0.5))
-% loglog(eps, 1e10*eps, 'r')
-% 
+figure;
 
+D1 = pdist(V(:,2:3));
+D2 = pdist(V(:,[2 6]));
+
+subplot(2,2,1)
+plot(V(:,2),V(:,3),'.')
+xlabel('\phi_2')
+ylabel('\phi_3')
+
+eps = logspace(-8, -4, 100);
+sumA1 = zeros(size(eps));
+sumA2 = zeros(size(eps));
+
+for i=1:length(eps)
+    sumA1(i) = sum(exp(-D1.^2/(2*eps(i))));
+    sumA2(i) = sum(exp(-D2.^2/(2*eps(i))));
+end
+
+subplot(2,2,2)
+loglog(eps, sumA1, '.')
+hold on
+loglog(eps, 1e7*eps.^(0.5))
+p = polyfit(log(eps), log(sumA1), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)*2), 'dim=1 line','location','best')
+xlabel('\epsilon')
+ylabel('$\sum W_{ij}$', 'interpreter','latex')
+
+subplot(2,2,3)
+plot(V(:,2),V(:,6),'.')
+xlabel('\phi_2')
+ylabel('\phi_6')
+
+subplot(2,2,4)
+loglog(eps, sumA2, '.r')
+hold on
+loglog(eps, 1e10*eps, 'r')
+p = polyfit(log(eps), log(sumA2), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)*2), 'dim=2 line','location','best')
+xlabel('\epsilon')
+ylabel('$\sum W_{ij}$', 'interpreter','latex')
 
 
 
