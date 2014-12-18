@@ -144,6 +144,52 @@ xlabel('\epsilon')
 ylabel('$\sum W_{ij}$', 'interpreter','latex')
 
 %%
+figure;
+
+D1 = pdist(V(:,2:3));
+D2 = pdist(V(:,2:4));
+
+subplot(2,2,1)
+plot(V(:,2),V(:,3),'.')
+xlabel('\phi_2')
+ylabel('\phi_3')
+
+eps = logspace(-4, -1, 100);
+
+sumA1 = zeros(size(eps));
+sumA2 = zeros(size(eps));
+
+for i=1:length(eps)
+    sumA1(i) = sum(D1 < eps(i))/N^2;
+    sumA2(i) = sum(D2 < eps(i))/N^2;
+end
+
+subplot(2,2,2)
+loglog(eps, sumA1, '.')
+hold on
+loglog(eps, 1e2*eps.^2)
+p = polyfit(log(eps), log(sumA1), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)), 'dim=2 line','location','best')
+xlabel('\epsilon')
+ylabel('C(\epsilon) = (number of pairs < \epsilon apart) / N^2')
+
+subplot(2,2,3)
+plot3(V(:,2),V(:,3),V(:,4),'.')
+xlabel('\phi_2')
+ylabel('\phi_3')
+zlabel('\phi_4')
+
+subplot(2,2,4)
+loglog(eps, sumA2, '.r')
+hold on
+loglog(eps, 1e2*eps.^2, 'r')
+p = polyfit(log(eps), log(sumA2), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)), 'dim=2 line','location','best')
+xlabel('\epsilon')
+ylabel('C(\epsilon) = (number of pairs < \epsilon apart) / N^2')
+
+
+%%
 
 load swissroll2.mat
 
@@ -240,6 +286,49 @@ legend(sprintf('data; est dim = %2.2f', p(1)*2), 'dim=2 line','location','best')
 xlabel('\epsilon')
 ylabel('$\sum W_{ij}$', 'interpreter','latex')
 
+%%
+figure;
 
+D1 = pdist(V(:,2:3));
+D2 = pdist(V(:,[2 6]));
+
+subplot(2,2,1)
+plot(V(:,2),V(:,3),'.')
+xlabel('\phi_2')
+ylabel('\phi_3')
+
+eps = logspace(-4, -1, 100);
+
+sumA1 = zeros(size(eps));
+sumA2 = zeros(size(eps));
+
+for i=1:length(eps)
+    sumA1(i) = sum(D1 < eps(i))/N^2;
+    sumA2(i) = sum(D2 < eps(i))/N^2;
+end
+
+subplot(2,2,2)
+loglog(eps, sumA1, '.')
+hold on
+loglog(eps, 1e1*eps)
+p = polyfit(log(eps), log(sumA1), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)), 'dim=1 line','location','best')
+xlabel('\epsilon')
+ylabel('C(\epsilon) = (number of pairs < \epsilon apart) / N^2')
+
+subplot(2,2,3)
+plot(V(:,2),V(:,6),'.')
+xlabel('\phi_2')
+ylabel('\phi_6')
+
+
+subplot(2,2,4)
+loglog(eps, sumA2, '.r')
+hold on
+loglog(eps, 1e2*eps.^2, 'r')
+p = polyfit(log(eps), log(sumA2), 1);
+legend(sprintf('data; est dim = %2.2f', p(1)), 'dim=2 line','location','best')
+xlabel('\epsilon')
+ylabel('C(\epsilon) = (number of pairs < \epsilon apart) / N^2')
 
 

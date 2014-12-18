@@ -168,3 +168,89 @@ for sim_num = 1:length(lambda_all)
     % % print(sprintf('lle_embed2_%d', sim_num),'-depsc')
     
 end
+
+
+%%
+
+
+% lambda_all = [100 2500 6400];
+lambda_all = linspace(100, 10000, 10);
+s_all = sqrt(lambda_all);
+
+eval1 = zeros(size(lambda_all));
+eval2 = zeros(size(lambda_all));
+
+for sim_num = 1:length(lambda_all)
+    
+    lambda = lambda_all(sim_num);
+    s = s_all(sim_num);
+    
+    x_hist = linspace(min_start-s*tmax, max_start+s*tmax, nbins);
+    
+    
+    %
+    for j=1:nsim
+        % simulate velocity jump process
+        [pos, vel, time] = simulate_jumps(N, tmax, dt, lambda, s, pinit(j));
+        
+        % histogram of all particle positions as a function of time
+        for i=1:nsteps
+            
+            [hist_all(:,(j-1)*nsteps+i), ~] = hist(pos(:,i),x_hist);
+            
+            idx = (vel(:,i) == -1);
+            [hist_left(:,(j-1)*nsteps+i), ~] = hist(pos(idx,i),x_hist);
+            
+            idx = (vel(:,i) == 1);
+            [hist_right(:,(j-1)*nsteps+i), ~] = hist(pos(idx,i),x_hist);
+            
+        end
+        
+        % store times and probabilities
+        all_time((j-1)*nsteps+1:j*nsteps) = time;
+        all_p((j-1)*nsteps+1:j*nsteps) = pinit(j);
+        
+    end
+    
+    
+    % use data after initial "relaxation" time
+    idx = (all_time > 1);
+    
+    % compute EMD between histograms
+    
+    W2 = zeros(nsteps*nsim);
+    
+    D_for_emd = pdist2(x_hist', x_hist');
+    
+    for i1=1:nsteps*nsim
+        for i2=1:i1-1
+            
+            emd_dist = sum(abs(cumsum(hist_all(:,i1)) - cumsum(hist_all(:,i2))));
+            
+            W2(i1, i2) = emd_dist^2;
+            W2(i2, i1) = W2(i1, i2);
+        end
+    end
+    
+    % dmaps on EMD
+    W2 = W2(idx,idx);
+    eps2 = median(W2(:));
+    [V2, D2] = dmaps(W2, eps2, 10);
+    
+    
+    % compute regression
+    eps_med_scale = 3;
+    res = compute_residuals_DMAPS(V2, eps_med_scale);
+    
+    idx = find(res(2:end) > 0.5) + 1;
+    eval1(sim_num) = D2(idx(1), idx(1));
+    eval2(sim_num) = D2(idx(2), idx(2));
+    
+    
+    
+end
+
+%%
+figure;
+plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, lambda_all* tmax)
+
