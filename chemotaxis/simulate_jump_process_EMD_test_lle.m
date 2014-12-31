@@ -272,8 +272,8 @@ set(h1, 'marker', '.', 'color','b')
 set(h2, 'marker', '.', 'color','r')
 set(ax(1), 'ycolor','b')
 set(ax(2), 'ycolor','r')
-ylabel(ax(1), 'DMAPS ratio of log eigenvalues');
-ylabel(ax(2), 'Chemotaxis log ratio of time scales');
+ylabel(ax(1), 'log(\mu_{i_1})/log(\mu_{i_2})');
+ylabel(ax(2), 'log(\tau_{diff}/\tau_{drift})');
 xlabel('\lambda')
 % axis tight
 % axis square
