@@ -7,6 +7,7 @@ end
 
 colormap([linspace(1, 0, 64)' linspace(1, 0, 64)' ones(64, 1)])
 cbar = colorbar('peer',gca);
-set(get(cbar,'ylabel'),'String','CV error');
+%set(get(cbar,'ylabel'),'String','CV error');
+set(get(cbar,'xlabel'),'String','r_k');
 caxis([0 1])
 set(gca, 'xtick', 1:length(bar_height))

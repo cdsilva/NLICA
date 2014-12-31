@@ -96,7 +96,7 @@ for sim_num = 1:length(lambda_all)
     
     eps2 = median(W2(:));
     
-    [V2, D2] = dmaps(W2, eps2, 10);
+    [V2, D2] = dmaps(W2, eps2, 11);
     
     
     if corr(V2(:,2), all_time(idx)') < 0
@@ -174,7 +174,7 @@ end
 
 
 % lambda_all = [100 2500 6400];
-lambda_all = linspace(100, 10000, 10);
+lambda_all = linspace(1, 4000, 40);
 s_all = sqrt(lambda_all);
 
 eval1 = zeros(size(lambda_all));
@@ -235,14 +235,21 @@ for sim_num = 1:length(lambda_all)
     % dmaps on EMD
     W2 = W2(idx,idx);
     eps2 = median(W2(:));
-    [V2, D2] = dmaps(W2, eps2, 10);
+    [V2, D2] = dmaps(W2, eps2, 5);
     
     
     % compute regression
     eps_med_scale = 3;
     res = compute_residuals_DMAPS(V2, eps_med_scale);
     
-    idx = find(res(2:end) > 0.5) + 1;
+    [~, idx] = sort(res(2:end), 'descend');
+    idx = idx + 1;
+    if idx(1) > idx(2)
+        tmp = idx(1);
+        idx(1) = idx(2);
+        idx(2) = tmp;
+    end
+    
     eval1(sim_num) = D2(idx(1), idx(1));
     eval2(sim_num) = D2(idx(2), idx(2));
     
@@ -251,6 +258,27 @@ for sim_num = 1:length(lambda_all)
 end
 
 %%
-figure;
-plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, lambda_all* tmax)
+% figure;
+% plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, log(lambda_all.*s_all* tmax))
+
+L = s_all.*tmax;
+tau_run = 1./lambda_all;
+tau_drift = L./s_all;
+tau_diff = L.^2.*lambda_all./(s_all.^2);
+
+make_fig(3,3);
+[ax,h1,h2] = plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, log(tau_diff./tau_drift));
+set(h1, 'marker', '.', 'color','b')
+set(h2, 'marker', '.', 'color','r')
+set(ax(1), 'ycolor','b')
+set(ax(2), 'ycolor','r')
+ylabel(ax(1), 'DMAPS ratio of log eigenvalues');
+ylabel(ax(2), 'Chemotaxis ratio of time scales');
+xlabel('\lambda')
+axis tight
+axis square
+print('chemotaxis_compare_timescales_evals.eps','-depsc')
+
+
+
 
