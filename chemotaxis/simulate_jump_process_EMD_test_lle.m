@@ -96,7 +96,7 @@ for sim_num = 1:length(lambda_all)
     
     eps2 = median(W2(:));
     
-    [V2, D2] = dmaps(W2, eps2, 11);
+    [V2, D2] = dmaps(W2, eps2, 10);
     
     
     if corr(V2(:,2), all_time(idx)') < 0
@@ -266,17 +266,17 @@ tau_run = 1./lambda_all;
 tau_drift = L./s_all;
 tau_diff = L.^2.*lambda_all./(s_all.^2);
 
-make_fig(3,3);
+make_fig(4,3);
 [ax,h1,h2] = plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, log(tau_diff./tau_drift));
 set(h1, 'marker', '.', 'color','b')
 set(h2, 'marker', '.', 'color','r')
 set(ax(1), 'ycolor','b')
 set(ax(2), 'ycolor','r')
 ylabel(ax(1), 'DMAPS ratio of log eigenvalues');
-ylabel(ax(2), 'Chemotaxis ratio of time scales');
+ylabel(ax(2), 'Chemotaxis log ratio of time scales');
 xlabel('\lambda')
-axis tight
-axis square
+% axis tight
+% axis square
 print('chemotaxis_compare_timescales_evals.eps','-depsc')
 
 
