@@ -142,9 +142,9 @@ Furthermore, these data-driven methods allow us to detect changes in dynamical b
 
 
 
-\section{Issues in Manifold Learning/Diffusion maps}
+\section{Background on Manifold Learning and Some Relevant Issues}
 
-\subsection{Diffusion maps}
+\subsection{Manifold learning algorithm: diffusion maps}
 
 Let $z(t) \in \mathbb{R}^n$ denote an $n$-dimensional observation of the system at time $t$. 
 %
@@ -180,7 +180,7 @@ The eigenvalues of the Laplacian operator $\tilde{\mu}_0, \tilde{\mu}_1, \dots, 
 \mu_k = e^{-\tilde{\mu}_k t}.
 \end{equation}
 
-\subsection{Observers}
+\subsection{Constructing appropriate observers}
 
 \begin{itemize}
 \item Physical examples (e.g., $\alpha$-carbons for molecules)
@@ -192,7 +192,7 @@ For the chemotaxis example, we use histograms of the particle positions as obser
 Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
 \end{itemize}
 
-\subsection{Metric}
+\subsection{Defining a meaningful metric}
 
 \begin{itemize}
 \item Euclidean (not good, especially for histograms)
@@ -216,7 +216,7 @@ where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb
 \item Emphasize stability and regularity issues.
 \end{itemize}
 
-\section{Identifying the Principal Components}
+\section{Identifying the Informative Eigenvectors}
 
 \begin{itemize}
 \item Discuss the issues: harmonics
@@ -267,7 +267,7 @@ Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^n$, we 
 To accomplish this, we will fit a function $f(\phi_1, \dots, \phi_{k-1})$ to $\phi_{k}$. 
 %
 If the resulting fit is good/accurate, then $\phi_{k}$ is most likely a harmonic of $\phi_1, \dots, \phi_{k-1}$. 
-
+%
 We will use a local linear function 
 \begin{equation}
 \phi_k \approx \alpha( \Phi_{k-1}) + \beta(\Phi_{k-1})^T \Phi_{k-1}
@@ -277,9 +277,9 @@ where
 $\Phi_{k-1} = \begin{bmatrix} \phi_1 \\ \vdots \\ \phi_{k-1} \end{bmatrix}$
 and $\beta \in \mathbb{R}^{k-1}$. 
 %
-The coefficients $\alpha$ and $\beta$ are {\em functions} of $\phi_{k-1}$ because we use a {\em local} linear fit; therefore, the coefficients change as a function of the domain. 
+The coefficients $\alpha$ and $\beta$ are functions of $\phi_{k-1}$ because we use a {\em local} linear fit; therefore, the coefficients change as a function of the domain. 
 
-At each point $\Phi_{k-1}(i)$, we fit a local linear function using the remaining $m-1$ data points. 
+At each point $\Phi_{k-1}(i)$, we approximate $\phi_k(i)$ by fitting a local linear function using the remaining $m-1$ data points. 
 %
 We solve the following optimization problem 
 \begin{equation} \label{eq:opt_problem}
@@ -295,6 +295,8 @@ w_i(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_
 \end{equation}
 %
 We take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(i)$.
+%
+The solution of \eqref{eq:opt_problem} is given by the solution of an eigenvector problem \cite{...}.
 
 We then define the normalized leave-one-out cross-validation error as
 \begin{equation} \label{eq:cv_error}
@@ -341,11 +343,14 @@ A large value of $r_{k}$ indicates that $\phi_{k}$ parameterizes a new direction
 %
 Because $r_{k} \approx 1$ if $\phi_{k}$ parameterizes a new direction, we define $r_1 = 1$.
 
-\subsection{Illustrative Examples}
 
+
+\subsection{Illustrative Examples}
 
 \subsubsection{Swiss Roll}
 
+We will demonstrate the local linear regression algorithm for identifying informative eigenvectors on two synthetic data sets. 
+%
 Our first illustrative example will consist of two different swiss roll data sets.
 %
 Each data set consists of $m=1500$ points uniformly distributed on the swiss roll. 
@@ -474,6 +479,16 @@ Clearly, as the torus becomes thinner, the second pair of relevant eigenfunction
 
 
 \section{Chemotaxis: a case study}
+
+The issues discussed above must all be considered and addressed in order to successfully analyze data using manifold learning algorithms. 
+%
+To illustrate this point, we will use a model problem arising in the study of cellular dynamics. 
+%
+In this example, constructing appropriate observers with an informative metric will allow us to perform informative analysis. 
+%
+Furthermore, automatically detecting the ``important'' components will allow us to deduce when the dimension of the underlying dynamical system changes. 
+%
+In this way, we can deduce how many variables are required to write an accurate reduced model. 
 
 %The remainder of this letter is organized as follows. 
 %
@@ -807,7 +822,7 @@ This ratio is also plotted in Figure~\ref{fig:chemotaxis_compare_timescales_eval
 \centering
 \includegraphics[width=\textwidth]{chemotaxis_compare_timescales_evals}
 %
-\caption{}
+\caption{Detecting the change in dimensionality. The ratio of the log of the two ``meaningful'' diffusion maps eigenvalues (those which correspond to modes which are not harmonics) is shown in blue, and the ratio of the diffusive and drift time scales are shown in red. When the diffusive time scale is significantly larger than the drift time scale, the data is expected to be effectively one-dimensional. This transition is consistent with the diffusion maps eigenvalues: the data is effectively one-dimensional if the first eigenvalue is significantly larger than the second. }
 %
 \label{fig:chemotaxis_compare_timescales_evals}
 %
