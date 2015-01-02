@@ -24,6 +24,8 @@
 
 \graphicspath{{../}}
 
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+
 %\newtheorem{theorem}{Theorem}
 %\newtheorem{corollary}[theorem]{Corollary}
 %\newtheorem{lemma}[theorem]{Lemma}
@@ -106,6 +108,40 @@ All of these considerations (recently developed plus what we propose here) provi
 
 \end{itemize}
 
+Often, systems which are stochastic and noisy on the microscale exhibit coherent dynamics on the macroscale which are governed by only a few parameters.
+%
+For example, fluid flow, which can be described via the position and velocity of every fluid particle, is modeled at the macroscale using the Navier-Stokes equations.
+%
+However, in general, this mapping from microscale to macroscale is not always obvious.
+%
+We would like to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
+
+In this letter, we will demonstrate how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
+%
+Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) choosing the appropriate observers, especially in presence of stochastic dynamics, and (b) selecting an appropriate metric for comparison \cite{mallat2012group}. 
+%
+We will show that both are essential for data-driven algorithms to successfully uncover the underlying system dynamics. 
+
+We will illustrate these points using a model problem which arises in studies of cellular chemotaxis \cite{othmer2000diffusion}.
+%
+In this example, the macroscopic dynamics vary depending on the value of a single system parameter.
+%
+We will demonstrate how we can use diffusion maps \cite{coifman2005geometric}, a manifold learning technique, to {\em automatically} detect changes in the system's macroscopic dynamics from microscale data.
+%
+This case study exhibits several key points which allow us to demonstrate the strength of our approach.
+%
+First, this system has random microscopic behavior with smooth macroscopic dynamics governed by a single parameter which determines the regime/mode of the system. 
+%
+Second, it consists of an ensemble of individual stochastic particles which must be described using the appropriate observers.
+%
+Third, it has an analytic macroscopic description, which serves as a ground truth and will allow us to verify our results which are obtained in an unsupervised manner.
+%
+We will show that manifold learning algorithms based on statistical observers and with the appropriate affinity metric between pairs of observations uncovers a parameterization of the microscopic data which is consistent with the macroscopic model.
+%
+Furthermore, these data-driven methods allow us to detect changes in dynamical behavior resulting from changes in the system parameters. 
+
+
+
 \section{Issues in Manifold Learning/Diffusion maps}
 
 \subsection{Diffusion maps}
@@ -139,7 +175,7 @@ In the limit of infinite data ($m \rightarrow \infty$ and $\epsilon \rightarrow 
 %
 Therefore, the eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ approach the eigenfunctions of the Laplacian (with Neumann boundary conditions) on $\mathcal{M}_d$.
 %
-The eigenvalues are related to the eigenvalues we compute in diffusion maps by 
+The eigenvalues of the Laplacian operator $\tilde{\mu}_0, \tilde{\mu}_1, \dots, \tilde{\mu}_{m-1}$ are related to the eigenvalues we compute in diffusion maps by 
 \begin{equation}
 \mu_k = e^{-\tilde{\mu}_k t}.
 \end{equation}
@@ -175,7 +211,7 @@ For the special case of one-dimensional data, the EMD is equivalent to the $L_1$
 \begin{equation}
 \| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|
 \end{equation}
-where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$. 
+where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$, and $z_k$ denotes the $k^{th}$ bin. 
 %
 \item Emphasize stability and regularity issues.
 \end{itemize}
@@ -194,7 +230,7 @@ However, often some eigenvectors are higher harmonics of previous eigenvectors a
 %
 We will illustrate this issue with a simple two-dimensional strip where we know the analytical form of the eigenfunctions and can explicitly highlight the issue at hand. 
 
-Consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x$ and $L_y$. 
+Consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x  > L_y$. 
 %
 The eigenvalues of the Laplacian with Neumann boundary conditions are given by
 \begin{equation}
@@ -208,11 +244,11 @@ The corresponding eigenfunctions are
 \end{equation}
 where $x$ and $y$ denote the two coordinates of the rectangular domain. 
 %
-We note that $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ are one-to-one with the $x$ and $y$ coordinates, respectively, and so the eigenfunctions of the Laplacian yield a parameterization of the underlying manifold. 
+We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ are one-to-one with the $x$ and $y$ coordinates, respectively, and therefore yield a parameterization of the underlying manifold. 
 %
-However, these two eigenvectors $\tilde{\phi}_{1, 0}$ and $\tilde{\phi}_{0, 1}$ are not guaranteed to correspond to the two largest (non-trivial) eigenvalues (the largest eigenvalue will always be $\mu_{0,0} = 1$). 
+However, these two eigenvectors $\tilde{\phi}_{1, 0}$ and $\tilde{\phi}_{0, 1}$ are not guaranteed to correspond to the two largest (non-trivial) eigenvalues (the largest eigenvalue will always be $\mu_{0,0} = 1$ and correspond to a constant eigenfunction). 
 %
-In fact, if $L_x > 2 L_y$, then $\mu_{2, 0} > \mu_{0, 1}$, and so the second (non-trivial) eigenvector (when ordered by eigenvalue) will be a harmonic of the first and still parameterize the $x$ direction. 
+In fact, if $L_x > 2 L_y$, then $\mu_{2, 0} > \mu_{0, 1}$, and so the second (non-trivial) eigenvector (when the eigenvectors are sorted by their corresponding eigenvalues) will be a harmonic of the first and still parameterize the $x$ direction. 
 %
 We therefore require a methodology to automatically detect which eigenvectors are harmonics of each other. 
 
@@ -228,45 +264,82 @@ We therefore require a methodology to automatically detect which eigenvectors ar
 
 Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^n$, we would like to automatically deduce which ones are harmonics/functions of another. 
 %
-To accomplish this, we will fit a function $f(\phi_1, \dots, \phi_k)$ to $\phi_{k+1}$. 
+To accomplish this, we will fit a function $f(\phi_1, \dots, \phi_{k-1})$ to $\phi_{k}$. 
 %
-If the resulting fit is good/accurate, then $\phi_{k+1}$ is most likely a harmonic of $\phi_1, \dots, \phi_k$. 
+If the resulting fit is good/accurate, then $\phi_{k}$ is most likely a harmonic of $\phi_1, \dots, \phi_{k-1}$. 
 
 We will use a local linear function 
 \begin{equation}
-f_{k+1}(\phi_1, \dots, \phi_k) = a_0 + a_1 \phi_1 + \dots + a_k \phi_k
+\phi_k \approx \alpha( \Phi_{k-1}) + \beta(\Phi_{k-1})^T \Phi_{k-1}
 \end{equation}
-where the coefficients $a_0, \dots, a_k$ are functions of $\phi_1, \dots, \phi_k$. 
+where 
+%
+$\Phi_{k-1} = \begin{bmatrix} \phi_1 \\ \vdots \\ \phi_{k-1} \end{bmatrix}$
+and $\beta \in \mathbb{R}^{k-1}$. 
+%
+The coefficients $\alpha$ and $\beta$ are {\em functions} of $\phi_{k-1}$ because we use a {\em local} linear fit; therefore, the coefficients change as a function of the domain. 
 
-
-To find these coefficients, we want to minimize the local weighted sum of squares
+At each point $\Phi_{k-1}(i)$, we fit a local linear function using the remaining $m-1$ data points. 
+%
+We solve the following optimization problem 
 \begin{equation} \label{eq:opt_problem}
-\sum_{i=1}^n w_i(x) (\phi_{k+1}(x) - f_{k+1} (\phi_1(x), \dots, \phi_{k}(x))
+\hat{\alpha} (i) , \hat{\beta}(i)  = \argmin_{\alpha, \beta} \sum_{j \ne i} w_i(\Phi_{k-1}(i), \Phi_{k-1}(j)) \left( \phi_{k}(j) - (\alpha + \beta^T \Phi_{k-1}(j)) \right)^2.
 \end{equation}
+%
 where $w$ is a weighting function.
 %
-We will use
+We will use Gaussian weights, 
 %
 \begin{equation}
-w_i(x) = \exp \left( - \frac{\|\Phi_{k}(x) - \Phi_{k} (x_i) \|^2}{\epsilon^2} \right), \text{where } \Phi_k(x) = \begin{bmatrix}
-\phi_1(x) \\
-\vdots \\
-\phi_k(x)
-\end{bmatrix} .
+w_i(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_{k-1} (j) \|^2}{\epsilon^2} \right).
 \end{equation}
 %
-We take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k}(x)$.
+We take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(i)$.
 
-Let $\hat{f}_{k+1}(\phi_1(x_i), \dots, \phi_k(x_i))$ denote the minimum achieved in \eqref{eq:opt_problem}, when the minimization is performed over $x_j$ with $j \ne i$. 
-%
-We then define the leave-one-out- cross-validation error as
+We then define the normalized leave-one-out cross-validation error as
 \begin{equation} \label{eq:cv_error}
-r_{k+1} = \sum_{i=1}^n \left( \phi_{k+1} (x_i) - \hat{f}_{k+1}(\phi_1(x_i), \dots, \phi_k(x_i)) \right)^2
+r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \phi_{k} (i) - (\hat{\alpha}(i) + \hat{\beta}(i)^T \Phi_{k-1}(i))  \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }}
 \end{equation}
 %
-A small value of $r_{k+1}$ means that $\phi_{k+1}$ can be accurately approximated from $\phi_1, \dots, \phi_k$, and is therefore a harmonic of a previous mode.
+%We will use a local linear function 
+%\begin{equation}
+%f_{k}(\phi_1, \dots, \phi_{k-1}) = a_0 + a_1 \phi_1 + \dots + a_{k-1} \phi_{k-1}
+%\end{equation}
+%where the coefficients $a_0, \dots, a_{k-1}$ are functions of $\phi_1, \dots, \phi_{k-1}$. 
 %
-A large value of $r_{k+1}$ indicates that $\phi_{k+1}$ parameterizes a new direction in the data.
+%To find these coefficients, we want to minimize the local weighted sum of squares
+%\begin{equation} \label{eq:opt_problem}
+%\sum_{i=1}^n w_i(x) \left( \phi_{k}(x) - f_{k} (\phi_1(x), \dots, \phi_{k-1}(x)) \right)^2
+%\end{equation}
+%where $w$ is a weighting function.
+%%
+%We will use Gaussian weights, 
+%%
+%\begin{equation}
+%w_i(x) = \exp \left( - \frac{\|\Phi_{k-1}(x) - \Phi_{k-1} (x_i) \|^2}{\epsilon^2} \right), \text{where } \Phi_{k-1}(x) = \begin{bmatrix}
+%\phi_1(x) \\
+%\vdots \\
+%\phi_{k-1}(x)
+%\end{bmatrix} .
+%\end{equation}
+%%
+%We take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(x)$.
+%
+%Let $\hat{f}_{k}(\phi_1(x_i), \dots, \phi_{k-1}(x_i))$ denote the minimum achieved in \eqref{eq:opt_problem}, when the minimization is performed over $x_j$ with $j \ne i$. 
+%
+%We then define the normalized leave-one-out cross-validation error as
+%\begin{equation} \label{eq:cv_error}
+%r_{k} = \sum_{i=1}^n \left( \phi_{k} (x_i) - \hat{f}_{k}(\phi_1(x_i), \dots, \phi_{k-1}(x_i)) \right)^2
+%\end{equation}
+%\begin{equation} \label{eq:cv_error}
+%r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \phi_{k} (x_i) - \hat{f}_{k}(\Phi_{k-1}(x_i)) \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (x_i) \right) }}
+%\end{equation}
+%
+When $r_{k}$ is small, $\phi_{k}$ can be accurately approximated from $\phi_1, \dots, \phi_{k-1}$, and is therefore a harmonic of a previous mode.
+%
+A large value of $r_{k}$ indicates that $\phi_{k}$ parameterizes a new direction in the data.
+%
+Because $r_{k} \approx 1$ if $\phi_{k}$ parameterizes a new direction, we define $r_1 = 1$.
 
 \subsection{Illustrative Examples}
 
@@ -345,68 +418,62 @@ As expected, these eigenvectors parameterize the arc length along the spiral, an
 \caption{}
 \end{subfigure}
 %
-\caption{Swiss roll example. (a) Data set 1, with $h=6 \pi$. (b) Data set 2, with $h = 15 \pi$. (c) Diffusion maps eigenvalue spectrum for data set 1. } 
+\caption{Swiss roll example. (a) Data set 1; $h=6 \pi$. (b) Data set 2; $h = 15 \pi$. (c) Diffusion maps eigenvalue spectrum for data set 1. (d) Diffusion maps eigenvalue spectrum for data set 2. (e) Data set 1, colored by the first diffusion maps eigenvector. (f) Data set 2, colored by the first diffusion maps eigenvector. (g) Data set 1, colored by the second diffusion maps eigenvector which is not a harmonic of the first. (h) Data set 2, colored by the second diffusion maps eigenvector which is not a harmonic of the first. } 
 \label{fig:swiss_rolls}	
 \end{figure}
 
-%For first case: $\lambda_1 = 0.9982$, $\lambda_2 = 0.9959$
-
-%For second case: $\lambda_1 = 0.9977$, $\lambda_5 = 0.9652$.
-
 \subsubsection{Torus}
 
+For the second example, we consider a torus defined by
+%
+\begin{equation}
+\begin{aligned}
+x =& (r_1 + r_2 \cos \theta_2 ) \cos \theta_1 \\
+y =& (r_1 + r_2 \cos \theta_2 ) \sin \theta_1 \\
+z =& r_2 \sin \theta_2
+\end{aligned}
+\end{equation}
+%
+where $r_1 > r_2$ are the outer and inner radii, respectively, and $\theta_1, \theta_2 \sim Unif(0, 2 \pi)$. 
+%
+Changing the ratio of $r_1$ to $r_2$ changes the ratio of the eigenvalues corresponding to non-harmonic eigenvectors. 
+
+We expect to obtain two eigenfunctions ($\sin \theta_1$ and $\cos \theta_1$) which parmeterize the outer circle, and two eigenfunctions ($\sin \theta_2$ and $\cos \theta_2$) which parameterize the inner circle. 
+%
+However, the number of harmonics which fall between these relevant/descriptive eigenfunctions depends on the ratio of the two radii. 
+
+Figure~\ref{fig:torus} shows the diffusion maps eigenspectra for three different torii. 
+%
+Clearly, as the torus becomes thinner, the second pair of relevant eigenfunctions (corresponding to $\sin \theta_2$ and $\cos \theta_2$) moves farther down in the spectrum. 
 
 \begin{figure}[t]
 %
+\begin{subfigure}{\textwidth}
 \includegraphics[width=2.5in]{torus1}
-\hfill
-\includegraphics[height=1.5in]{torus1_evals}\\
-%
-\includegraphics[width=2.5in]{torus2}
-\hfill
-\includegraphics[height=1.5in]{torus2_evals}\\
-%
-\includegraphics[width=2.5in]{torus3}
-\hfill
-\includegraphics[height=1.5in]{torus3_evals}
-%
+\includegraphics[height=1.5in]{torus1_evals}
 \caption{}
+\end{subfigure}
+%
+\begin{subfigure}{\textwidth}
+\includegraphics[width=2.5in]{torus2}
+\includegraphics[height=1.5in]{torus2_evals}\\
+\caption{}
+\end{subfigure}
+%
+\begin{subfigure}{\textwidth}
+\includegraphics[width=2.5in]{torus3}
+\includegraphics[height=1.5in]{torus3_evals}
+\caption{}
+\end{subfigure}
+%
+\caption{Torus data sets (left) and corresponding diffusion maps eigenvalues (right). (a) $r_1 = 3$, $r_2 = 1$. (b) $r_1 = 5$, $r_2 = 1$. (c) $r_1 = 10$, $r_2 = 1$. In all three data sets, the first two eigenvalues/eigenvectors correspond to $\sin \theta_1$ and $\cos \theta_1$. The second pair of non-harmonic eigenvectors (corresponding to $\sin \theta_2$ and $\cos \theta_2$) are captured by components 7 and 8, 11 and 12, and 15 and 16, respectively.}
+%
+\label{fig:torus}
+%
 \end{figure}
 
 
 \section{Chemotaxis: a case study}
-
-Often, systems which are stochastic and noisy on the microscale exhibit coherent dynamics on the macroscale which are governed by only a few parameters.
-%
-For example, fluid flow, which can be described via the position and velocity of every fluid particle, is modeled at the macroscale using the Navier-Stokes equations.
-%
-However, in general, this mapping from microscale to macroscale is not always obvious.
-%
-We would like to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
-
-In this letter, we will demonstrate how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
-%
-Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) choosing the appropriate observers, especially in presence of stochastic dynamics, and (b) selecting an appropriate metric for comparison \cite{mallat2012group}. 
-%
-We will show that both are essential for data-driven algorithms to successfully uncover the underlying system dynamics. 
-
-We will illustrate these points using a model problem which arises in studies of cellular chemotaxis \cite{othmer2000diffusion}.
-%
-In this example, the macroscopic dynamics vary depending on the value of a single system parameter.
-%
-We will demonstrate how we can use diffusion maps \cite{coifman2005geometric}, a manifold learning technique, to {\em automatically} detect changes in the system's macroscopic dynamics from microscale data.
-%
-This case study exhibits several key points which allow us to demonstrate the strength of our approach.
-%
-First, this system has random microscopic behavior with smooth macroscopic dynamics governed by a single parameter which determines the regime/mode of the system. 
-%
-Second, it consists of an ensemble of individual stochastic particles which must be described using the appropriate observers.
-%
-Third, it has an analytic macroscopic description, which serves as a ground truth and will allow us to verify our results which are obtained in an unsupervised manner.
-%
-We will show that manifold learning algorithms based on statistical observers and with the appropriate affinity metric between pairs of observations uncovers a parameterization of the microscopic data which is consistent with the macroscopic model.
-%
-Furthermore, these data-driven methods allow us to detect changes in dynamical behavior resulting from changes in the system parameters. 
 
 %The remainder of this letter is organized as follows. 
 %
@@ -568,49 +635,8 @@ One is the appropriate {\em observers} of the system.
 These observers should be informative as to the state of the system, as well as insensitive to noise in the system. 
 %
 Two is a {\em distance metric} between the observations that captures a notion of locality: observations which we perceive to be similar should have a small distance. 
-
-Let $z(t) \in \mathbb{R}^n$ denote an $n$-dimensional observation of the system at time $t$. 
 %
-For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
-%
-Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
-%
-Instead of the standard Euclidean distance, we use the earth mover's distance (EMD) \cite{rubner2000earth} as the metric between pairs of histograms. 
-%
-Conceptually, the EMD measures how much ``work'' it takes to transform one probability density into another.
-%
-It therefore not only considers where the densities are inconsistent, but also how far apart the inconsistencies are.
-%
-Although the brute-force computation of the EMD is computationally expensive, there has been a plethora of work in developing efficient algorithms for its computation \cite{Pele-eccv2008, Pele-iccv2009}.
-%
-For the special case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions \cite{rubner2000perceptual}, which can be estimated from histograms as
-\begin{equation}
-\| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|
-\end{equation}
-where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$. 
-
-Assume we are given $m$ observations $z(1), \dots, z(m)$, which lie on a $d$-dimensional, nonlinear manifold, with $d \ll n$. 
-%
-Our goal is to uncover a $d$-dimensional parameterization of the $m$ observations that respects the underlying manifold geometry.
-%
-We first construct the matrix $W \in \mathbb{R}^{m \times m}$, with
-\begin{equation} \label{eq:W}
-W_{ij} = \exp \left( -\frac{\|z(i) - z(j) \|^2}{\epsilon^2} \right), \ i,j=1,\ldots,m
-\end{equation}
-where $\| \cdot \|$ denotes the appropriate norm for the observations, and $\epsilon$ is a characteristic distance between the observations. 
-%
-For the chemotaxis example, we use the EMD as the norm, and we take $\epsilon$ to be the median of the pairwise distances between the data points.
-%
-We then construct the diagonal matrix $D \in \mathbb{R}^{m \times m}$, with $D_{ii} = \sum_j W_{ij}$, and the matrix $A  = D^{-1} W.$
-%
-The eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ of $A$ provide the embedding coordinates for the data, such that
-$\phi_{j}(i)$ is the $j^{th}$ embedding coordinate for $z(i)$.
-%
-The ``importance'' of coordinate $\phi_j$ is quantified by the corresponding eigenvalue $\mu_j$, e.g., the relative importance of $\phi_1$ versus $\phi_2$ can be measured by comparing $\mu_1$ and $\mu_2$.
-%
-We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$, and if the data are low-dimensional, we only need to retain a few of the leading eigenvectors to adequately describe the data.
-%
-Because the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$),  $\mu_0 = 1$ and $\phi_0$ is a constant vector which is not used as an embedding coordinate.
+For this particular example, we will use histograms of the particle positions as the observations, and the EMD as the distance metric.
 
 Figure~\ref{fig:dmaps_embed_emd} shows the results of analyzing two sets of chemotaxis simulations using diffusion maps. 
 %
@@ -703,6 +729,92 @@ We can therefore detect changes in dynamical behavior using data-driven techniqu
 %\label{fig:dmaps_embed_noemd}
 %\end{figure}
 
+
+
+\subsection{Detect dimensionality}
+
+Often in dynamical systems, one would like to detect a change in the dimensionally of the system. 
+%
+We can uncover the true dimensionally of the data set by looking at the eigenvalues corresponding to eigenvectors which parameterize new directions in the data. 
+%
+For the specific chemotaxis example, we know that there are two directions in the data, corresponding to simulation parameters $p$ and $t$. 
+%
+However, at long times, we know the dynamics become diffusive and $p$ becomes unimportant. 
+
+To detect this transition in the data, we look at the eigenvalues corresponding to the two independent eigenevctors. 
+%
+Let $\mu_{i_1} \ge \mu_{i_2}$ denote these two eigenvalues. 
+%
+We plot  
+\begin{equation}
+ \frac{\log \mu_{i_1}}{\log \mu_{i_2}} ;
+\end{equation}
+when this ratio becomes small, it indicates that the data is effectively one-dimensional, as the second dimension is very small compared with the first. 
+%
+This is plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} as a function of $\lambda$. 
+
+For this specific example, we can compare the empirically detected change in dimensionality with the analytically-predicted shift. 
+%
+From \cite{...}, the relevant time scales for the velocity jump process are
+\begin{equation}
+\begin{aligned}
+\tau_{drift} =& \frac{L}{s} \\
+\tau_{diff} =& \frac{L^2 \lambda}{s^2}
+\end{aligned}
+\end{equation}
+%
+Here, we take $L = t_{max} s$ as a characteristic length scale for the simulations. 
+%
+When $\frac{\tau_{diff}}{\tau_{drift}} =  t_{max}  \lambda \gg 1$, then the dynamics are effectively one-dimensional. 
+%
+This ratio is also plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} as a function of $\lambda$, and the transition is consisted with the transition predicted by the diffusion maps eigenvalues. 
+
+\begin{figure}
+%
+\def\figheight{1.4in}
+%
+\begin{subfigure}[t]{0.31\textwidth}
+\centering
+\includegraphics[height=\figheight]{chemotaxis1_evals}
+\includegraphics[height=\figheight]{chemotaxis1_embed_good}
+\vspace{1.2in}
+%\includegraphics[height=1.5in]{chemotaxis1_embed_bad}
+\caption{}
+\end{subfigure}
+%
+\begin{subfigure}[t]{0.31\textwidth}
+\centering
+\includegraphics[height=\figheight]{chemotaxis2_evals}
+\includegraphics[height=\figheight]{chemotaxis2_embed_good}
+\includegraphics[height=\figheight]{chemotaxis2_embed_bad}
+\caption{}
+\end{subfigure}
+%
+\begin{subfigure}[t]{0.35\textwidth}
+\centering
+\includegraphics[height=\figheight]{chemotaxis3_evals}
+\includegraphics[height=\figheight]{chemotaxis3_embed_good}
+\includegraphics[height=\figheight]{chemotaxis3_embed_bad}
+\caption{}
+\end{subfigure}
+%
+\caption{Diffusion maps embedding for three different chemotaxis simulations. (a) $\lambda = 100$, $s = 10$. (b) $\lambda = 2500$, $s = 50$. (c) $\lambda = 6400$, $s = 80$. For each simulation, the eigenvalue spectrum is shown. From the spectra, we can see that the first two components are informative for (a), components 1 and 3 are informative for (b), and components 1 and  are informative for (c). The corresponding embeddings are shown below. For comparison, the embeddings using the first two components are also shown in (b) and (c), where clearly, the second component is a harmonic of the first and does not describe a new direction in the data. }
+%
+\end{figure}
+
+\begin{figure}[t]
+%
+\centering
+\includegraphics[width=\textwidth]{chemotaxis_compare_timescales_evals}
+%
+\caption{}
+%
+\label{fig:chemotaxis_compare_timescales_evals}
+%
+\end{figure}
+
+\section{Conclusions}
+
 This paper aims to bridge the fields of data mining and dynamical systems. 
 %
 For data mining methods to be informative with regards to the underlying system dynamics, processing the appropriate statistical moments or observables instead of individual particles is essential. 
@@ -717,34 +829,6 @@ We showed that, using histograms as observers and EMD as a distance metric, diff
 %
 We are confident that such techniques can help inform modeling efforts for systems where the macroscopic dynamics and behavior are not currently known. 
 
-\subsection{Detect dimensionality}
-
-
-\begin{figure}
-%
-\def\figheight{1.4in}
-%
-\begin{subfigure}[t]{0.31\textwidth}
-\includegraphics[height=\figheight]{chemotaxis1_evals}
-\includegraphics[height=\figheight]{chemotaxis1_embed_good}
-%\includegraphics[height=1.5in]{chemotaxis1_embed_bad}
-\end{subfigure}
-%
-\begin{subfigure}[t]{0.31\textwidth}
-\includegraphics[height=\figheight]{chemotaxis2_evals}
-\includegraphics[height=\figheight]{chemotaxis2_embed_good}
-\includegraphics[height=\figheight]{chemotaxis2_embed_bad}
-\end{subfigure}
-%
-\begin{subfigure}[t]{0.35\textwidth}
-\includegraphics[height=\figheight]{chemotaxis3_evals}
-\includegraphics[height=\figheight]{chemotaxis3_embed_good}
-\includegraphics[height=\figheight]{chemotaxis3_embed_bad}
-\end{subfigure}
-%
-\caption{}
-%
-\end{figure}
 
 \section*{Acknowledgment}
 The authors would like to thank TODO.
