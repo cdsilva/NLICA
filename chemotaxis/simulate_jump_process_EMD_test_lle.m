@@ -267,13 +267,15 @@ tau_drift = L./s_all;
 tau_diff = L.^2.*lambda_all./(s_all.^2);
 
 make_fig(4,3);
-[ax,h1,h2] = plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, log(tau_diff./tau_drift));
+[ax,h1,h2] = plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, tau_drift./tau_diff, 'plot','semilogy');
 set(h1, 'marker', '.', 'color','b')
 set(h2, 'marker', '.', 'color','r')
+% set(h2, 'yscale', 'log')
 set(ax(1), 'ycolor','b')
 set(ax(2), 'ycolor','r')
 ylabel(ax(1), 'log(\mu_{i_1})/log(\mu_{i_2})');
-ylabel(ax(2), 'log(\tau_{diff}/\tau_{drift})');
+ylab = ylabel(ax(2), '\tau_{diff}/\tau_{drift}');
+set(ylab, 'Units', 'Normalized', 'Position', [1.02, 0.5, 0]);
 xlabel('\lambda')
 % axis tight
 % axis square
