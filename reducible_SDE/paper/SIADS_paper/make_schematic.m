@@ -12,7 +12,7 @@ x = repmat(linspace(0, 1, npoints), ntraj, 1);
 
 y = zeros(size(x));
 y(1, :) = exp(-10*x(1,:));
-y(2, :) = -exp(-10*x(2,:));
+y(2, :) = -exp(-20*x(2,:));
 
 % figure;
 % plot(x, y, '.')
@@ -20,11 +20,17 @@ y(2, :) = -exp(-10*x(2,:));
 % set(gca, 'ytick', [])
 
 make_fig(3, 3);
-scatter(x(:), y(:), 50, -x(:),'.')
+scatter(x(:), y(:), 50, x(:)/max(x(:)),'.')
 set(gca, 'xtick', [])
 set(gca, 'ytick', [])
 set(gca, 'ylim', [-1 1])
+xlabel('x_1')
+ylabel('x_2')
 % axis off
+colormap(flipud(jet))
+h = colorbar;
+xlabel(h,'t');
+set(h,'YTick',[0 1])
 saveas(gcf, 'schematic_DS1.eps', 'epsc');
 
 % figure;
@@ -38,11 +44,17 @@ x = linspace(0, 1, npoints);
 y = randn(size(x)) .* max(10*exp(-8*x), 2);
 
 make_fig(3, 3);
-scatter(x, smooth(y, 11), 50, -x,'.')
+scatter(x, smooth(y, 11), 50, x/max(x),'.')
 set(gca, 'xtick', [])
 set(gca, 'ytick', [])
 set(gca, 'ylim', [-3 3])
+xlabel('x_1')
+ylabel('x_2')
 % axis off
+colormap(flipud(jet))
+h = colorbar;
+xlabel(h,'t');
+set(h,'YTick',[0 1])
 saveas(gcf, 'schematic_DS2.eps', 'epsc');
 
 
