@@ -172,8 +172,7 @@ Often, the goal is to write a reduced system of equations which accurately captu
 %
 These reduced models can greatly accelerate simulation efforts, and are more appropriate for integration into larger modeling frameworks.
 
-%%TODO: add more references
-Following the methods of Mori \cite{mori1965transport}, Zwanzig \cite{zwanzig1961memory}, and others \cite{chorin2000optimal}, one can reduce the number of variables needed to describe a system of differential equations.
+Following the methods of Mori \cite{mori1965transport}, Zwanzig \cite{zwanzig1961memory}, and others \cite{brey1981nonlinear, chorin2000optimal, hijon2010mori}, one can reduce the number of variables needed to describe a system of differential equations.
 %
 However, in general, this reduction introduces memory terms.
 %
@@ -183,9 +182,9 @@ so that the reduction of the number of variables is counterpoised by the increas
 Here, we will study the special case of evolution equations which contain an inherent time scale separation;
 in this case, it is, in principle, possible to obtain a reduced system of differential equations in only the slow variables {\em without memory terms}.
 %
-Such an analysis crucially hinges on knowing in which variables (or, more generally, functions of variables), one can write such a reduced system of slow evolution equations.
+Such an analysis crucially hinges on knowing in which variables (or, more generally, functions of variables) one can write such a reduced system of slow evolution equations.
 
-Moving averages and subsampling have often been used in simple cases as appropriate functions of variables in which to formulate lower-dimensional models \cite{pavliotis2007parameter}.
+Moving averages and subsampling have often been used in simple cases as appropriate functions of variables in which to formulate slow lower-dimensional models \cite{pavliotis2007parameter}.
 %
 %%%TODO  moving averages intrinsically contain memory - DISCUSS - is this a fair example or not ?
 %%%  one cannot trivially initialize a simulation with "a given local average" 
@@ -197,15 +196,14 @@ fail to capture the relevant structures and time scales within the data.
 %
 For well-studied systems, one often has some {\em a priori} knowledge of the appropriate observables (such as phase field variables) with which to formulate the reduced dynamics \cite{chen2002phase, wheeler1992phase}.
 %
-However, such observables may not be immediately obvious upon inspection for new complex systems.
+However, such observables may not be immediately obvious upon inspection for new complex systems, and so we require an automated approach to construct such slow variables.
 
-In addition, given an explicit system of ordinary differential equations,
+Given an explicit system of ordinary differential equations,
 one can make numerical approximations, such as the quasi-steady state approximation \cite{segel1989quasi} or
 the partial equilibrium approximation \cite{gallagher1986combined}, to reduce the system dimensionality without introducing memory terms.
 %
 There has been some recent analytical work on extending and
-generalizing such ideas to more complex systems of equations \cite{ait2008closed, calderon2007fitting, contou2011model, givon2004extracting, pavliotis2007parameter,  sotiropoulos2009model}.
-%%%TODO: add more SDE reduction references
+generalizing such ideas to more complex systems of equations \cite{ait2008closed, calderon2007fitting, contou2011model, dong2007simplification, givon2004extracting, pavliotis2007parameter,  sotiropoulos2009model}.
 %
 However, in many instances, closed form, analytical models are not given explicitly,
 but can only be inferred from simulation and/or experimental data.
@@ -232,8 +230,8 @@ and can better recover the true underlying structure in the data by suppressing 
 %
 The Mahalanobis distance is one such metric.
 %
-It was shown \cite{dsilva2013nonlinear, singer2008non, talmon2013empirical} that the Mahalanobis distance can remove the effect of {\em observing}
-the underlying system variables through a complex, nonlinear function.
+It was shown that the Mahalanobis distance can remove the effect of {\em observing}
+the underlying system variables through a complex, nonlinear function \cite{dsilva2013nonlinear, singer2008non, talmon2013empirical} .
 %
 Here, we will show the analogy between removing the effects of such nonlinear observation functions (in the context of data analysis), and reducing the dynamical system to remove the effects of the fast variables.
 %
@@ -255,27 +253,7 @@ Our presentation and discussion will address two-time-scale stochastic systems; 
 our framework and analysis readily extends to systems with multiple time scale separations.
 %
 
-%Also include:
-%\begin{itemize}
-%
-%\item
-%relate to Mori-Zwanzig, Chorin - do reduction of variables with memory. we do without.
-%
-%\item
-%reference - averages
-%
-%\item
-%reduce SDE - MN papers - they build explicit transforms based on known model
-%
-%\item
-%we can also do fusion
-%
-%\item
-%phase field variables
-%
-%\end{itemize}
-%
-%Refs: ADM, Ronen
+%% TODO: where to discuss Radek PNAS?
 
 \begin{figure}[t]
 
@@ -321,7 +299,7 @@ Thus, the last $n-m$ variables of \eqref{eq:general_SDE} rapidly approach a loca
 A short burst of simulation will yield a cloud of points which is broadly distributed in the fast directions but narrowly distributed in the slow ones.
 %
 With the appropriate conditions on $a_i(\mathbf{x})$, the same can be said for more general drift
-functions, where $\mu_i$ are the eigenvalues of the Jacobian of $\mathbf{a}(\mathbf{x})$ \cite{villani2009hypocoercivity}.
+functions, where $\mu_i$ are the eigenvalues of the Jacobian of $\mathbf{a}(\mathbf{x}) = \begin{bmatrix} a_1(\mathbf{x}) & \cdots & a_n(\mathbf{x}) \end{bmatrix}^T$ \cite{villani2009hypocoercivity}.
 %
 Therefore, \eqref{eq:general_SDE} defines an $n$-dimensional stochastic system with $m$ slow
 variables and $n-m$ fast variables, and $\epsilon$ defines the time scale separation.
@@ -334,7 +312,7 @@ unbounded.
 %
 Conversely, if the diffusivity is smaller, the equilibrium measure will go to $0$ as $\epsilon \rightarrow 0$.
 
-Assuming the sample average of $a_i(\mathbf{x})$ converges to a distribution which is only a function of the slow variables, by the averaging principle \cite{freidlin2012random}, we can write a reduced SDE in {\em only} the slow variables $x_1, \dots, x_m$.
+Assuming the sample average of $a_i(\mathbf{x})$ converges to a distribution which is only a function of the slow variables, then by the averaging principle \cite{freidlin2012random}, we can write a reduced SDE in {\em only} the slow variables $x_1, \dots, x_m$.
 %
 The aim of our work is to show how we can detect such slow variables {\em automatically} from data, in order to help inform modeling efforts and aid in the writing of such reduced stochastic models.
 %
@@ -344,7 +322,6 @@ In general, we are not given the variables $\mathbf{x}(t)$ from the original SDE
 We assume that $\mathbf{f}: \mathbb{R}^n \mapsto \mathbb{R}^d$, $n \le d$, is a deterministic (possibly nonlinear) function whose image is an $n$-dimensional manifold $\mathcal{M}$ in $\mathbb{R}^d$.
 %
 % TODO: check whether the inverse condition is not too strong (and we only need it to apply to the domain of the samples)
-%  Explain "domain of samples"
 %
 For our analysis, we require $\mathbf{g} = \mathbf{f} ^{-1}$ to be well-defined on $\mathcal{M}$, and both $\mathbf{f}$ and $\mathbf{g}$ to be continuously differentiable to fourth order.
 %
@@ -391,9 +368,9 @@ where
 \begin{equation} \label{eq:general_rescale}
 z_i(t) = \sqrt{e_i} x_i(t).
 \end{equation}
-$\mathbf{z}(t)$ is therefore a stochastic process of the same dimension as $\mathbf{x}(t)$, rescaled so that each variable has unit diffusivity.
+$\mathbf{z}(t)$ is a stochastic process of the same dimension as $\mathbf{x}(t)$, rescaled so that each variable has unit diffusivity.
 %
-This rescaling transforms our problem from one of detecting the slow variables within dynamic data, to one of traditional data mining.
+This rescaling transforms our problem from one of detecting the slow variables within dynamic data to one of traditional data mining.
 %
 The Mahalanobis distance incorporates information about the dynamics and relevant time scales, so that using traditional data mining techniques with this metric will allow us to detect the slow variables in our data \cite{singer2009detecting}.
 %
@@ -408,7 +385,6 @@ and so we can recover a parameterization of the data which is consistent with th
 %
 In Section~\ref{sec:analysis}, we will show how we can approximate this distance directly from data $\mathbf{y}(t)$.
 %
-%TODO: some text about 1. this change of variables in effect translates a multiscale fast slow reduction problem to data mining dimensionality reduction problem. 2. in this paper, we play with Mahalanobis distance. This is the only place where we show their meaning - as a Euclidean distances in the $z$ domain.
 
 \section{Diffusion Maps for Global Parametrization}
 
@@ -432,7 +408,7 @@ D_{ii} = \sum_{j=1}^N W_{ij}.
 %
 We compute the eigenvalues $\lambda_0, \dots, \lambda_{N-1}$ and eigenvectors $\phi_0, \dots, \phi_{N-1}$ of the matrix $\mathbf{A} = \mathbf{D}^{-1}\mathbf{W}$, and order them such that $|\lambda_0| \ge |\lambda_1| \ge \dots \ge |\lambda_{N-1}|$.
 %
-$\phi_0$ is a constant trivial eigenvector; the next few eigenvectors provide embedding coordinates for the data (modulo higher harmonics which characterize
+$\phi_0$ is a constant trivial eigenvector; the next few eigenvectors provide embedding coordinates for the data, so that $\phi_j(i)$, the $i^{th}$ entry of $\phi_j$, provides the $j^{th}$ embedding coordinate for $\mathbf{y}(t_i)$ (modulo higher harmonics which characterize
 the same direction in the data \cite{ferguson2010systematic}).
 %
 
@@ -441,7 +417,7 @@ the same direction in the data \cite{ferguson2010systematic}).
 \begin{figure}[t]
 \centering
 \epsfig{width=\textwidth, file=schematic.eps}
-\caption{Illustration of how to choose $\sigma_{kernel}$ and $\delta t$ appropriately.  The curvature effects and other nonlinearities should be negligible within a ball of radius $\sigma_{kernel}$ and within a time window $\delta t$.}
+\caption{Illustration of how to choose $\delta t$ and $\sigma_{kernel}$ appropriately.  The curvature effects and other nonlinearities should be negligible within a time window $\delta t$ and within a ball of radius $\sigma_{kernel}$.}
 \label{fig:schematic}
 \end{figure}
 
@@ -463,7 +439,11 @@ where $\mathbf{C}(\mathbf{y}(t))$ is the covariance of the observed stochastic p
 %
 and $\dagger$ denotes the Moore-Penrose pseudoinverse (since $d$ may exceed $n$).
 
-In the simple linear case where $\mathbf{f} (\mathbf{x}) = \mathbf{A} \mathbf{x}$, with $\mathbf{A} \in \mathbb{R}^{d \times n}$, the covariance of the observed stochastic process $\mathbf{f} (\mathbf{x})$ is given by $\mathbf{C}=\mathbf{AC}_x\mathbf{A}^T$. Let $\mathbf{A}= \mathbf{U} \mathbf{\Lambda} \mathbf{V}^T$ be the singular value decomposition (SVD) of $\mathbf{A}$, where $\mathbf{U} \in \mathbb{R}^{d \times n}$, $\mathbf{\Lambda} \in \mathbb{R}^{n \times n}$, and $\mathbf{V} \in \mathbb{R}^{n \times n}$.
+To motivate this definition of the Mahalanobis distance, we first consider the simple linear case where $\mathbf{f} (\mathbf{x}) = \mathbf{A} \mathbf{x}$, with $\mathbf{A} \in \mathbb{R}^{d \times n}$.
+%
+The covariance of the observed stochastic process $\mathbf{f} (\mathbf{x})$ is given by $\mathbf{C}=\mathbf{AC}_x\mathbf{A}^T$. 
+%
+Let $\mathbf{A}= \mathbf{U} \mathbf{\Lambda} \mathbf{V}^T$ be the singular value decomposition (SVD) of $\mathbf{A}$, where $\mathbf{U} \in \mathbb{R}^{d \times n}$, $\mathbf{\Lambda} \in \mathbb{R}^{n \times n}$, and $\mathbf{V} \in \mathbb{R}^{n \times n}$.
 %
 The pseudoinverse of the covariance matrix is $\mathbf{C}^{\dagger} = \mathbf{U} \mathbf{\Lambda}^{-1} \mathbf{V}^T \mathbf{C}_x^{-1} \mathbf{V \Lambda} ^{-1} \mathbf{U}^T$. Consequently, the Mahalanobis distance \eqref{eq:mahalanobis_distance} is reduced to
 \begin{equation}
@@ -724,7 +704,7 @@ y_1(t) \\ y_2(t)
 %
 where the fast and slow variables remain uncoupled.
 %
-In this case, $E_M = 0$, as the second- and higher-order derivatives of $\mathbf{g}$ are identically 0.
+In this case, there is no error incurred due to the measurement function $\mathbf{f}$ ($E_M = 0$), as the second- and higher-order derivatives of $\mathbf{g}$ are identically 0.
 
 \subsubsection{Importance of using the Mahalanobis distance}
 
@@ -819,19 +799,19 @@ Therefore, taking $\delta t$ too large will not lead to nonlinear effects or mix
 %
 Rather, changing $\delta t$ will only affect the perceived ratio of the fast and slow timescales.
 
-To see this behavior in our diffusion maps results, we first must discuss the interpretation of the diffusion maps eigenspectrum. 
+To see this behavior in our diffusion maps results, we must first discuss the interpretation of the diffusion maps eigenspectrum. 
 %
-The diffusion maps eigenvectors provide embedding coordinates for the data, and the corresponding elgenvalues provide a measure of the importance of each coordinate. 
+The diffusion maps eigenvectors provide embedding coordinates for the data, and the corresponding eigenvalues provide a measure of the importance of each coordinate. 
 %
 However, some eigenvectors can be harmonics of previous eigenvectors; for example, for a data set parameterized by a variable $x$, both $\cos x$ and $\cos 2x$ will appear as diffusion maps eigenvectors (see \cite{ferguson2010systematic} for a more detailed discussion). 
 %
-These harmonics do not capture any new direction within the data set, but do appear as a separate eigenvectors/eigenvalues. 
+These harmonics do not capture any new direction within the data set, but do appear as additional eigenvector/eigenvalue pairs. 
 %
 Therefore, for the two-dimensional data considered here, the fast variable will not necessarily appear as the second (non-trivial) eigenvector.
 %
-As the time scale separation increases, the relative importance of the fast and slow directions will also increase.
+As the time scale separation increases, the relative importance of the slow and fast directions will also increase.
 %
-This implies that the eigenvalue corresponding to the eigenvector which paremeterizes the slow direction will decrease, and the number of harmonics which appear between the slow and fast modes will increase. 
+This implies that the eigenvalue corresponding to the eigenvector which paremeterizes the fast direction will decrease, and the number of harmonics of the slow mode which appear before the fast mode will increase. 
 
 Figure~\ref{fig:recover_fast} shows results for three different values of $\delta t$ (the corresponding values are indicated by the dashed lines on Figure~\ref{fig:cov_error}).
 %
@@ -888,7 +868,7 @@ x_2(t)
 Figure~\ref{fig:initial_data_nonlinear} shows the data from Figure~\ref{fig:initial_data} transformed by the function $\mathbf{f}$ in \eqref{eq:nonlinear_function} and colored by time.
 %
 It is important to note that this is the most difficult type of problem in practice, as none of the observed
-variables are purely fast or slow, and the system appears, at first inspection, to possess no separation
+variables are purely fast or slow, and the observed system appears, at first inspection, to possess no separation
 of time scales.
 %
 For this example, the analytical covariance and inverse covariance are
@@ -932,7 +912,7 @@ We can bound the Mahalanobis distance by the eigenvalues of $\mathbf{C}^{\dagger
 \end{equation}
 where $\lambda_{C^{\dagger},1} \le \lambda_{C^{\dagger},2}$ are the two eigenvalues of $\mathbf{C}^{\dagger}$.
 %
-For the example in \eqref{eq:nonlinear_function}, we have
+Therefore, for the example in \eqref{eq:nonlinear_function}, we have
 \begin{equation}
 E_M(\mathbf{y}(t_1), \mathbf{y}(t_2)) = - (y_2(t_2) - y_2(t_1))^4.
 \end{equation}
@@ -1079,9 +1059,9 @@ Furthermore, we showed how to estimate the covariances (required for the Mahalan
 %
 A key point in our approach is that the embedding coordinates we compute are not only insensitive to the fast variables, but are also invariant to nonlinear observation functions. 
 %
-Therefore, the approach can be used for data fusion: data from the same system collected via different measurement functions can be combined and merged into a single coordinate system. 
+Therefore, the approach can be used for data fusion: data collected from the same system via different measurement functions can be combined and merged into a single coordinate system. 
 
-In the examples presented, we collected data from a single trajectory of a dynamical system, and then estimated the local covariance at each point in the trajectory using brief simulation bursts. 
+In the examples presented, the initial data came from a single trajectory of a dynamical system, and then estimated the local covariance at each point in the trajectory using brief simulation bursts. 
 %
 However, the initial data need not be collected from a single trajectory, and other sampling schemes could be employed.
 %
@@ -1097,7 +1077,7 @@ For these cases, the data cannot be processed as given,
 and it is necessary to construct intermediate observers, 
 such as histograms, Fourier coefficients, or scattering transform coefficients \cite{mallat2012group}.
 %
-Such intermediates are more complex statistical functions than simple averages and can therefore capture more structure within the data.
+Such intermediates are more complex statistical functions than simple averages and can capture additional structure within the data.
 %
 They also reduce the effects of noise and permit a larger time step.
 %
@@ -1111,7 +1091,7 @@ Future work involves extending our analysis to the finite sample case, and provi
 
 The methods presented here provide a bridge between traditional data mining and multiple time scale dynamical systems.
 %
-With this interface established, one can now consider using such data-driven methodologies to extract reduced models (either explicitly, or implicitly via an equation-free framework \cite{kevrekidis2003equation, kevrekidis2004equation, erban2006gene, kevrekidis2009equation}) which also respect the underlying slow dynamics and geometry of the data.
+With this interface established, one can now consider using such data-driven methodologies to extract reduced models (either explicitly, or implicitly via an equation-free framework \cite{erban2006gene, kevrekidis2004equation, kevrekidis2003equation,  kevrekidis2009equation}) which also respect the underlying slow dynamics and geometry of the data.
 %
 Such reduced models hold the promise of accelerated analysis and reduced simulation of dynamical systems whose effective dynamics are obscure upon simple inspection.
 
