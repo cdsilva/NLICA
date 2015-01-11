@@ -91,13 +91,12 @@ axis([10^-7 10^-2 10^0 10^4])
 axis square
 xlabel('\delta t')
 ylabel('Analytical covariance contributions')
-h = legend('$\|C\|$', '$\| $E$_C\|$', '$\| C\| + \|$e$_C \|$', 'location','southeast');
+h = legend('$\| \mathbf{C}\|$', '$\| \mathbf{E}_C\|$', '$\| \mathbf{C}\| + \|\mathbf{E}_C \|$', 'location','southeast');
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
 loglog(dt_tmp2, (1+1/epsilon)*ones(size(dt_tmp2)), '-b')
 set(gca,'layer','top')
 saveas(gcf, 'C_dt_analytical_linear.eps', 'epsc');
-
 
 %%
 
@@ -134,7 +133,7 @@ axis([10^-7 10^-2 10^0 10^4])
 % axis([10^-8 10^-1 -5000 5000])
 axis square
 xlabel('\delta t')
-ylabel('$\| \hat{C} \|$', 'interpreter','latex')
+ylabel('$\| \hat{\mathbf{C}} \|$', 'interpreter','latex')
 set(gca,'layer','top')
 saveas(gcf, 'C_dt_linear.eps', 'epsc');
 

@@ -108,9 +108,9 @@ for i=1:length(kernel_samplepoints)
 end
 axis([1e-2 1e1 1e-6 1e2])
 axis square
-xlabel('$\|\vec{y}_2 - \vec{y}_1\|_2$', 'interpreter','latex')
+xlabel('$\|\mathbf{y}_2 - \mathbf{y}_1\|_2$', 'interpreter','latex')
 ylabel('Analytical distance contributions')
-h = legend('$\|\vec{y}_2 - \vec{y}_1\|_M^2$', '$\| $E$_M\|$',  '$ \|\vec{y}_2 - \vec{y}_1\|_M^2 + \|$E$_M \|$', 'location','southeast');
+h = legend('$\|\mathbf{y}_2 - \mathbf{y}_1\|_M^2$', '$\| $E$_M\|$',  '$ \|\mathbf{y}_2 - \mathbf{y}_1\|_M^2 + \|$E$_M \|$', 'location','southeast');
 loglog(dy, 1.5*dy.^2,'-b')
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
@@ -145,8 +145,8 @@ end
 loglog(dy2, Dis_avg, '.')
 axis([1e-2 1e1 1e-6 1e2])
 axis square
-xlabel('$\| \vec{y}_2 - \vec{y}_1 \|_2$', 'interpreter','latex')
-ylabel('$\| \vec{y}_2 - \vec{y}_1 \|_M^2$', 'interpreter','latex')
+xlabel('$\| \mathbf{y}_2 - \mathbf{y}_1 \|_2$', 'interpreter','latex')
+ylabel('$\| \mathbf{y}_2 - \mathbf{y}_1 \|_M^2$', 'interpreter','latex')
 set(gca,'layer','top')
 saveas(gcf, 'dist_dy_nonlinear.eps', 'epsc');
 
@@ -170,7 +170,7 @@ axis([1e-9 1e-2 1e1 1e5])
 axis square
 xlabel('\delta t')
 ylabel('Analytical covariance contributions')
-h = legend('$\|C\|$', '$\| $E$_C\|$', '$\| C\| + \|$E$_C \|$', 'location','southeast');
+h = legend('$\|\mathbf{C}\|$', '$\| \mathbf{E}_C\|$', '$\| \mathbf{C}\| + \|\mathbf{E}_C \|$', 'location','southeast');
 set(h,'Interpreter','latex');
 set(h,'fontsize', 6);
 loglog(dt_tmp2, (1+4/epsilon+1/epsilon)*ones(size(dt_tmp2)), '-b')
@@ -208,7 +208,7 @@ end
 axis([1e-9 1e-2 1e1 1e5])
 axis square
 xlabel('\delta t')
-ylabel('$\| \hat{C} \|$', 'interpreter','latex')
+ylabel('$\| \hat{\mathbf{C}} \|$', 'interpreter','latex')
 loglog(dt_tmp, mean(norm_c, 2),'.')
 set(gca,'layer','top')
 saveas(gcf, 'C_dt_nonlinear.eps', 'epsc');
@@ -256,7 +256,7 @@ for j=1:length(dt_burst_samplepoints)
         axis([1e-9 1e-2 1e1 1e5])
         axis square
         xlabel('\delta t')
-        ylabel('$\| \hat{C} \|$', 'interpreter','latex')
+        ylabel('$\| \hat{\mathbf{C}} \|$', 'interpreter','latex')
         saveas(gcf, sprintf('C_dt_nonlinear_dt%d_kernel%d.eps', j, j2), 'epsc');
         
         make_fig(2.25, 2);
@@ -266,8 +266,8 @@ for j=1:length(dt_burst_samplepoints)
         loglog(dy, kernel_samplepoints(j2)*ones(size(dy)), 'linestyle', '--', 'color', 'r')
         axis([1e-2 1e1 1e-6 1e2])
         axis square
-        xlabel('$\| \vec{y}_2 - \vec{y}_1 \|_2$', 'interpreter','latex')
-        ylabel('$\| \vec{y}_2 - \vec{y}_1 \|_M^2$', 'interpreter','latex')
+        xlabel('$\| \mathbf{y}_2 - \mathbf{y}_1 \|_2$', 'interpreter','latex')
+        ylabel('$\| \mathbf{y}_2 - \mathbf{y}_1 \|_M^2$', 'interpreter','latex')
         saveas(gcf, sprintf('dist_dy_nonlinear_dt%d_kernel%d.eps', j, j2), 'epsc');
     end
     

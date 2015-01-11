@@ -517,7 +517,7 @@ We want to relate the distance in the rescaled space, $\|\mathbf{z}(t_2) - \math
 %
 We define the error incurred by using the Mahalanobis distance to approximate the true distance as
 \begin{equation}
-E_M(\mathbf{y}(t_1) \mathbf{y}(t_2)) = \|\mathbf{z}(t_2) - \mathbf{z}(t_1)\|_2^2 - \| \mathbf{y}(t_2) - \mathbf{y}(t_1)\|^2_M .
+E_M(\mathbf{y}(t_1), \mathbf{y}(t_2)) = \|\mathbf{z}(t_2) - \mathbf{z}(t_1)\|_2^2 - \| \mathbf{y}(t_2) - \mathbf{y}(t_1)\|^2_M .
 \end{equation}
 %
 By Taylor expansion of $\mathbf{g}(y) = \mathbf{f}^{-1}(y)$ around $\mathbf{y}(t_1)$ and $\mathbf{y}(t_2)$ and averaging the two expansions, we obtain
@@ -588,7 +588,7 @@ The parameter $\sigma_{kernel}$ in the diffusion maps calculation determines how
 %
 From \eqref{eq:dmaps_kernel}, distances which are greater than $\sigma_{kernel}$ are negligible in the diffusion maps computation because of the exponential kernel.
 %
-Therefore, we want to choose $\sigma_{kernel}^2$ on the order of $\|\mathbf{y}(t_2) - \mathbf{y}(t_1)\|^2$ in a regime where $| E_M(\mathbf{y}(t_1), \mathbf{y}(t_2))|  \ll \|\mathbf{y}(t_2) - \mathbf{y}(t_1)\|^2$.
+Therefore, we want to choose $\sigma_{kernel}^2$ on the order of $\|\mathbf{y}(t_2) - \mathbf{y}(t_1)\|^2_M$ in a regime where $| E_M(\mathbf{y}(t_1), \mathbf{y}(t_2))|  \ll \|\mathbf{y}(t_2) - \mathbf{y}(t_1)\|^2_M$.
 %
 This is illustrated in Figure~\ref{fig:schematic}, where we want to choose $\sigma_{kernel}$ small enough so that the curvature and other nonlinear effects (captured in the error term $E_M$) are negligible.
 %
@@ -616,7 +616,7 @@ Due to the drift in the stochastic process and the (perhaps nonlinear) measureme
 %
 Define the error in this approximation as
 \begin{equation}
-E_C(\mathbf{y}(t), \delta t) = \hat{\mathbf{C}}(\mathbf{y}(t), \delta t) - \mathbf{C}(\mathbf{y}(t)).
+\mathbf{E}_C(\mathbf{y}(t), \delta t) = \hat{\mathbf{C}}(\mathbf{y}(t), \delta t) - \mathbf{C}(\mathbf{y}(t)).
 \end{equation}
 %
 %We know that, for a stochastic process following \eqref{eq:general_SDE} and observed through a function $\mathbf{f}$, the covariance $C$ is given by
@@ -674,7 +674,7 @@ f_{i,(0, k)} &= \frac{1}{\sqrt{e_k}} \sum_{l=1}^n \left( \frac{a_l(\mathbf{x})}{
 %
 From \eqref{eq:cov_error}, the error in the covariance is $\mathcal{O}(\delta t)$ and a function of the derivatives of the observation function $\mathbf{f}$ and the drift $\mathbf{a}$.
 %
-We want to set $\delta t$ such that $\|E_C \| \ll \| \mathbf{C} \|$
+We want to set $\delta t$ such that $\|\mathbf{E}_C \| \ll \| \mathbf{C} \|$
 (this is illustrated in Figure~\ref{fig:schematic}), so that the estimated covariances are accurate.
 %
 Note that in practice, we compute $\hat{\mathbf{C}}$ by running many simulations of length $\delta t$ starting from $\mathbf{x}(t)$, and use the sample average to approximate the expected values in \eqref{eq:estimated_cov_expected_value}.
@@ -770,7 +770,7 @@ For the example in \eqref{eq:linear_transform}, the analytical covariance is
 From \eqref{eq:cov_error}, we find
 %
 \begin{equation}
-E_C(\mathbf{x}(t), \delta t) =
+\mathbf{E}_C(\mathbf{x}(t), \delta t) =
 \begin{bmatrix}
 0 & 0 \\
 0 & -\frac{\delta t}{\epsilon^2}
@@ -778,18 +778,18 @@ E_C(\mathbf{x}(t), \delta t) =
 + \mathcal{O} (\delta t^{3/2}) .
 \end{equation}
 %
-Therefore, $\| \mathbf{C} \| = \mathcal{O} \left( \frac{1}{\epsilon} \right)$ and $\|E_C \| = \mathcal{O}\left(\frac{\delta t}{\epsilon^2} \right)$.
+Therefore, $\| \mathbf{C} \| = \mathcal{O} \left( \frac{1}{\epsilon} \right)$ and $\|\mathbf{E}_C \| = \mathcal{O}\left(\frac{\delta t}{\epsilon^2} \right)$.
 %
 These terms are shown in Figure~\ref{fig:cov_error}(a) as a function of $\delta t$.
 %
-We want to choose $\delta t$ in a regime where $\| E_C \| \ll \| \mathbf{C} \|$ (indicated by the yellow shaded region in the plot), so that the errors in the estimated covariance are small.
+We want to choose $\delta t$ in a regime where $\| \mathbf{E}_C \| \ll \| \mathbf{C} \|$ (indicated by the yellow shaded region in the plot), so that the errors in the estimated covariance are small.
 
 When we do not analytically know the functions $\mathbf{f}$ or $\mathbf{g}$, we can find such a regime empirically by
 estimating the covariance for several values of $\delta t$.
 %
-This provides an estimate of $\hat{\mathbf{C}} = \mathbf{C} + E_C$ as a function of $\delta t$.
+This provides an estimate of $\hat{\mathbf{C}} = \mathbf{C} + \mathbf{E}_C$ as a function of $\delta t$.
 %
-From Figure~\ref{fig:cov_error}(a), we can see that there should be a ``knee" in the plot of $\| \hat{\mathbf{C}} \|$ versus $\delta t$ when $\| E_C \|$ becomes larger than $\| \mathbf{C}\|$.
+From Figure~\ref{fig:cov_error}(a), we can see that there should be a ``knee" in the plot of $\| \hat{\mathbf{C}} \|$ versus $\delta t$ when $\| \mathbf{E}_C \|$ becomes larger than $\| \mathbf{C}\|$.
 %
 Figure~\ref{fig:cov_error}(b) shows the empirical $\| \hat{\mathbf{C}} \|$ as a function of $\delta t$ for the data in Figure~\ref{fig:initial_data}, and the knee in this curve is consistent with the crossover point in Figure~\ref{fig:cov_error}(a).
 
@@ -813,7 +813,7 @@ Figure~\ref{fig:cov_error}(b) shows the empirical $\| \hat{\mathbf{C}} \|$ as a 
 
 \subsubsection{Recovery of the fast variable}
 
-Note that, for the example in \eqref{eq:linear_transform}, $E_C$ is a constant diagonal matrix.
+Note that, for the example in \eqref{eq:linear_transform}, $\mathbf{E}_C$ is a constant diagonal matrix.
 %
 Therefore, taking $\delta t$ too large will not lead to nonlinear effects or mixing of the fast and slow variables.
 %
@@ -1017,9 +1017,9 @@ As expected, the error grows with increasing $\delta t$.
 %
 We can also see the explicit dependence of the covariance error on the time scale separation $\epsilon$; larger time scale separation results in a larger covariance error, as a more refined simulation burst is required to estimate the covariance of the fast directions.
 %
-$\|\mathbf{C} \|$ and $\| E_C\|  $ are plotted as a function of $\delta t$ in Figure~\ref{fig:cov_error_nonlinear}(c); the shaded yellow portion denotes the region where $\| E_C \| \ll \| \mathbf{C} \|$.
+$\|\mathbf{C} \|$ and $\| \mathbf{E}_C\|  $ are plotted as a function of $\delta t$ in Figure~\ref{fig:cov_error_nonlinear}(c); the shaded yellow portion denotes the region where $\| \mathbf{E}_C \| \ll \| \mathbf{C} \|$.
 %
-As in the previous example, we can empirically find where $\| E_C \| \ll \| \mathbf{C} \|$  by plotting $\| \hat{\mathbf{C}} \|$ as a function of $\delta t $ and looking for a knee in the plot.
+As in the previous example, we can empirically find where $\| \mathbf{E}_C \| \ll \| \mathbf{C} \|$  by plotting $\| \hat{\mathbf{C}} \|$ as a function of $\delta t $ and looking for a knee in the plot.
 %
 These results are shown in Figure~\ref{fig:cov_error_nonlinear}(d).
 
@@ -1027,9 +1027,9 @@ Figures~\ref{fig:colored_data_nonlinear_cases}(a) and (c) show the data from Fig
 %
 The corresponding values of $\delta t$ are indicated by the dashed lines in Figure~\ref{fig:cov_error_nonlinear}(c)~and~(d).
 %
-When $\delta t$ corresponds to a region where $\|E_C \| \ll \| \mathbf{C} \|$, the slow variable is recovered by the first diffusion maps coordinate.
+When $\delta t$ corresponds to a region where $\|\mathbf{E}_C \| \ll \| \mathbf{C} \|$, the slow variable is recovered by the first diffusion maps coordinate.
 %
-However, when $\delta t$ corresponds to a region where $\|E_C \| \gg \| \mathbf{C} \|$, the slow variable is no longer recovered.
+However, when $\delta t$ corresponds to a region where $\|\mathbf{E}_C \| \gg \| \mathbf{C} \|$, the slow variable is no longer recovered.
 
 
 
