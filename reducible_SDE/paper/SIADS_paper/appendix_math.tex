@@ -19,8 +19,8 @@
 We have \eqref{eq:general_SDE}
 \begin{equation}
 \begin{aligned}
-dx_i(t) &= a_i(\vec{x}(t)) dt + dW_i(t), & \: 1 \le i \le m \\
-dx_i(t) &= \frac{a_i(\vec{x}(t))}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i(t) , & \: m+1 \le i \le n
+dx_i(t) &= a_i(\mathbf{x}(t)) dt + dW_i(t), & \: 1 \le i \le m \\
+dx_i(t) &= \frac{a_i(\mathbf{x}(t))}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i(t) , & \: m+1 \le i \le n
 \end{aligned}
 \end{equation}
 %
@@ -28,8 +28,8 @@ We then use \eqref{eq:general_rescale}, to obtain
 %
 \begin{equation}
 \begin{aligned}
-d z_i(t) &= a_i(\vec{z}(t)) dt + dW_i(t), & \: 1 \le i \le m \\
-d \frac{z_i(t)}{\sqrt{\epsilon}} &= \frac{a_i(\vec{z}(t))}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i(t) , & \: m+1 \le i \le n
+d z_i(t) &= a_i(\mathbf{z}(t)) dt + dW_i(t), & \: 1 \le i \le m \\
+d \frac{z_i(t)}{\sqrt{\epsilon}} &= \frac{a_i(\mathbf{z}(t))}{\epsilon} dt + \frac{1}{\sqrt{\epsilon}} dW_i(t) , & \: m+1 \le i \le n
 \end{aligned}
 \end{equation}
 %
@@ -37,8 +37,8 @@ which reduces to
 %
 \begin{equation}
 \begin{aligned}
-d z_i(t) &= a_i(\vec{z}(t)) dt + dW_i(t), & \: 1 \le i \le m \\
-d z_i(t) &= \frac{a_i(\vec{z}(t))}{\sqrt{\epsilon}} dt + dW_i(t) , & \: m+1 \le i \le n
+d z_i(t) &= a_i(\mathbf{z}(t)) dt + dW_i(t), & \: 1 \le i \le m \\
+d z_i(t) &= \frac{a_i(\mathbf{z}(t))}{\sqrt{\epsilon}} dt + dW_i(t) , & \: m+1 \le i \le n
 \end{aligned}
 \end{equation}
 
@@ -46,15 +46,15 @@ d z_i(t) &= \frac{a_i(\vec{z}(t))}{\sqrt{\epsilon}} dt + dW_i(t) , & \: m+1 \le 
 
 \subsection{Error due to the observation function $\mathbf{f}$}
 
-By Taylor expansion around $\vec{y}(t_1)$,
+By Taylor expansion around $\mathbf{y}(t_1)$,
 %
 \begin{equation}
 \begin{aligned}
-g_i(\vec{y}(t_2)) =& 
-g_i(\vec{y}(t_1)) + \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1))\\
-&+ \frac{1}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1))\\
-&+ \frac{1}{6} \sum_{jkl=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
-&+ \mathcal{O}( \|\vec{y}(t_2) - \vec{y}(t_1) \|^4) .
+g_i(\mathbf{y}(t_2)) =& 
+g_i(\mathbf{y}(t_1)) + \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1))\\
+&+ \frac{1}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1))\\
+&+ \frac{1}{6} \sum_{jkl=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
+&+ \mathcal{O}( \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^4) .
 \end{aligned}
 \end{equation}
 %
@@ -64,10 +64,10 @@ substituting in relationships from \eqref{eq:general_rescale}, we obtain
 \begin{equation}
 \begin{aligned}
 z_i(t_2) =& 
-z_i(t_1) + \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1))\\
-&+ \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1))\\
-&+ \frac{\sqrt{e_i}}{6} \sum_{jkl=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
-&+ \mathcal{O}( \sqrt{e_i} \|\vec{y}(t_2) - \vec{y}(t_1) \|^4) .
+z_i(t_1) + \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1))\\
+&+ \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1))\\
+&+ \frac{\sqrt{e_i}}{6} \sum_{jkl=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
+&+ \mathcal{O}( \sqrt{e_i} \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^4) .
 \end{aligned}
 \end{equation}
 %
@@ -77,16 +77,16 @@ Therefore,
 \scriptsize
 \begin{aligned}
 & (z_i(t_2) - z_i(t_1))^2 = \\ 
-& \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \\
-&+ 2 \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \right) \\
-&+ 2 \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \left( \frac{\sqrt{e_i}}{6} \sum_{jkl=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \right) \\
-&+ \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \right) \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \right) \\
-&+ \mathcal{O}( e_i \|\vec{y}(t_2) - \vec{y}(t_1) \|^5) \\
-=& e_i \sum_{jk=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \\
-&+ e_i \sum_{jkl=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1))  (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
-&+ \frac{e_i}{3} \sum_{jklm=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1))(y_m(t_2)-y_m(t_1)) \\
-&+ \frac{e_i}{4} \sum_{jklm=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) (y_m(t_2)-y_m(t_1)) \\
-&+ \mathcal{O}(e_i \|\vec{y}(t_2) - \vec{y}(t_1) \|^5)
+& \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \\
+&+ 2 \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \right) \\
+&+ 2 \left( \sqrt{e_i} \sum_{j=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) \right) \left( \frac{\sqrt{e_i}}{6} \sum_{jkl=1}^d \left. \frac{\partial^3 g_i}{\partial y_j \partial y_k \partial y_l} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \right) \\
+&+ \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \right) \left( \frac{\sqrt{e_i}}{2} \sum_{jk=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \right) \\
+&+ \mathcal{O}( e_i \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^5) \\
+=& e_i \sum_{jk=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \\
+&+ e_i \sum_{jkl=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1))  (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
+&+ \frac{e_i}{3} \sum_{jklm=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1))(y_m(t_2)-y_m(t_1)) \\
+&+ \frac{e_i}{4} \sum_{jklm=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) (y_m(t_2)-y_m(t_1)) \\
+&+ \mathcal{O}(e_i \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^5)
 \end{aligned}
 \end{equation}
 %
@@ -95,62 +95,62 @@ and so the norm is
 \begin{equation} \label{eq:appendix_z_norm}
 \scriptsize
 \begin{aligned}
-\|\vec{z}(t_2) - \vec{z}(t_1)\|_2^2 =& 
+\|\mathbf{z}(t_2) - \mathbf{z}(t_1)\|_2^2 =& 
 \sum_{i=1}^n (z_i(t_2) - z_i(t_1))^2 \\
-=& \sum_{i=1}^n e_i \sum_{jk=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \\
-&+ \sum_{i=1}^n e_i \sum_{jkl=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1))  (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
-&+ \sum_{i=1}^n \frac{e_i}{3} \sum_{jklm=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1))(y_m(t_2)-y_m(t_1)) \\
-&+ \sum_{i=1}^n \frac{e_i}{4} \sum_{jklm=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\vec{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) (y_m(t_2)-y_m(t_1)) \\
-&+ \sum_{i=1}^n \mathcal{O}( e_i \|\vec{y}(t_2) - \vec{y}(t_1) \|^5) .
+=& \sum_{i=1}^n e_i \sum_{jk=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \\
+&+ \sum_{i=1}^n e_i \sum_{jkl=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1))  (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
+&+ \sum_{i=1}^n \frac{e_i}{3} \sum_{jklm=1}^d \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1))(y_m(t_2)-y_m(t_1)) \\
+&+ \sum_{i=1}^n \frac{e_i}{4} \sum_{jklm=1}^d \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) (y_m(t_2)-y_m(t_1)) \\
+&+ \sum_{i=1}^n \mathcal{O}( e_i \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^5) .
 \end{aligned}
 \end{equation}
 %
-We can write $\sum_{i=1}^n \mathcal{O}( e_i \|\vec{y}(t_2) - \vec{y}(t_1) \|^5) = \mathcal{O}( (m + (n-m) \epsilon) \|\vec{y}(t_2) - \vec{y}(t_1) \|^5) \approx \mathcal{O}( m \|\vec{y}(t_2) - \vec{y}(t_1) \|^5)$ for $\epsilon \ll 1$. 
+We can write $\sum_{i=1}^n \mathcal{O}( e_i \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^5) = \mathcal{O}( (m + (n-m) \epsilon) \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^5) \approx \mathcal{O}( m \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^5)$ for $\epsilon \ll 1$. 
 
-We note that \eqref{eq:appendix_z_norm} is for expansion around $\vec{y}(t_1)$. 
+We note that \eqref{eq:appendix_z_norm} is for expansion around $\mathbf{y}(t_1)$. 
 %
-We can average expansions around $\vec{y}(t_1)$ and $\vec{y}(t_2)$ to gain one order of accuracy. 
+We can average expansions around $\mathbf{y}(t_1)$ and $\mathbf{y}(t_2)$ to gain one order of accuracy. 
 %
 \begin{equation} \label{eq:mahalanobis_taylor_explansion}
 \tiny
 \begin{aligned}
-& \|\vec{z}(t_2) - \vec{z}(t_1)\|_2^2 \\
-=& \frac{1}{2} \left( \|\vec{z}(t_2) - \vec{z}(t_1)\|_{2, \text{expanded at } \vec{y}(t_1)}^2  + \|\vec{z}(t_2) - \vec{z}(t_1)\|_{2, \text{expanded at } \vec{y}(t_2)}^2 \right) \\
-=& \frac{1}{2} \sum_{i=1}^n e_i \sum_{jk=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\vec{y}(t_1)} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_2)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\vec{y}(t_2)} \right) (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \\
-&+ \frac{1}{2} \sum_{i=1}^n e_i \sum_{jkl=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}(t_1)} - \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}(t_2)} \right) (y_j(t_2)-y_j(t_1))  (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
-&+ \frac{1}{6} \sum_{i=1}^n e_i \sum_{jklm=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}(t_1)} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_2)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}(t_2)} \right) (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1))(y_m(t_2)-y_m(t_1)) \\
-&+ \frac{1}{8} \sum_{i=1}^n e_i \sum_{jklm=1}^d \left( \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\vec{y}(t_1)} + \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\vec{y}(t_2)} \right) (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) (y_m(t_2)-y_m(t_1)) \\
-&+ \mathcal{O}(m \|\vec{y}(t_2) - \vec{y}(t_1) \|^6)
+& \|\mathbf{z}(t_2) - \mathbf{z}(t_1)\|_2^2 \\
+=& \frac{1}{2} \left( \|\mathbf{z}(t_2) - \mathbf{z}(t_1)\|_{2, \text{expanded at } \mathbf{y}(t_1)}^2  + \|\mathbf{z}(t_2) - \mathbf{z}(t_1)\|_{2, \text{expanded at } \mathbf{y}(t_2)}^2 \right) \\
+=& \frac{1}{2} \sum_{i=1}^n e_i \sum_{jk=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\mathbf{y}(t_1)} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_2)} \left. \frac{\partial g_i}{\partial y_k} \right|_{\mathbf{y}(t_2)} \right) (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) \\
+&+ \frac{1}{2} \sum_{i=1}^n e_i \sum_{jkl=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\mathbf{y}(t_1)} - \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\mathbf{y}(t_2)} \right) (y_j(t_2)-y_j(t_1))  (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) \\
+&+ \frac{1}{6} \sum_{i=1}^n e_i \sum_{jklm=1}^d \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_2)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\mathbf{y}(t_2)} \right) (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1))(y_m(t_2)-y_m(t_1)) \\
+&+ \frac{1}{8} \sum_{i=1}^n e_i \sum_{jklm=1}^d \left( \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} + \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\mathbf{y}(t_2)} \right) (y_j(t_2)-y_j(t_1)) (y_k(t_2)-y_k(t_1)) (y_l(t_2)-y_l(t_1)) (y_m(t_2)-y_m(t_1)) \\
+&+ \mathcal{O}(m \|\mathbf{y}(t_2) - \mathbf{y}(t_1) \|^6)
 \end{aligned}
 \end{equation}
 %
-noting that the fifth-order error terms involve {\em differences} of derivatives evaluated at $\vec{y}(t_1)$ and $\vec{y}(t_2)$, and we assume that these differences are $\mathcal{O} (\| \vec{y}(t_2) - \vec{y}(t_1) \|)$. 
+noting that the fifth-order error terms involve {\em differences} of derivatives evaluated at $\mathbf{y}(t_1)$ and $\mathbf{y}(t_2)$, and we assume that these differences are $\mathcal{O} (\| \mathbf{y}(t_2) - \mathbf{y}(t_1) \|)$. 
 
 \subsection{Error due to the dynamics}
 
 The integral form of our SDE (using the definition of $e_i$ from \eqref{eq:e_def}) is
 \begin{equation}
-x_{i}(t + \delta t) = x_{i}(t) + \int_{t}^{t + \delta t} \frac{a_i(\vec{x}(s))}{e_i} ds + \int_{t}^{t+\delta t} \frac{1}{\sqrt{e_i}} dW_i(s)
+x_{i}(t + \delta t) = x_{i}(t) + \int_{t}^{t + \delta t} \frac{a_i(\mathbf{x}(s))}{e_i} ds + \int_{t}^{t+\delta t} \frac{1}{\sqrt{e_i}} dW_i(s)
 \end{equation}
 where $1 \le i \le n$. 
 %
 From page 182, equation 5.3 of \cite{kloeden1992numerical}, for a general function $f$
 %
 \begin{equation} \label{eq:appendix_ito_taylor_sum}
-f(\vec{x}(t+\delta t)) = \sum_{\alpha \in \mathcal{A}} I_\alpha[f_\alpha (\vec{x}(t))]_{t, t+\delta t} + \sum_{\alpha \in \mathcal{B}(\mathcal{A})} I_\alpha [f_\alpha(\cdot, \vec{x})]_{t, t+\delta t}
+f(\mathbf{x}(t+\delta t)) = \sum_{\alpha \in \mathcal{A}} I_\alpha[f_\alpha (\mathbf{x}(t))]_{t, t+\delta t} + \sum_{\alpha \in \mathcal{B}(\mathcal{A})} I_\alpha [f_\alpha(\cdot, \mathbf{x})]_{t, t+\delta t}
 \end{equation}
 where $\mathcal{A}$ is a hierarchical set. 
 %
 We take 
 \begin{equation}
- A = \{ \alpha \in M : l(\alpha) \le 1 \} = \{ (j) : 0 \le j \le n \} \cup \{v \}
+ \mathcal{A} = \{ \alpha \in M : l(\alpha) \le 1 \} = \{ (j) : 0 \le j \le n \} \cup \{v \}
 \end{equation}
 %
 where $v$ denotes the empty set.
 %
 Then, \eqref{eq:appendix_ito_taylor_sum} becomes
 \begin{equation} \label{eq:general_ito_taylor_sum}
-f(\vec{x}(t+\delta t)) = I_{v} [f_v(\vec{x}(t))]_{t, t+\delta t} + \sum_{j=0}^n I_{(j)} [f_{(j)}(\vec{x}(t))]_{t, t+\delta t} + \sum_{j=0}^n \sum_{k=0}^n I_{(j,k)} [f_{(j,k)} ( \vec{x} )]_{t, t+\delta t}
+f(\mathbf{x}(t+\delta t)) = I_{v} [f_v(\mathbf{x}(t))]_{t, t+\delta t} + \sum_{j=0}^n I_{(j)} [f_{(j)}(\mathbf{x}(t))]_{t, t+\delta t} + \sum_{j=0}^n \sum_{k=0}^n I_{(j,k)} [f_{(j,k)} ( \mathbf{x} )]_{t, t+\delta t}
 \end{equation}
 
 We have that (page 169 of \cite{kloeden1992numerical})
@@ -169,25 +169,25 @@ and (page 177 of \cite{kloeden1992numerical}),
 \begin{itemize}
 \item $f_v = f$
 \item $f_{(j)} = \frac{1}{\sqrt{e_j}} \frac{\partial f}{\partial x_j}$ for $j \ge 1$
-\item $f_{(0)} = \sum_{j=1}^n \frac{a_j(\vec{x})}{e_j} \frac{\partial f}{\partial x_j} + \frac{1}{2}\sum_{j=1}^n \frac{1}{e_j} \frac{\partial^2 f}{\partial x_j^2}$
+\item $f_{(0)} = \sum_{j=1}^n \frac{a_j(\mathbf{x})}{e_j} \frac{\partial f}{\partial x_j} + \frac{1}{2}\sum_{j=1}^n \frac{1}{e_j} \frac{\partial^2 f}{\partial x_j^2}$
 \item $f_{(j, k)} = \frac{1}{\sqrt{e_j e_k}} \frac{\partial^2 f}{\partial x_j \partial x_k}$ for $j,k \ge 1$
-\item $f_{(j,0)} = \frac{1}{\sqrt{e_j}} \left( \sum_{k=1}^n \frac{\partial}{\partial x_j} \left( \frac{a_k(\vec{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 e_k} \frac{\partial^3 f}{\partial x_j \partial x_k^2} \right)$
-\item $f_{(0, j)} = \frac{1}{\sqrt{e_j}} \sum_{k=1}^n \frac{a_k(\vec{x})}{e_k} \frac{\partial^2 f}{\partial x_j \partial x_k} +\frac{1}{2 e_k}  \frac{\partial^3 f}{\partial x_j \partial^2 x_k}$
-\item $f_{(0,0)} = \sum_{j,k=1}^n \frac{a_j(\vec{x})}{e_j} \frac{\partial}{\partial x_j} \left( \frac{a_k(\vec{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 e_k}\frac{a_j(\vec{x})}{e_j} \frac{\partial^3 f}{\partial x_j \partial x_k^2} + \frac{1}{2 e_j} \frac{\partial}{\partial x_j^2} \left( \frac{a_k(\vec{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{4 e_j e_k} \frac{\partial^4 f}{\partial x_j^2 \partial x_k^2}$
+\item $f_{(j,0)} = \frac{1}{\sqrt{e_j}} \left( \sum_{k=1}^n \frac{\partial}{\partial x_j} \left( \frac{a_k(\mathbf{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 e_k} \frac{\partial^3 f}{\partial x_j \partial x_k^2} \right)$
+\item $f_{(0, j)} = \frac{1}{\sqrt{e_j}} \sum_{k=1}^n \frac{a_k(\mathbf{x})}{e_k} \frac{\partial^2 f}{\partial x_j \partial x_k} +\frac{1}{2 e_k}  \frac{\partial^3 f}{\partial x_j \partial^2 x_k}$
+\item $f_{(0,0)} = \sum_{j,k=1}^n \frac{a_j(\mathbf{x})}{e_j} \frac{\partial}{\partial x_j} \left( \frac{a_k(\mathbf{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 e_k}\frac{a_j(\mathbf{x})}{e_j} \frac{\partial^3 f}{\partial x_j \partial x_k^2} + \frac{1}{2 e_j} \frac{\partial}{\partial x_j^2} \left( \frac{a_k(\mathbf{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{4 e_j e_k} \frac{\partial^4 f}{\partial x_j^2 \partial x_k^2}$
 \end{itemize}
 %
 Substituting into \eqref{eq:general_ito_taylor_sum}, we obtain
 %
 \begin{equation} 
 \begin{aligned}
-f(\vec{x}(t+\delta t)) =&
-f(\vec{x}(t)) \\
-&+ \int_t^{t + \delta t} f_{(0)}(\vec{x}(t)) ds
-+ \int_t^{t + \delta t} f_{(j)}(\vec{x}(t)) dW_j(s) \\
-&+ \int_t^{t+\delta t} \int_t^{s_2} f_{(0,0)}(\vec{x}(s_1)) ds_1 ds_2 \\
-&+ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2 \\
-&+ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \\
-&+ \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) 
+f(\mathbf{x}(t+\delta t)) =&
+f(\mathbf{x}(t)) \\
+&+ \int_t^{t + \delta t} f_{(0)}(\mathbf{x}(t)) ds
++ \int_t^{t + \delta t} f_{(j)}(\mathbf{x}(t)) dW_j(s) \\
+&+ \int_t^{t+\delta t} \int_t^{s_2} f_{(0,0)}(\mathbf{x}(s_1)) ds_1 ds_2 \\
+&+ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 \\
+&+ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \\
+&+ \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) 
 \end{aligned}
 \end{equation}
 %
@@ -195,33 +195,33 @@ and rearranging the terms in order yields
 %
 \begin{equation} \label{eq:integro_f}
 \begin{aligned}
-f(\vec{x}(t+\delta t)) =&
-f(\vec{x}(t)) \\
-&+ \sum_{j=1}^n f_{(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
-&+  f_{(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds
-+ \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
-&+ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2 
-+ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \\
-&+ \int_t^{t+\delta t} \int_t^{s_2} f_{(0,0)}(\vec{x}(s_1)) ds_1 ds_2 
+f(\mathbf{x}(t+\delta t)) =&
+f(\mathbf{x}(t)) \\
+&+ \sum_{j=1}^n f_{(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
+&+  f_{(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds
++ \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
+&+ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 
++ \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \\
+&+ \int_t^{t+\delta t} \int_t^{s_2} f_{(0,0)}(\mathbf{x}(s_1)) ds_1 ds_2 
 \end{aligned}
 \end{equation}
 
-We then want to compute the estimated covariance of two function $f_{i_1}$ and $f_{i_2}$ at the point $\vec{x}(t)$, 
+We then want to compute the estimated covariance of two function $f_{i_1}$ and $f_{i_2}$ at the point $\mathbf{x}(t)$, 
 %
 \begin{equation}
-\mathbb{E}[f_{i_1}(\vec{x}(t + \delta t))f_{i_2}(\vec{x}(t + \delta t))] - \mathbb{E}[f_{i_1}(\vec{x}(t + \delta t))]\mathbb{E}[f_{i_2}(\vec{x}(t + \delta t))].
+\mathbb{E}[f_{i_1}(\mathbf{x}(t + \delta t))f_{i_2}(\mathbf{x}(t + \delta t))] - \mathbb{E}[f_{i_1}(\mathbf{x}(t + \delta t))]\mathbb{E}[f_{i_2}(\mathbf{x}(t + \delta t))].
 \end{equation}
 %
 From \eqref{eq:integro_f}, we calculate
 \begin{equation} 
 \begin{aligned}
-\mathbb{E} [f(\vec{x}(t+\delta t))] =&
-f(\vec{x}(t)) \\
-&+  f_{(0)}(\vec{x}(t)) \delta t
-+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+ \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right]\\
-&+ \sum_{j=1}^n \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \right] \\
-&+ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{(0,0)}(\vec{x}(s_1)) ds_1 ds_2  \right].
+\mathbb{E} [f(\mathbf{x}(t+\delta t))] =&
+f(\mathbf{x}(t)) \\
+&+  f_{(0)}(\mathbf{x}(t)) \delta t
++ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+ \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right]\\
+&+ \sum_{j=1}^n \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \right] \\
+&+ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{(0,0)}(\mathbf{x}(s_1)) ds_1 ds_2  \right].
 \end{aligned}
 \end{equation}
 %
@@ -229,23 +229,23 @@ Therefore,
 %
 \begin{equation} \label{eq:E1E2}
 \begin{aligned}
-&\mathbb{E} [f_{i_1}(\vec{x}(t+\delta t))] \mathbb{E} [f_{i_2}(\vec{x}(t+\delta t))] \\
+&\mathbb{E} [f_{i_1}(\mathbf{x}(t+\delta t))] \mathbb{E} [f_{i_2}(\mathbf{x}(t+\delta t))] \\
 =&
-f_{i_1}(\vec{x}(t)) f_{i_2}(\vec{x}(t)) \\
-&+  f_{i_1}(\vec{x}(t))f_{{i_2},(0)}(\vec{x}(t)) \delta t
-+ f_{i_1}(\vec{x}(t))\sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+ f_{i_1}(\vec{x}(t))\sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right]\\
-&+ f_{i_1}(\vec{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \right] \\
-&+ f_{i_1}(\vec{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,0)}(\vec{x}(s_1)) ds_1 ds_2  \right]\\
-&+ f_{{i_1},(0)}(\vec{x}(t)) \delta t f_{i_2}(\vec{x}(t)) \\
-&+ f_{{i_1},(0)}(\vec{x}(t)) \delta t f_{{i_2},(0)}(\vec{x}(t)) \delta t
-+ f_{{i_1},(0)}(\vec{x}(t)) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+ f_{i_2}(\vec{x}(t)) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+ f_{{i_2},(0)}(\vec{x}(t)) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+ \sum_{j, k, l, m =1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\vec{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right] \\
-&+ f_{i_2}(\vec{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right]  \\
-&+ f_{i_2}(\vec{x}(t)) \sum_{j=1}^n \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \right] \\
-&+ f_{i_2}(\vec{x}(t) )\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,0)}(\vec{x}(s_1)) ds_1 ds_2  \right]\\
+f_{i_1}(\mathbf{x}(t)) f_{i_2}(\mathbf{x}(t)) \\
+&+  f_{i_1}(\mathbf{x}(t))f_{{i_2},(0)}(\mathbf{x}(t)) \delta t
++ f_{i_1}(\mathbf{x}(t))\sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+ f_{i_1}(\mathbf{x}(t))\sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right]\\
+&+ f_{i_1}(\mathbf{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \right] \\
+&+ f_{i_1}(\mathbf{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,0)}(\mathbf{x}(s_1)) ds_1 ds_2  \right]\\
+&+ f_{{i_1},(0)}(\mathbf{x}(t)) \delta t f_{i_2}(\mathbf{x}(t)) \\
+&+ f_{{i_1},(0)}(\mathbf{x}(t)) \delta t f_{{i_2},(0)}(\mathbf{x}(t)) \delta t
++ f_{{i_1},(0)}(\mathbf{x}(t)) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+ f_{i_2}(\mathbf{x}(t)) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+ f_{{i_2},(0)}(\mathbf{x}(t)) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+ \sum_{j, k, l, m =1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\mathbf{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right] \\
+&+ f_{i_2}(\mathbf{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right]  \\
+&+ f_{i_2}(\mathbf{x}(t)) \sum_{j=1}^n \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \right] \\
+&+ f_{i_2}(\mathbf{x}(t) )\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,0)}(\mathbf{x}(s_1)) ds_1 ds_2  \right]\\
 &+ \mathcal{O}(\delta t^{5/2}) .
 \end{aligned}
 \end{equation}
@@ -255,34 +255,34 @@ We then compute the product,
 \begin{equation}
 \scriptsize
 \begin{aligned}
-&f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \\
+&f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \\
 =& 
-f_{i_1}(\vec{x}(t)) f_{i_2}(\vec{x}(t)) 
-+  f_{i_1}(\vec{x}(t)) \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
-&+  f_{i_1}(\vec{x}(t)) f_{{i_2},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds
-+ f_{i_1}(\vec{x}(t)) \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
-&+ f_{i_1}(\vec{x}(t)) \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2 
-+ f_{i_1}(\vec{x}(t)) \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \\
-&+ f_{i_1}(\vec{x}(t)) \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (0,0)}(\vec{x}(s_1)) ds_1 ds_2 
-+ \left( \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) f_{i_2}(\vec{x}(t)) \\
-&+ \left( \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) 
-+  \left(\sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)f_{{i_2},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds \\
-&+ \left(\sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
-&+ \left(\sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)\sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2 \\
-&+ \left(\sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)\sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \\
-&+\left( f_{{i_1},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds \right) f_{i_2}(\vec{x}(t)) 
-+  \left( f_{{i_1},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds \right)\sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
-&+  \left( f_{{i_1},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds \right)f_{{i_2},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds
-+ \left( f_{{i_1},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds \right)\sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
-&+\left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) f_{i_2}(\vec{x}(t)) \\
-&+  \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
-&+ \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) f_{{i_2},(0)}(\vec{x}(t)) \int_t^{t + \delta t} ds \\
-&+ \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right)\sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
-&+ \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right) f_{i_2}(\vec{x}(t)) \\
-&+  \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right)\left( \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)\\
-&+ \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2)  \right) f_{i_2}(\vec{x}(t)) \\
-&+  \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2)  \right)\left( \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) \\
-&+ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,0)}(\vec{x}(s_1)) ds_1 ds_2 \right) f_{i_2}(\vec{x}(t)) \\
+f_{i_1}(\mathbf{x}(t)) f_{i_2}(\mathbf{x}(t)) 
++  f_{i_1}(\mathbf{x}(t)) \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
+&+  f_{i_1}(\mathbf{x}(t)) f_{{i_2},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds
++ f_{i_1}(\mathbf{x}(t)) \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
+&+ f_{i_1}(\mathbf{x}(t)) \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 
++ f_{i_1}(\mathbf{x}(t)) \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \\
+&+ f_{i_1}(\mathbf{x}(t)) \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (0,0)}(\mathbf{x}(s_1)) ds_1 ds_2 
++ \left( \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) f_{i_2}(\mathbf{x}(t)) \\
+&+ \left( \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) 
++  \left(\sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)f_{{i_2},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds \\
+&+ \left(\sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
+&+ \left(\sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)\sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 \\
+&+ \left(\sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)\sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \\
+&+\left( f_{{i_1},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds \right) f_{i_2}(\mathbf{x}(t)) 
++  \left( f_{{i_1},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds \right)\sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
+&+  \left( f_{{i_1},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds \right)f_{{i_2},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds
++ \left( f_{{i_1},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds \right)\sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
+&+\left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) f_{i_2}(\mathbf{x}(t)) \\
+&+  \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \\
+&+ \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) f_{{i_2},(0)}(\mathbf{x}(t)) \int_t^{t + \delta t} ds \\
+&+ \left( \sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right)\sum_{j, k=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \\
+&+ \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right) f_{i_2}(\mathbf{x}(t)) \\
+&+  \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right)\left( \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right)\\
+&+ \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2)  \right) f_{i_2}(\mathbf{x}(t)) \\
+&+  \left( \sum_{j=1}^n \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2)  \right)\left( \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \int_t^{t + \delta t} dW_j(s) \right) \\
+&+ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,0)}(\mathbf{x}(s_1)) ds_1 ds_2 \right) f_{i_2}(\mathbf{x}(t)) \\
 &+ \mathcal{O} (\delta t^{5/2}) .
 \end{aligned}
 \end{equation}
@@ -292,30 +292,30 @@ Taking expectations, and using independence, we obtain
 \begin{equation} \label{eq:E12}
 \scriptsize
 \begin{aligned}
-&\mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \right] \\
 =& 
-f_{i_1}(\vec{x}(t)) f_{i_2}(\vec{x}(t)) \\
-&+  f_{i_1}(\vec{x}(t)) f_{{i_2},(0)}(\vec{x}(t)) \delta t
-+ f_{i_1}(\vec{x}(t)) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+ f_{i_1}(\vec{x}(t)) \sum_{j=1}^n \mathbb{E}  \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2 \right] 
-+ f_{i_1}(\vec{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \right] \\
-&+ f_{i_1}(\vec{x}(t)) \int_t^{t+\delta t} \mathbb{E} \left[ \int_t^{s_2} f_{{i_2}, (0,0)}(\vec{x}(s_1)) ds_1 ds_2 \right]
-+  \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
-&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\vec{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
-&+ \sum_{j,k=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,0)}(\vec{x}(s_1)) dW_k(s_1) ds_2 \right) \right]\\
-&+ \sum_{j, k=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,k)}(\vec{x}(s_1)) ds_1 dW_k(s_2) \right) \right] \\
-&+f_{{i_1},(0)}(\vec{x}(t)) f_{i_2}(\vec{x}(t)) \delta t
-+  f_{{i_1},(0)}(\vec{x}(t))f_{{i_2},(0)}(\vec{x}(t)) \delta t^2
-+  f_{{i_1},(0)}(\vec{x}(t)) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+f_{i_2}(\vec{x}(t)) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
-&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\vec{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
-&+ f_{{i_2},(0)}(\vec{x}(t)) \delta t  \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right]  \\
-&+ \sum_{j, k, l, m=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\vec{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right) \right] \\
-&+ f_{i_2}(\vec{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right]  \\
-&+  \sum_{j, k=1}^n f_{{i_2},(k)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right) \left( \int_t^{t + \delta t} dW_k(s) \right) \right]\\
-&+ f_{i_2}(\vec{x}(t))  \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2)  \right]  \\
-&+   \sum_{j, k=1}^n  f_{{i_2},(k)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_k(s) \right) \right] \\
-&+ f_{i_2}(\vec{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,0)}(\vec{x}(s_1)) ds_1 ds_2 \right]  \\
+f_{i_1}(\mathbf{x}(t)) f_{i_2}(\mathbf{x}(t)) \\
+&+  f_{i_1}(\mathbf{x}(t)) f_{{i_2},(0)}(\mathbf{x}(t)) \delta t
++ f_{i_1}(\mathbf{x}(t)) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+ f_{i_1}(\mathbf{x}(t)) \sum_{j=1}^n \mathbb{E}  \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 \right] 
++ f_{i_1}(\mathbf{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2}, (0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \right] \\
+&+ f_{i_1}(\mathbf{x}(t)) \int_t^{t+\delta t} \mathbb{E} \left[ \int_t^{s_2} f_{{i_2}, (0,0)}(\mathbf{x}(s_1)) ds_1 ds_2 \right]
++  \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
+&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\mathbf{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
+&+ \sum_{j,k=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,0)}(\mathbf{x}(s_1)) dW_k(s_1) ds_2 \right) \right]\\
+&+ \sum_{j, k=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,k)}(\mathbf{x}(s_1)) ds_1 dW_k(s_2) \right) \right] \\
+&+f_{{i_1},(0)}(\mathbf{x}(t)) f_{i_2}(\mathbf{x}(t)) \delta t
++  f_{{i_1},(0)}(\mathbf{x}(t))f_{{i_2},(0)}(\mathbf{x}(t)) \delta t^2
++  f_{{i_1},(0)}(\mathbf{x}(t)) \delta t \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+f_{i_2}(\mathbf{x}(t)) \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \\
+&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\mathbf{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
+&+ f_{{i_2},(0)}(\mathbf{x}(t)) \delta t  \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right]  \\
+&+ \sum_{j, k, l, m=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\mathbf{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right) \right] \\
+&+ f_{i_2}(\mathbf{x}(t)) \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right]  \\
+&+  \sum_{j, k=1}^n f_{{i_2},(k)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right) \left( \int_t^{t + \delta t} dW_k(s) \right) \right]\\
+&+ f_{i_2}(\mathbf{x}(t))  \sum_{j=1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2)  \right]  \\
+&+   \sum_{j, k=1}^n  f_{{i_2},(k)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_k(s) \right) \right] \\
+&+ f_{i_2}(\mathbf{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,0)}(\mathbf{x}(s_1)) ds_1 ds_2 \right]  \\
 &+ \mathcal{O} (\delta t^{5/2}).
 \end{aligned}
 \end{equation}
@@ -324,18 +324,18 @@ Combining \eqref{eq:E1E2} and \eqref{eq:E12}, we obtain
 %
 \begin{equation} \label{eq:E12_E1E2}
 \begin{aligned}
-&\mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\mathbf{x}_{t + \delta t}) \right] \\
 =& 
- \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
-&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\vec{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
-&+ \sum_{j,k=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,0)}(\vec{x}(s_1)) dW_k(s_1) ds_2 \right) \right]\\
-&+ \sum_{j, k=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,k)}(\vec{x}(s_1)) ds_1 dW_k(s_2) \right) \right] \\
-&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\vec{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
-&+ \sum_{j, k, l, m=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\vec{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right) \right] \\
-&- \sum_{j, k, l, m =1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\vec{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right] \\
-&+  \sum_{j, k=1}^n f_{{i_2},(k)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right) \left( \int_t^{t + \delta t} dW_k(s) \right) \right]\\
-&+   \sum_{j, k=1}^n  f_{{i_2},(k)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_k(s) \right) \right] \\
+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
+&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\mathbf{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
+&+ \sum_{j,k=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,0)}(\mathbf{x}(s_1)) dW_k(s_1) ds_2 \right) \right]\\
+&+ \sum_{j, k=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,k)}(\mathbf{x}(s_1)) ds_1 dW_k(s_2) \right) \right] \\
+&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\mathbf{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
+&+ \sum_{j, k, l, m=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\mathbf{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right) \right] \\
+&- \sum_{j, k, l, m =1}^n \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right] \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(l,m)}(\mathbf{x}(s_1)) dW_{s_1, l} dW_{s_2, m} \right] \\
+&+  \sum_{j, k=1}^n f_{{i_2},(k)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right) \left( \int_t^{t + \delta t} dW_k(s) \right) \right]\\
+&+   \sum_{j, k=1}^n  f_{{i_2},(k)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_k(s) \right) \right] \\
 &+ \mathcal{O} (\delta t^{5/2}) .
 \end{aligned}
 \end{equation}
@@ -344,17 +344,17 @@ From \cite{kloeden1992numerical}, page 190-191, some terms of \eqref{eq:E12_E1E2
 %
 \begin{equation}
 \begin{aligned}
-&\mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\mathbf{x}_{t + \delta t}) \right] \\
 =& 
- \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
-&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\vec{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2 \right) \right]\\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \right) \right] \\
-&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\vec{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
-&+ \sum_{j, k=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_{s_2,k} \right) \right] \\
-&+  \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\vec{x}(s_1)) dW_j(s_1) ds_2  \right) \left( \int_t^{t + \delta t} dW_j(s) \right) \right]\\
-&+   \sum_{j=1}^n  f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_j(s) \right) \right] \\
+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
+&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\mathbf{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 \right) \right]\\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \right) \right] \\
+&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\mathbf{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_{s_2,k} \right) \right] \\
+&+  \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,0)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2  \right) \left( \int_t^{t + \delta t} dW_j(s) \right) \right]\\
+&+   \sum_{j=1}^n  f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_j(s) \right) \right] \\
 &+ \mathcal{O} (\delta t^{5/2}) .
 \end{aligned}
 \end{equation}
@@ -363,17 +363,17 @@ Exchanging the order of integration, we obtain
 %
 \begin{equation}
 \begin{aligned}
-&\mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\mathbf{x}_{t + \delta t}) \right] \\
 =& 
- \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
-&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\vec{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\vec{x}_{s_2}) ds_2 dW_j(s_1)  \right) \right]\\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2) \right) \right] \\
-&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\vec{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
-&+ \sum_{j, k=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) dW_{s_2,k} \right) \right] \\
-&+  \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\vec{x}_{s_2}) ds_2 dW_j(s_1)   \right) \left( \int_t^{t + \delta t} dW_j(s) \right) \right]\\
-&+   \sum_{j=1}^n  f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_j(s) \right) \right] \\
+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
+&+ \sum_{j,k,l=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,l)}(\mathbf{x}(s_1)) dW_k(s_1) dW_{s_2, l} \right) \right] \\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)\left( \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\mathbf{x}_{s_2}) ds_2 dW_j(s_1)  \right) \right]\\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2) \right) \right] \\
+&+  \sum_{j, k, l=1}^n  f_{{i_2},(l)}(\mathbf{x}(t))\mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t + \delta t} dW_{s,l} \right) \right] \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_k(s_2) \right) \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) dW_{s_2,k} \right) \right] \\
+&+  \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\mathbf{x}_{s_2}) ds_2 dW_j(s_1)   \right) \left( \int_t^{t + \delta t} dW_j(s) \right) \right]\\
+&+   \sum_{j=1}^n  f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 dW_j(s_2)  \right) \left(\int_t^{t + \delta t} dW_j(s) \right) \right] \\
 &+ \mathcal{O} (\delta t^{5/2}),
 \end{aligned}
 \end{equation}
@@ -381,17 +381,17 @@ Exchanging the order of integration, we obtain
 and then by the It\={o} isometry, $\mathbb{E} \left[ \int_0^t f(X) dW_{i,t} \int_0^t g(X) dW_{j,t} \right] = \mathbb{E} \left[ \int_0^t f(X) g(X) \delta_{ij} dt \right]$, we have
 \begin{equation}
 \begin{aligned}
-&\mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\mathbf{x}_{t + \delta t}) \right] \\
 =& 
- \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
-&+ \sum_{j,k=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,j)}(\vec{x}(s_1)) dW_k(s_1) ds_2 \right] \\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]\\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\vec{x}(s_1)) ds_1 ds_2\right] \\
-&+  \sum_{j, k=1}^n  f_{{i_2},(k)}(\vec{x}(t))\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) ds_2 \right] \\
-&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) \right) ds_2 \right] \\
-&+  \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]\\
-&+   \sum_{j=1}^n  f_{{i_2},(j)}(\vec{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 ds_2 \right] \\
+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] \\
+&+ \sum_{j,k=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(k,j)}(\mathbf{x}(s_1)) dW_k(s_1) ds_2 \right] \\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right]\\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\mathbf{x}(s_1)) ds_1 ds_2\right] \\
+&+  \sum_{j, k=1}^n  f_{{i_2},(k)}(\mathbf{x}(t))\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 \right] \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) \right) ds_2 \right] \\
+&+  \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right]\\
+&+   \sum_{j=1}^n  f_{{i_2},(j)}(\mathbf{x}(t)) \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 ds_2 \right] \\
 &+ \mathcal{O} (\delta t^{5/2}) .
 \end{aligned}
 \end{equation}
@@ -399,17 +399,17 @@ and then by the It\={o} isometry, $\mathbb{E} \left[ \int_0^t f(X) dW_{i,t} \int
 Rearranging terms, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_j(s) \right)^2 \right] = \delta t$, we obtain
 \begin{equation}
 \begin{aligned}
-&\mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\mathbf{x}_{t + \delta t}) \right] \\
 =& 
- \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) f_{{i_2},(j)}(\vec{x}(t)) \delta t \\
-&+ \sum_{j,k=1}^n f_{{i_1},(k)}(\vec{x}(t)) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) ds_2 \right] \\
-&+  \sum_{j, k=1}^n  f_{{i_2},(k)}(\vec{x}(t))\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1) ds_2 \right]\\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right] 
-+ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\vec{x}(s_1)) ds_1 ds_2\right] \right) \\
-&+  \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]
-+ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 ds_2 \right] \right) \\
-&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) \right) ds_2 \right] \\
+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) f_{{i_2},(j)}(\mathbf{x}(t)) \delta t \\
+&+ \sum_{j,k=1}^n f_{{i_1},(k)}(\mathbf{x}(t)) \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 \right] \\
+&+  \sum_{j, k=1}^n  f_{{i_2},(k)}(\mathbf{x}(t))\mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) ds_2 \right]\\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right] 
++ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\mathbf{x}(s_1)) ds_1 ds_2\right] \right) \\
+&+  \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right]
++ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 ds_2 \right] \right) \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) \right) ds_2 \right] \\
 &+ \mathcal{O} (\delta t^{5/2})
 \end{aligned}
 \end{equation}
@@ -417,15 +417,15 @@ Rearranging terms, and using $\mathbb{E} \left[ \left( \int_t^{t + \delta t} dW_
 We then utilize the fact that It\={o} integrals containing Wiener processes have 0 expected value to obtain
 \begin{equation} \label{eq:cov_est}
 \begin{aligned}
-&\mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) f_{i_2}(\vec{x}_{t + \delta t}) \right] 
-- \mathbb{E} \left[ f_{i_1}(\vec{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\vec{x}_{t + \delta t}) \right] \\
+&\mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) f_{i_2}(\mathbf{x}_{t + \delta t}) \right] 
+- \mathbb{E} \left[ f_{i_1}(\mathbf{x}_{t + \delta t}) \right] \mathbb{E} \left[ f_{i_2}(\mathbf{x}_{t + \delta t}) \right] \\
 =& 
- \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) f_{{i_2},(j)}(\vec{x}(t)) \delta t \\
-&+ \sum_{j=1}^n f_{{i_1},(j)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right] 
-+ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\vec{x}(s_1)) ds_1 ds_2\right] \right) \\
-&+  \sum_{j=1}^n f_{{i_2},(j)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]
-+ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\vec{x}(s_1)) ds_1 ds_2 \right] \right) \\
-&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{{i_1},(j,k)}(\vec{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{{i_2},(j,k)}(\vec{x}(s_1)) dW_j(s_1) \right) ds_2 \right] \\
+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) f_{{i_2},(j)}(\mathbf{x}(t)) \delta t \\
+&+ \sum_{j=1}^n f_{{i_1},(j)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{{i_2},(j,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right] 
++ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{{i_2},(0,j)}(\mathbf{x}(s_1)) ds_1 ds_2\right] \right) \\
+&+  \sum_{j=1}^n f_{{i_2},(j)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{{i_1},(j,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right]
++ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{{i_1},(0,j)}(\mathbf{x}(s_1)) ds_1 ds_2 \right] \right) \\
+&+ \sum_{j, k=1}^n \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{{i_1},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{{i_2},(j,k)}(\mathbf{x}(s_1)) dW_j(s_1) \right) ds_2 \right] \\
 &+ \mathcal{O} (\delta t^{5/2})
 \end{aligned}
 \end{equation}
@@ -434,8 +434,8 @@ where
 \begin{itemize}
 \item $f_{(j)} = \frac{1}{\sqrt{e_j}} \frac{\partial f}{\partial x_j}$ for $j \ge 1$
 \item $f_{(j, k)} = \frac{1}{\sqrt{e_j e_k}} \frac{\partial^2 f}{\partial x_j \partial x_k}$ for $j,k \ge 1$
-\item $f_{(j,0)} = \frac{1}{\sqrt{e_j}} \left( \sum_{k=1}^n \frac{\partial}{\partial x_j} \left( \frac{a_k(\vec{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 e_k} \frac{\partial^3 f}{\partial x_j \partial x_k^2} \right)$
-\item $f_{(0, j)} = \frac{1}{\sqrt{e_j}} \sum_{k=1}^n \frac{a_k(\vec{x})}{e_k} \frac{\partial^2 f}{\partial x_j \partial x_k} +\frac{1}{2 e_k}  \frac{\partial^3 f}{\partial x_j \partial^2 x_k}$
+\item $f_{(j,0)} = \frac{1}{\sqrt{e_j}} \left( \sum_{k=1}^n \frac{\partial}{\partial x_j} \left( \frac{a_k(\mathbf{x})}{e_k} \frac{\partial f}{\partial x_k} \right) + \frac{1}{2 e_k} \frac{\partial^3 f}{\partial x_j \partial x_k^2} \right)$
+\item $f_{(0, j)} = \frac{1}{\sqrt{e_j}} \sum_{k=1}^n \frac{a_k(\mathbf{x})}{e_k} \frac{\partial^2 f}{\partial x_j \partial x_k} +\frac{1}{2 e_k}  \frac{\partial^3 f}{\partial x_j \partial^2 x_k}$
 \end{itemize}
 
 \section{Illustrative Examples}
@@ -530,10 +530,10 @@ E_{C,22} =&
 %\tiny
 %\begin{aligned}
 %E_M =& 
-% \frac{1}{2} \sum_{i=1}^n \sum_{jkl=1}^{d} e_i \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}(t_1)} - \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\vec{y}(t_2)} \right) (y_j(t_2) - y_j(t_1))  (y_k(t_2) - y_k(t_1))(y_l(t_2) - y_l(t_1)) \\
-%& + \frac{1}{8} \sum_{i=1}^n \sum_{jklm=1}^d  e_i \left( \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\vec{y}(t_1)} + \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\vec{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\vec{y}(t_2)} \right) (y_j(t_2) - y_j(t_1))  (y_k(t_2) - y_k(t_1))(y_l(t_2) - y_l(t_1))(y_m(t_2) - y_m(t_1)) \\
-%& + \frac{1}{6} \sum_{i=1}^n \sum_{jklm=1}^d e_i \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}(t_1)} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\vec{y}(t_2)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\vec{y}(t_2)} \right) (y_j(t_2) - y_j(t_1))  (y_k(t_2) - y_k(t_1))(y_l(t_2) - y_l(t_1))(y_m(t_2) - y_m(t_1)) \\
-%& + \mathcal{O} (\|\vec{y}(t_1) - \vec{y}(t_2) \|^6 )
+% \frac{1}{2} \sum_{i=1}^n \sum_{jkl=1}^{d} e_i \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\mathbf{y}(t_1)} - \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_k \partial y_l} \right|_{\mathbf{y}(t_2)} \right) (y_j(t_2) - y_j(t_1))  (y_k(t_2) - y_k(t_1))(y_l(t_2) - y_l(t_1)) \\
+%& + \frac{1}{8} \sum_{i=1}^n \sum_{jklm=1}^d  e_i \left( \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} + \left. \frac{\partial^2 g_i}{\partial y_j \partial y_k} \right|_{\mathbf{y}(t_2)} \left. \frac{\partial^2 g_i}{\partial y_l \partial y_m} \right|_{\mathbf{y}(t_2)} \right) (y_j(t_2) - y_j(t_1))  (y_k(t_2) - y_k(t_1))(y_l(t_2) - y_l(t_1))(y_m(t_2) - y_m(t_1)) \\
+%& + \frac{1}{6} \sum_{i=1}^n \sum_{jklm=1}^d e_i \left( \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_1)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\mathbf{y}(t_1)} + \left. \frac{\partial g_i}{\partial y_j} \right|_{\mathbf{y}(t_2)} \left. \frac{\partial^3 g_i}{ \partial y_k \partial y_l \partial y_m} \right|_{\mathbf{y}(t_2)} \right) (y_j(t_2) - y_j(t_1))  (y_k(t_2) - y_k(t_1))(y_l(t_2) - y_l(t_1))(y_m(t_2) - y_m(t_1)) \\
+%& + \mathcal{O} (\|\mathbf{y}(t_1) - \mathbf{y}(t_2) \|^6 )
 %\end{aligned}
 %\end{equation}
 
@@ -575,7 +575,7 @@ and therefore, from \eqref{eq:mahalanobis_taylor_explansion},
 \begin{equation}
 E_M =
  -(y_{2,2} - y_{1,2})^4
- + \mathcal{O} (\|\vec{y}(t_1) - \vec{y}(t_2) \|^6 ) .
+ + \mathcal{O} (\|\mathbf{y}(t_1) - \mathbf{y}(t_2) \|^6 ) .
 \end{equation}
 
 For the example in Section~\ref{subsec:nonlinear_example}, 
@@ -662,9 +662,9 @@ and therefore, from \eqref{eq:cov_est},
 \begin{aligned}
 E_{C,11}
 =& 
-\frac{1}{\delta t} 2 f_{1,(2)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{1,(2,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right] 
-+ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,2)}(\vec{x}(s_1)) ds_1 ds_2\right] \right) \\
-&+ \frac{1}{\delta t}  \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{1,(2,2)}(\vec{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{1,(2,2)}(\vec{x}(s_1)) dW_j(s_1) \right) ds_2 \right] 
+\frac{1}{\delta t} 2 f_{1,(2)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{1,(2,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right] 
++ \mathbb{E} \left[  \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,2)}(\mathbf{x}(s_1)) ds_1 ds_2\right] \right) \\
+&+ \frac{1}{\delta t}  \mathbb{E} \left[ \int_t^{t+\delta t}\left( \int_t^{s_2} f_{1,(2,2)}(\mathbf{x}(s_1)) dW_j(s_1)  \right) \left(  \int_t^{s_2} f_{1,(2,2)}(\mathbf{x}(s_1)) dW_j(s_1) \right) ds_2 \right] 
 + \mathcal{O} (\delta t^{3/2}) \\
 =& 
 \frac{1}{\delta t}  \frac{4 x_2}{\sqrt{\epsilon}} \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} \frac{-4 x_2}{\epsilon^{3/2}} ds_2 ds_1 \right] 
@@ -685,9 +685,9 @@ E_{C,11}
 %
 E_{C, 12} 
 =& 
-\frac{1}{\delta t}  f_{1,(2)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(2,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]  \right) \\
-&+ \frac{1}{\delta t} f_{2,(2)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{1,(2,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]
-+ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,2)}(\vec{x}(s_1)) ds_1 ds_2 \right] \right) 
+\frac{1}{\delta t}  f_{1,(2)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(2,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right]  \right) \\
+&+ \frac{1}{\delta t} f_{2,(2)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t + \delta t} f_{1,(2,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right]
++ \mathbb{E} \left[ \int_t^{t+\delta t} \int_t^{s_2} f_{1,(0,2)}(\mathbf{x}(s_1)) ds_1 ds_2 \right] \right) 
 + \mathcal{O} (\delta t^{3/2}) \\
 =& 
 \frac{1}{\delta t} \frac{2 x_2}{\sqrt{\epsilon}} \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} \frac{-1}{\epsilon^{3/2}} ds_2 ds_1 \right]  \right) \\
@@ -703,7 +703,7 @@ E_{C, 12}
 %%
 E_{C, 22} 
 =&
- \frac{1}{\delta t} 2 f_{2,(2)}(\vec{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(2,0)}(\vec{x}_{s_2}) ds_2 ds_1 \right]  \right) 
+ \frac{1}{\delta t} 2 f_{2,(2)}(\mathbf{x}(t)) \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} f_{2,(2,0)}(\mathbf{x}_{s_2}) ds_2 ds_1 \right]  \right) 
 + \mathcal{O} (\delta t^{3/2}) \\
 =&
  \frac{1}{\delta t} 2 \frac{1}{\sqrt{\epsilon}} \left( \mathbb{E} \left[ \int_t^{t+\delta t} \int_{s_1}^{t+\delta t} \frac{-1}{\epsilon^{3/2}} ds_2 ds_1 \right]  \right) 
