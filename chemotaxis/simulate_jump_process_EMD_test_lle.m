@@ -269,7 +269,7 @@ tau_diff = L.^2.*lambda_all./(s_all.^2);
 make_fig(4,3);
 [ax,h1,h2] = plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, tau_drift./tau_diff, 'plot','semilogy');
 set(h1, 'marker', '.', 'color','b')
-set(h2, 'marker', '.', 'color','r')
+set(h2, 'linestyle', '-', 'color','r')
 % set(h2, 'yscale', 'log')
 set(ax(1), 'ycolor','b')
 set(ax(2), 'ycolor','r')
