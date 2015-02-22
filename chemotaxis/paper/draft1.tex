@@ -148,10 +148,10 @@ Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_
 
 Although these eigenfunctions can only be written analytically for very special cases, it has been observed empirically that the eigenfunctions often yield appropriate/good coordinates to parameterize the underlying manifold. 
 
-
-
-
-
+\begin{figure}
+\includegraphics[width=0.5\textwidth]{strip_cnts1}
+\includegraphics[width=0.5\textwidth]{strip_cnts2}
+\end{figure}
 
 
 %From the eigenvalues, 
@@ -204,7 +204,13 @@ If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some densi
 
 
 
+\begin{figure}
+\includegraphics[width=0.5\textwidth]{strip_discrete1}
+\includegraphics[width=0.5\textwidth]{strip_discrete2}
+\includegraphics[width=0.5\textwidth]{strip_nonuniform1}
+\includegraphics[width=0.5\textwidth]{strip_nonuniform2}
 
+\end{figure}
 
 TODO: add two sets of figures: one with data uniformly sampled, one with data with Gaussian distribiution
 
@@ -220,22 +226,9 @@ In diffusion maps, we order the eigenvectors by the magnitude of the correspondi
 %
 However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set. 
 %
-Again, we consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x  > L_y$. 
+Again, for illustrative purposes, we consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x  > L_y$. 
 %
-The eigenvalues of the Laplacian with Neumann boundary conditions are given by
-\begin{equation}
-\tilde{\mu}_{k_1, k_2} = \left( \frac{k_1 \pi}{L_x} \right)^2 + \left( \frac{k_2 \pi}{L_y} \right)^2
-\end{equation}
-for $k_1, k_2 = 0, 1, 2, \dots$,
-and the corresponding eigenfunctions are 
-\begin{equation}
-\tilde{\phi}_{k_1, k_2} = \cos \left( \frac{k_1 \pi x}{L_x} \right) \cos \left( \frac{k_2 \pi y}{L_y} \right)
-\end{equation}
-where $x$ and $y$ denote the two coordinates of the rectangular domain. 
-%
-We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ are one-to-one with the $x$ and $y$ coordinates, respectively, and therefore yield a parameterization of the underlying manifold. 
-%
-Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ provide a measure of $L_x$ versus $L_y$: as the ratio between $L_x$ and $L_y$ increases, the gap between $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ also increases.
+We recall that the eigenfunctions $\phi_{1,0} = \cos \left( \frac {\pi x}{L_x} \right)$ and  $\phi_{0,1} = \cos \left( \frac {\pi y}{L_y} \right)$ provide embedding coordinates for the manifold $|mathcal{M}_d$. 
 %
 However, these two eigenvectors $\tilde{\phi}_{1, 0}$ and $\tilde{\phi}_{0, 1}$ are not guaranteed to correspond to the two smallest (non-trivial) eigenvalues (the largest eigenvalue will always be $\tilde{\mu}_{0,0} = 1$ and correspond to a constant eigenfunction; the eigenvalues $\tilde{\mu}_k$ are related to the diffusion maps eigenvalues $\mu_k$ via \eqref{eq:evals_relationship}). 
 %
@@ -328,10 +321,14 @@ Because $r_{k} \approx 1$ if $\phi_{k}$ parameterizes a new direction, we define
 
 \subsection{Illustrative Examples}
 
-\subsubsection{Swiss Roll}
-
 We will demonstrate the local linear regression algorithm for identifying informative eigenvectors on two synthetic data sets. 
 %
+Both of these data sets are nonlinear manifolds which provide examples of the flexibility of diffusion maps. 
+%
+However, these data sets will also illustrate the issues of harmonics. 
+
+\subsubsection{Swiss Roll}
+
 Our first illustrative example will consist of two different swiss roll data sets.
 %
 Each data set consists of $m=1500$ points uniformly distributed on the swiss roll. 
@@ -465,9 +462,9 @@ The issues discussed above must all be considered and addressed in order to succ
 %
 To illustrate this point, we will use a model problem arising in the study of cellular dynamics. 
 %
-In this example, constructing appropriate observers with an informative metric will allow us to perform informative analysis. 
+%In this example, constructing appropriate observers with an informative metric will allow us to perform informative analysis. 
 %
-Furthermore, automatically detecting the ``important'' components will allow us to deduce when the dimension of the underlying dynamical system changes. 
+Automatically detecting the ``important'' components will allow us to deduce when the dimension of the underlying dynamical system changes. 
 %
 In this way, we can deduce how many variables are required to write an accurate reduced model. 
 
@@ -478,15 +475,28 @@ For example, fluid flow, which can be described via the position and velocity of
 However, in general, this mapping from microscale to macroscale is not always obvious.
 %
 We would like to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
+%
+Furthermore, determining the dimensionality of such a parameterization can inform us to the requisite dimensionality of a reduced model which captures the relevant macroscopic behavior. 
 
-In this letter, we will demonstrate how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
+%In this letter, we will demonstrate how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
 %
-Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) choosing the appropriate observers, especially in presence of stochastic dynamics, and (b) selecting an appropriate metric for comparison \cite{mallat2012group}. 
+%Specifically, we aim to emphasize two particular aspects of manifold learning from a dynamical systems' point of view: (a) choosing the appropriate observers, especially in presence of stochastic dynamics, and (b) selecting an appropriate metric for comparison \cite{mallat2012group}. 
 %
-We will show that both are essential for data-driven algorithms to successfully uncover the underlying system dynamics. 
+%We will show that both are essential for data-driven algorithms to successfully uncover the underlying system dynamics. 
 
-We will illustrate these points using a model problem which arises in studies of cellular chemotaxis \cite{othmer2000diffusion}.
+We will illustrate these points using a model problem which arises in studies of cellular chemotaxis \cite{othmer2000diffusion}, where 
+biological cells work together and exhibit coherent macroscopic dynamics regulated by extracellular sensed signals, in order to accomplish tasks such as finding food or navigating away from toxins.
 %
+Several microscopic models have been proposed to describe chemotaxis dynamics \cite{othmer1988models, codling2008random}.
+%
+We will analyze one such model described by a one-dimensional velocity jump process \cite{othmer2000diffusion}.
+%
+In this model, each cell is initialized with a position and a velocity on a line, and the dynamics of each cell are governed by a stochastic process.
+%
+At random times, a cell will ``turn around'' and switch the direction of its velocity (this turning is controlled by extracellular signals). 
+%
+%We will analyze the dynamics of collections of such cells/particles. 
+
 In this example, the macroscopic dynamics vary depending on the value of a single system parameter.
 %
 We will demonstrate how we can use diffusion maps \cite{coifman2005geometric}, a manifold learning technique, to {\em automatically} detect changes in the system's macroscopic dynamics from microscale data.
@@ -519,19 +529,6 @@ Furthermore, these data-driven methods allow us to detect changes in dynamical b
 
 %\subsection{Chemotaxis ``story''} 
 
-Biological cells are one common example of a system where microscopic entities work together and exhibit coherent macroscopic dynamics, in order to accomplish tasks such as finding food or navigating away from toxins.
-%
-The cellular dynamics are often governed by extracellular sensed signals; this movement is known as chemotaxis. 
-%
-Several microscopic models have been proposed to describe chemotaxis dynamics \cite{othmer1988models, codling2008random}.
-%
-We will analyze one such model described by a one-dimensional velocity jump process \cite{othmer2000diffusion}.
-%
-In this model, each cell is initialized with a position and a velocity on a line, and the dynamics of each cell are governed by a stochastic process.
-%
-At random times, a cell will ``turn around'' and switch the direction of its velocity (this turning is controlled by extracellular signals). 
-%
-%We will analyze the dynamics of collections of such cells/particles. 
 
 \subsection{Problem description}
 
@@ -612,16 +609,18 @@ The above analysis shows that the initial distribution of velocities of the part
 When $\lambda \rightarrow 0$, the dynamics are described by two wave equations, and the initial distribution persists throughout the trajectory.
 %
 When $\lambda \rightarrow \infty$, the dynamics are described by one heat equation, and the initial conditions are insignificant -- the velocity distribution quickly equilibrates and we see purely diffusive behavior.
-
+%
 For general dynamical systems, the governing macroscopic variables and asymptotic behavior may not be immediately obvious, and instead need to be inferred from the microscopic data.
 %
-We expect the simulation data to lie on a low-dimensional manifold which is parameterized by the macroscopic variables.
+We will demonstrate how we can use diffusion maps to parameterize the simulation data, as well as detect the effective dimensionality of the data.
 %
-We use diffusion maps \cite{coifman2005geometric}, which is a manifold learning technique, to uncover such low-dimensional structure and to analyze the results of the microscopic chemotaxis simulations.
+%We expect the simulation data to lie on a low-dimensional manifold which is parameterized by the macroscopic variables.
 %
-Compared to principal components analysis (PCA) \cite{shlens2005tutorial}, a standard linear technique, diffusion maps provides a parameterization of data which lie on a low-dimensional, (possibly) {\em nonlinear} structure in a high-dimensional space.
+%We use diffusion maps \cite{coifman2005geometric}, which is a manifold learning technique, to uncover such low-dimensional structure and to analyze the results of the microscopic chemotaxis simulations.
 %
-Diffusion maps is one of many recently introduced manifold learning techniques that could be used to analyzed this data \cite{roweis2000nonlinear, tenenbaum2000global, Belkin2003}.
+%Compared to principal components analysis (PCA) \cite{shlens2005tutorial}, a standard linear technique, diffusion maps provides a parameterization of data which lie on a low-dimensional, (possibly) {\em nonlinear} structure in a high-dimensional space.
+%
+%Diffusion maps is one of many recently introduced manifold learning techniques that could be used to analyzed this data \cite{roweis2000nonlinear, tenenbaum2000global, Belkin2003}.
 
 \begin{figure}[t!]
 \begin{subfigure}{6cm}
@@ -659,27 +658,48 @@ The distances used in the diffusion maps kernel are the earth mover's distances 
 
 \subsection{Observers and Metrics}
 
+In general, manifold learning techniques have two essential components.
+%
+One is the appropriate {\em observers} of the system. 
+%
+These observers should be informative as to the state of the system, as well as insensitive to noise in the system. 
+%
+Two is a {\em distance metric} between the observations that captures a notion of locality: observations which we perceive to be similar should have a small distance. 
+%
+%For this particular example, we will use histograms of the particle positions as the observations, and the EMD as the distance metric.
 
-\subsubsection{Constructing appropriate observers}
 
+Appropriate observers can be constructed in several different ways. 
+%
+For simple data, such as the illustrative examples in the previous section, the observers are simply the data points themselves. 
+%
+However, for more complex data, the raw data may contain other sources of variability which are not meaningful to the system dynamics. 
+%
+For some examples, physical intuition and {\em a priori} knowledge can aid in constructing appropriate observers. 
+%
+For example, when looking at a protein, the ``observers'' may be the locations of the $\alpha$-carbon atoms. 
+%
+Observers can also factor out other sources of variation. 
+%
+For example, the bispectrum \cite{...} and the scattering transform \cite{...} are both observers which are invariant to rotations. 
+%
+Observers should also be robust to noise. 
+%
+The scattering transform \cite{...} is robust to small deformations, and histograms serve to linearize noise \cite{...}.
 
-\begin{itemize}
-\item Physical examples (e.g., $\alpha$-carbons for molecules)
-\item Amit's bispectrum
-\item Scattering transform
-\item Cite PNAS, stating that the histograms are good since they linearize any noise. 
+After constructing appropriate observers, we must consider what metric to use in the diffusion maps calculation. 
+%
+Again, the simplest option is to use the Euclidean distance, but this can often prove uninformative. 
+%
+For molecular simulation data, it is often appropriate to use the root-mean-squared displacement {\em after} aligning configurations with respect to rotations, as global rotations of the entire molecule are not meaningful.
+%
+For dynamical systems which are obscured by large variance noise, the Mahalanobis distance often yields a more informative parameterization of the data \cite{...}.
+%
+Another option is the Earth Mover's Distance, a multi scale distance metric which is stable and robust to noise.
+
 For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
 %
 Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
-\end{itemize}
-
-\subsubsection{Defining a meaningful metric}
-
-
-\begin{itemize}
-\item Euclidean (not good, especially for histograms)
-\item Mahalanobis (good, cite PNAS, since it noise robust)
-\item Here we use EMD since it is multiscale.
 %
 Instead of the standard Euclidean distance, we use the earth mover's distance (EMD) \cite{rubner2000earth} as the metric between pairs of histograms. 
 %
@@ -695,10 +715,48 @@ For the special case of one-dimensional data, the EMD is equivalent to the $L_1$
 \end{equation}
 where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$, and $z_k$ denotes the $k^{th}$ bin. 
 %
-\item Emphasize stability and regularity issues.
-\end{itemize}
-
 Note: histograms are not essential for computing EMD, however, they make it computationally feasible. Furthermore, histograms are good because they are robust to noise (cite PNAS). 
+
+
+
+
+%\subsubsection{Constructing appropriate observers}
+%
+%\begin{itemize}
+%\item Physical examples (e.g., $\alpha$-carbons for molecules)
+%\item Amit's bispectrum
+%\item Scattering transform
+%\item Cite PNAS, stating that the histograms are good since they linearize any noise. 
+%For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
+%%
+%Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
+%\end{itemize}
+%
+%\subsubsection{Defining a meaningful metric}
+%
+%
+%\begin{itemize}
+%\item Euclidean (not good, especially for histograms)
+%\item Mahalanobis (good, cite PNAS, since it noise robust)
+%\item Here we use EMD since it is multiscale.
+%%
+%Instead of the standard Euclidean distance, we use the earth mover's distance (EMD) \cite{rubner2000earth} as the metric between pairs of histograms. 
+%%
+%Conceptually, the EMD measures how much ``work'' it takes to transform one probability density into another.
+%%
+%It therefore not only considers where the densities are inconsistent, but also how far apart the inconsistencies are.
+%%
+%Although the brute-force computation of the EMD is computationally expensive, there has been a plethora of work in developing efficient algorithms for its computation \cite{Pele-eccv2008, Pele-iccv2009}.
+%%
+%For the special case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions \cite{rubner2000perceptual}, which can be estimated from histograms as
+%\begin{equation}
+%\| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|
+%\end{equation}
+%where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$, and $z_k$ denotes the $k^{th}$ bin. 
+%%
+%\item Emphasize stability and regularity issues.
+%\end{itemize}
+
 
 
 
@@ -706,15 +764,7 @@ Note: histograms are not essential for computing EMD, however, they make it comp
 
 \subsection{Results}
 
-In general, manifold learning techniques have two essential components.
-%
-One is the appropriate {\em observers} of the system. 
-%
-These observers should be informative as to the state of the system, as well as insensitive to noise in the system. 
-%
-Two is a {\em distance metric} between the observations that captures a notion of locality: observations which we perceive to be similar should have a small distance. 
-%
-For this particular example, we will use histograms of the particle positions as the observations, and the EMD as the distance metric.
+
 
 
 
