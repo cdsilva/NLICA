@@ -100,6 +100,10 @@ Only recently, has it been applied to real (experimental/simulation) data, and t
 \item
 However, a major limitation (of spectral methods based on a Laplace operator) is identifying the true principal components.
 
+\item For the example of a square/strip, we know everything analytically, and identifying the ``true'' principal components is a problem/not obvious, and depends both on geometry and density
+
+\item While we can ignore/address nonuniform densities through normalization of the Laplace operator, we still have the problem of identifying the ``true'' components due to geometry. 
+
 \item
 In this paper, we propose an algorithm to automatically identify those principal components using locally linear regression.
 
@@ -110,17 +114,65 @@ All of these considerations (recently developed plus what we propose here) provi
 
 
 
-
-
 \section{Background on Manifold Learning and Some Relevant Issues}
 
-\subsection{Manifold learning algorithm: diffusion maps}
+\subsection{Manifold learning and the Laplace operator}
 
-Let $z(t) \in \mathbb{R}^n$ denote an $n$-dimensional observation of the system at time $t$. 
+We consider a continuous $d$-dimensional manifold $\mathcal{M}_d$ embedded in $\mathbb{R}^n$, and we are interested in uncovering a parameterization of this manifold. 
 %
-Assume we are given $m$ observations $z(1), \dots, z(m)$, which lie on a $d$-dimensional, nonlinear manifold $\mathcal{M}_d$, with $d \ll n$. 
+Many algorithms have been proposed for such a task.
 %
-Our goal is to uncover a $d$-dimensional parameterization of the $m$ observations that respects the underlying manifold geometry.
+Historically, principal component analysis (PCA) \cite{shlens2005tutorial} has been used to parmeterize linear manifolds (planes and hyperplanes), where the principal components parameterize the underlying hyperplane.
+%
+However, in the case when the manifold is curved, such linear techniques can fail to capture the underlying structure. 
+
+In recent years, it has been noted that eigenfunctions of the Laplace-Beltrami operator on the manifold with Neumann boundary conditions \cite{....} can provide coordinates which parameterize the manifold. 
+%
+To provide intuition as to why this is the case, consider a two-dimensional strip with edge lengths $L_x$ and $L_y$. 
+%
+The eigenvalues of the Laplacian with Neumann boundary conditions are given by
+\begin{equation}
+\tilde{\mu}_{k_1, k_2} = \left( \frac{k_1 \pi}{L_x} \right)^2 + \left( \frac{k_2 \pi}{L_y} \right)^2
+\end{equation}
+for $k_1, k_2 = 0, 1, 2, \dots$,
+and the corresponding eigenfunctions are 
+\begin{equation}
+\tilde{\phi}_{k_1, k_2} = \cos \left( \frac{k_1 \pi x}{L_x} \right) \cos \left( \frac{k_2 \pi y}{L_y} \right)
+\end{equation}
+where $x$ and $y$ denote the two coordinates of the rectangular domain. 
+%
+We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ are one-to-one with the $x$ and $y$ coordinates, respectively, and therefore yield a parameterization of the underlying manifold. 
+%
+Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ provide a measure of $L_x$ versus $L_y$: as the ratio between $L_x$ and $L_y$ increases, the gap between $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ also increases.
+
+
+Although these eigenfunctions can only be written analytically for very special cases, it has been observed empirically that the eigenfunctions often yield appropriate/good coordinates to parameterize the underlying manifold. 
+
+
+
+
+
+
+
+%From the eigenvalues, 
+%\begin{equation}
+%\sqrt{\frac{\log(\mu_{1,0})}{\log(\mu_{0,1})}} = 
+%\frac{L_y}{L_x}
+%\end{equation}
+%and so looking at the ratio of the log of the eigenvalues (modulo harmonics) should inform us as to the lengths of the different directions in the manifold. 
+
+
+\subsection{Discrete approximation of the Laplacian: diffusion maps}
+
+In most applications, we are not given a description of the continuous manifold. 
+%
+Instead, we are often given data {\em sampled} from the underlying manifold $\mathcal{M}_d$, and we would like to uncover a parameterization of the data.
+%
+We will do this by constructing a matrix which approximates the Laplace-Beltrami operator with Neumann boundary conditions. 
+%
+The eigenvectors of this matrix then approximate the eigenfunctions of this operator.
+
+Assume we are given $m$ observations $z(1), \dots, z(m) \in \mathbb{R}^n$, which lie on a $d$-dimensional, nonlinear manifold $\mathcal{M}_d$, with $d \ll n$. 
 %
 We first construct the matrix $W \in \mathbb{R}^{m \times m}$, with
 \begin{equation} \label{eq:W}
@@ -132,69 +184,43 @@ We typically take $\epsilon$ to be the median of the pairwise distances between 
 %
 We then construct the diagonal matrix $D \in \mathbb{R}^{m \times m}$, with $D_{ii} = \sum_j W_{ij}$, and the matrix $A  = D^{-1} W.$
 %
-The eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ of $A$ provide the embedding coordinates for the data, such that
+In the limit of infinite data uniformly sampled from $\mathcal{M}_d$ ($m \rightarrow \infty$ and $\epsilon \rightarrow 0$ with the appropriate rate), the matrix $I-A$ approaches the Laplace-Beltrami operator on the manifold $\mathcal{M}_d$ \cite{...}. 
+%
+Therefore, the eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ of $A$ approximate the eigenfunctions of the Laplacian (with Neumann boundary conditions) on $\mathcal{M}_d$, such that
 $\phi_{j}(i)$ is the $j^{th}$ embedding coordinate for $z(i)$.
 %
-The ``importance'' of coordinate $\phi_j$ is quantified by the corresponding eigenvalue $\mu_j$, e.g., the relative importance of $\phi_1$ versus $\phi_2$ can be measured by comparing $\mu_1$ and $\mu_2$.
+The eigenvalues of the Laplacian operator $\tilde{\mu}_0, \tilde{\mu}_1, \dots, \tilde{\mu}_{m-1}$ are related to the eigenvalues of $A$, $\mu_0, \mu_1, \dots, \mu_{m-1}$, by 
+\begin{equation} \label{eq:evals_relationship}
+\mu_k = e^{-\tilde{\mu}_k t}.
+\end{equation}
 %
 We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$, and if the data are low-dimensional, we only need to retain a few of the leading eigenvectors to adequately describe the data.
 %
 Because the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$),  $\mu_0 = 1$ and $\phi_0$ is a trivial constant vector which is not used as an embedding coordinate.
 
-In the limit of infinite data ($m \rightarrow \infty$ and $\epsilon \rightarrow 0$ with the appropriate rate), the matrix $I-A$ approaches the Laplacian operator on the manifold $\mathcal{M}_d$ \cite{...}. 
+However, the data need not be sampeld uniformly from the underlying manifold.
 %
-Therefore, the eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ approximate the eigenfunctions of the Laplacian (with Neumann boundary conditions) on $\mathcal{M}_d$.
-%
-The eigenvalues of the Laplacian operator $\tilde{\mu}_0, \tilde{\mu}_1, \dots, \tilde{\mu}_{m-1}$ are related to the eigenvalues we compute in diffusion maps by 
-\begin{equation} \label{eq:evals_relationship}
-\mu_k = e^{-\tilde{\mu}_k t}.
-\end{equation}
+If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some density $U$, then the matrix $I-A$ approximates the Fokker-Planck operator with potential $2U$, e.g., $(I-A) \phi \rightarrow \nabla^2 \phi - 2\nabla\phi \cdot \nabla U$. 
 
-\subsection{Constructing appropriate observers}
 
-\begin{itemize}
-\item Physical examples (e.g., $\alpha$-carbons for molecules)
-\item Amit's bispectrum
-\item Scattering transform
-\item Cite PNAS, stating that the histograms are good since they linearize any noise. 
-For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
-%
-Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
-\end{itemize}
 
-\subsection{Defining a meaningful metric}
 
-\begin{itemize}
-\item Euclidean (not good, especially for histograms)
-\item Mahalanobis (good, cite PNAS, since it noise robust)
-\item Here we use EMD since it is multiscale.
-%
-Instead of the standard Euclidean distance, we use the earth mover's distance (EMD) \cite{rubner2000earth} as the metric between pairs of histograms. 
-%
-Conceptually, the EMD measures how much ``work'' it takes to transform one probability density into another.
-%
-It therefore not only considers where the densities are inconsistent, but also how far apart the inconsistencies are.
-%
-Although the brute-force computation of the EMD is computationally expensive, there has been a plethora of work in developing efficient algorithms for its computation \cite{Pele-eccv2008, Pele-iccv2009}.
-%
-For the special case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions \cite{rubner2000perceptual}, which can be estimated from histograms as
-\begin{equation}
-\| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|
-\end{equation}
-where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$, and $z_k$ denotes the $k^{th}$ bin. 
-%
-\item Emphasize stability and regularity issues.
-\end{itemize}
 
-\section{Identifying the Informative Eigenvectors}
+TODO: add two sets of figures: one with data uniformly sampled, one with data with Gaussian distribiution
+
+Common practice is to use these tools for nonlinear data where these things are coupled. Show swiss roll and torus.
+
+
+
+\subsection{Identifying the Informative Eigenvectors using Local Linear Regression}
+
+
 
 In diffusion maps, we order the eigenvectors by the magnitude of the corresponding eigenvalues, in the hopes that the top eigenvectors provide us with a parameterization of the underlying manifold.
 %
 However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set. 
 %
-We will illustrate this issue with a simple two-dimensional strip where we know the analytical form of the eigenfunctions and can explicitly highlight the issue at hand. 
-
-Consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x  > L_y$. 
+Again, we consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x  > L_y$. 
 %
 The eigenvalues of the Laplacian with Neumann boundary conditions are given by
 \begin{equation}
@@ -218,16 +244,6 @@ In fact, if $L_x > 2 L_y$, then $\tilde{\mu}_{2, 0} < \tilde{\mu}_{0, 1}$, and s
 We therefore require a methodology to automatically detect which eigenvectors are harmonics of each other. 
 %
 Looking at the diffusion maps eigenvalues which correspond to modes which are {\em not} higher harmonics will then provide us with a measure of the relative lengths of the data set along the principal directions. 
-
-%From the eigenvalues, 
-%\begin{equation}
-%\sqrt{\frac{\log(\mu_{1,0})}{\log(\mu_{0,1})}} = 
-%\frac{L_y}{L_x}
-%\end{equation}
-%and so looking at the ratio of the log of the eigenvalues (modulo harmonics) should inform us as to the lengths of the different directions in the manifold. 
-
-
-\subsection{Algorithm: Local Linear Regression}
 
 Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^n$, we would like to automatically deduce which ones are harmonics/functions of another. 
 %
@@ -517,7 +533,7 @@ At random times, a cell will ``turn around'' and switch the direction of its vel
 %
 %We will analyze the dynamics of collections of such cells/particles. 
 
-%\subsection{Stochastic particles}
+\subsection{Problem description}
 
 The microscopic model consists of a collection of $N$ particles whose states are defined by their positions and velocities. 
 %
@@ -640,6 +656,56 @@ The distances used in the diffusion maps kernel are the earth mover's distances 
 \label{fig:dmaps_embed_emd}
 \end{figure}
 
+
+\subsection{Observers and Metrics}
+
+
+\subsubsection{Constructing appropriate observers}
+
+
+\begin{itemize}
+\item Physical examples (e.g., $\alpha$-carbons for molecules)
+\item Amit's bispectrum
+\item Scattering transform
+\item Cite PNAS, stating that the histograms are good since they linearize any noise. 
+For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
+%
+Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
+\end{itemize}
+
+\subsubsection{Defining a meaningful metric}
+
+
+\begin{itemize}
+\item Euclidean (not good, especially for histograms)
+\item Mahalanobis (good, cite PNAS, since it noise robust)
+\item Here we use EMD since it is multiscale.
+%
+Instead of the standard Euclidean distance, we use the earth mover's distance (EMD) \cite{rubner2000earth} as the metric between pairs of histograms. 
+%
+Conceptually, the EMD measures how much ``work'' it takes to transform one probability density into another.
+%
+It therefore not only considers where the densities are inconsistent, but also how far apart the inconsistencies are.
+%
+Although the brute-force computation of the EMD is computationally expensive, there has been a plethora of work in developing efficient algorithms for its computation \cite{Pele-eccv2008, Pele-iccv2009}.
+%
+For the special case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions \cite{rubner2000perceptual}, which can be estimated from histograms as
+\begin{equation}
+\| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|
+\end{equation}
+where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$, and $z_k$ denotes the $k^{th}$ bin. 
+%
+\item Emphasize stability and regularity issues.
+\end{itemize}
+
+Note: histograms are not essential for computing EMD, however, they make it computationally feasible. Furthermore, histograms are good because they are robust to noise (cite PNAS). 
+
+
+
+
+
+\subsection{Results}
+
 In general, manifold learning techniques have two essential components.
 %
 One is the appropriate {\em observers} of the system. 
@@ -649,6 +715,8 @@ These observers should be informative as to the state of the system, as well as 
 Two is a {\em distance metric} between the observations that captures a notion of locality: observations which we perceive to be similar should have a small distance. 
 %
 For this particular example, we will use histograms of the particle positions as the observations, and the EMD as the distance metric.
+
+
 
 Figure~\ref{fig:dmaps_embed_emd} shows the results of analyzing two sets of chemotaxis simulations using diffusion maps. 
 %
