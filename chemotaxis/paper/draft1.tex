@@ -124,36 +124,36 @@ For linear hyperplanes,  the principal axes parameterize the manifold.
 %
 However, in the case when the manifold is curved, it is more difficult to define such a set of coordinates. 
 
-In recent years, it has been noted that eigenfunctions of the Laplace-Beltrami operator with Neumann boundary conditions on the manifold \cite{....} can parameterize the manifold. 
+In recent years, it has been noted that eigenfunctions of the Laplace-Beltrami operator with Neumann boundary conditions can parameterize the manifold \cite{Belkin2003, coifman2005geometric, singer2008non}. 
 %
-To provide intuition as to why this is the case, consider a two-dimensional strip with edge lengths $L_x$ and $L_y$. 
+To provide intuition as to why this is the case, consider a two-dimensional strip with edge lengths $L_1$ and $L_2$. 
 %
 The eigenvalues of the Laplace-Beltrami operator with Neumann boundary conditions are given by
 \begin{equation} \label{eq:evals}
-\tilde{\mu}_{k_1, k_2} = \left( \frac{k_1 \pi}{L_x} \right)^2 + \left( \frac{k_2 \pi}{L_y} \right)^2
+\tilde{\mu}_{k_1, k_2} = \left( \frac{k_1 \pi}{L_1} \right)^2 + \left( \frac{k_2 \pi}{L_2} \right)^2
 \end{equation}
 for $k_1, k_2 = 0, 1, 2, \dots$,
 and the corresponding eigenfunctions are 
 \begin{equation} \label{eq:efuncs}
-\tilde{\phi}_{k_1, k_2} = \cos \left( \frac{k_1 \pi x}{L_x} \right) \cos \left( \frac{k_2 \pi y}{L_y} \right)
+\tilde{\phi}_{k_1, k_2} = \cos \left( \frac{k_1 \pi z_1}{L_1} \right) \cos \left( \frac{k_2 \pi z_2}{L_2} \right)
 \end{equation}
-where $x$ and $y$ denote the two coordinates of the rectangular domain. 
+where $z_1$ and $z_2$ denote the two coordinates of the rectangular domain. 
 %
-We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ are one-to-one with the $x$ and $y$ coordinates, respectively, and therefore yield a parameterization of the underlying manifold. 
+We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi z_1}{L_1} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi z_2}{L_2} \right)$ are one-to-one with the $z_1$ and $z_2$ coordinates, respectively, and therefore yield a parameterization of the underlying manifold (see Figure~\ref{fig:strip_efuncs}). 
 %
-Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ provide a measure of $L_x$ versus $L_y$: as the ratio between $L_x$ and $L_y$ increases, the gap between $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ also increases.
+Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ provide a measure of $L_1$ versus $L_2$: as the ratio between $L_1$ and $L_2$ increases, the gap between $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ also increases.
 
 
 Although these eigenfunctions can only be written analytically for very special cases, it has been observed empirically that the eigenfunctions often yield appropriate/good coordinates to parameterize the underlying manifold. 
 
-\begin{figure}
+\begin{figure}[t]
 \begin{subfigure}{0.5\textwidth}
 \includegraphics[width=\textwidth]{strip_cnts1}
 \end{subfigure}
 \begin{subfigure}{0.5\textwidth}
 \includegraphics[width=\textwidth]{strip_cnts2}
 \end{subfigure}
-\caption{Two-dimensional strip colored by the eigenfunction (a) $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$, and (b) $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ .}
+\caption{Two-dimensional strip colored by the eigenfunction (a) $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi z_1}{L_1} \right)$, and (b) $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi z_2}{L_2} \right)$ .}
 \label{fig:strip_efuncs}
 \end{figure}
 
@@ -170,7 +170,7 @@ Although these eigenfunctions can only be written analytically for very special 
 
 In most applications, we are not given a description of the continuous manifold. 
 %
-Instead, we are given data {\em sampled} from the underlying manifold $\mathcal{M}_d$, and we would like to uncover a parameterization of the data.
+Instead, we are given data {\em sampled} from the underlying manifold, and we would like to uncover a parameterization of the data.
 %
 We will do this by constructing a matrix which approximates the Laplace-Beltrami operator with Neumann boundary conditions. 
 %
@@ -188,35 +188,51 @@ We typically take $\epsilon$ to be the median of the pairwise distances between 
 %
 We then construct the diagonal matrix $D \in \mathbb{R}^{m \times m}$, with $D_{ii} = \sum_j W_{ij}$, and the matrix $A  = D^{-1} W.$
 %
-In the limit of infinite data uniformly sampled from $\mathcal{M}_d$ ($m \rightarrow \infty$ and $\epsilon \rightarrow 0$ with the appropriate rate), the matrix $I-A$ approaches the Laplace-Beltrami operator on the manifold $\mathcal{M}_d$ \cite{...}. 
+In the limit of infinite data uniformly sampled from $\mathcal{M}_d$ ($m \rightarrow \infty$ and $\epsilon \rightarrow 0$ with the appropriate rate), the matrix $A-I$ approaches the Laplace-Beltrami operator on the manifold $\mathcal{M}_d$ \cite{coifman2006geometric}. 
 %
 Therefore, the eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ of $A$ approximate the eigenfunctions of the Laplace-Beltrami operator (with Neumann boundary conditions) on $\mathcal{M}_d$,
-and the eigenvalues $\mu_0, \mu_1, \dots, \mu_{m-1}$ of $A$ are related to the eigenvalues of the operator by 
+and the eigenvalues $\mu_0, \mu_1, \dots, \mu_{m-1}$ of $A$ are related to the eigenvalues of the continuous operator by 
 \begin{equation} \label{eq:evals_relationship}
-\mu_k = e^{-\tilde{\mu}_k t}.
+\mu_k = \exp \left( -\frac{\epsilon^2}{4} \tilde{\mu}_{k_1, k_2}  \right).
 \end{equation}
-%
-where $t$ is ....
 %
 As discussed previously, the eigenfunctions provide a parameterization of the manifold, such that $\phi_{j}(i)$ yields the $j^{th}$ embedding coordinate for $z(i)$.
 %
 We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$, and if the data do lie on a low-dimensional manifold, we only need to retain a few of the leading eigenvectors to adequately describe the data.
 %
 Because the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$),  $\mu_0 = 1$ and $\phi_0$ is a trivial constant vector which is not used as an embedding coordinate.
+TODO: check sign , I-A or A-I??
 
 However, the data need not be sampled uniformly from the underlying manifold.
 %
-If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some density (TODO: check density vs. potential) $U$, then the matrix $I-A$ approximates the Fokker-Planck operator with potential $2U$, e.g., $(I-A) \phi \rightarrow \nabla^2 \phi - 2\nabla\phi \cdot \nabla U$. 
+If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some density $p$, then the matrix $A-I$ approximates the Fokker-Planck operator, $(A-I) \phi \rightarrow \nabla^2 \phi - \nabla U \cdot \nabla \phi$, where $U = -2 \log p$. 
 %
-If the sampling density of the data on the manifold is not meaningful, it can also be factored out via the appropriate normalization of the matrix $W$. TODO: add details?
+Alternatively, one can factor out the density effects in the diffusion maps matrix.
+%
+Given data $z(1), \dots, z(m) \in \mathcal{M}_d$, we construct the matrix
+%
+\begin{equation}
+\tilde{W} = D^{-1} W D^{-1}.
+\end{equation}
+%
+Pre- and post-multiplication by $D^{-1}$ removes any density effects from $W$. 
+%
+We then construct the diagonal matrix $\tilde{D} \in \mathbb{R}^{m \times m}$, with $\tilde{D}_{ii} = \sum_j \tilde{W}_{ij}$, and the matrix $\tilde{A}  = \tilde{D}^{-1} \tilde{W}.$
+%
+The matrix $\tilde{A}$ is comparable to the matrix $A$, but with any sampling density effects removed, such that $A-I$ approaches the Laplace-Beltrami operator even if the data is nonuniformly sampled \cite{coifman2005geometric}. 
 
+Figure~\ref{fig:strip_evecs} shows data sampled from a strip, colored by diffusion maps eigenvectors. 
+%
+In both the case of uniform and nonuniform sampling, the eigenvectors are one-to-one with $z_1$ and $z_2$, and thus parameterize the manifold. 
+%
+Although we have considered a very simple example for illustrative purposes, common practice is to use these tools for more complex, nonlinear data sets.
 
-\begin{figure}
+\begin{figure}[t]
 \begin{subfigure}{0.5\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete1}
 \end{subfigure}
 \begin{subfigure}{0.5\textwidth}
-\includegraphics[width=\textwidth]{strip_discrete2}
+\includegraphics[width=\textwidth]{strip_discrete4}
 \end{subfigure}
 
 \begin{subfigure}{0.5\textwidth}
@@ -225,13 +241,14 @@ If the sampling density of the data on the manifold is not meaningful, it can al
 \begin{subfigure}{0.5\textwidth}
 \includegraphics[width=\textwidth]{strip_nonuniform2}
 \end{subfigure}
-\caption{(a, b) Two-dimensional strip with uniform sampling colored by the (a) first, and (b) fourth (non-trivial) eigenvector from diffusion maps. (c, d)Two-dimensional strip with data sampled from a Gaussian distribution in the x-direction and uniform sampling in the y-direction, colored by the (c) first, and (d) third (non-trivial) eigenvector from diffusion maps. Note that in both cases we uncover parameterizations which are one-to-one with the x- and y-directions. }
+\caption{(a, b) Two-dimensional strip with uniform sampling colored by the (a) first, and (b) fourth (non-trivial) eigenvector from diffusion maps. (c, d)Two-dimensional strip with data sampled from a Gaussian distribution in $z_1$ and sampled uniformly in $z_2$, colored by the (c) first, and (d) third (non-trivial) eigenvector from diffusion maps. Note that in both cases we uncover parameterizations which are one-to-one with $z_1$ and $z_2$. }
 \label{fig:strip_evecs}
 \end{figure}
 
-TODO: add two sets of figures: one with data uniformly sampled, one with data with Gaussian distribiution
 
-Common practice is to use these tools for nonlinear data where these things are coupled. Show swiss roll and torus.
+
+
+
 
 
 
@@ -243,13 +260,13 @@ In diffusion maps, we order the eigenvectors by the magnitude of the correspondi
 %
 However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set.
 %
-Again, for illustrative purposes, we consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x  > L_y$. 
+Again, for illustrative purposes, we consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_1  > L_2$. 
 %
-We recall that the eigenfunctions $\phi_{1,0} = \cos \left( \frac {\pi x}{L_x} \right)$ and  $\phi_{0,1} = \cos \left( \frac {\pi y}{L_y} \right)$ provide embedding coordinates for the manifold $\mathcal{M}_d$. 
+We recall that the eigenfunctions $\tilde{\phi}_{1,0} = \cos \left( \frac {\pi z_1}{L_1} \right)$ and  $\tilde{\phi}_{0,1} = \cos \left( \frac {\pi z_2}{L_2} \right)$ provide embedding coordinates for the manifold $\mathcal{M}_d$. 
 %
 However, these two eigenvectors $\tilde{\phi}_{1, 0}$ and $\tilde{\phi}_{0, 1}$ are not guaranteed to correspond to the two smallest (non-trivial) eigenvalues (the largest eigenvalue will always be $\tilde{\mu}_{0,0} = 1$ and correspond to a constant eigenfunction; the eigenvalues $\tilde{\mu}_k$ are related to the diffusion maps eigenvalues $\mu_k$ via \eqref{eq:evals_relationship}). 
 %
-In fact, if $L_x > 2 L_y$, then $\tilde{\mu}_{2, 0} < \tilde{\mu}_{0, 1}$, and so the second (non-trivial) eigenvector (when the eigenvectors are ordered by their corresponding eigenvalues) will be a harmonic of the first and still parameterize the $x$ direction. 
+In fact, if $L_1 > 2 L_2$, then $\tilde{\mu}_{2, 0} < \tilde{\mu}_{0, 1}$, and so the second (non-trivial) eigenvector (when the eigenvectors are ordered by their corresponding eigenvalues) will be a harmonic of the first and still parameterize $z_1$ (see Figure~\ref{fig:strip_harmonics}).
 %
 We therefore require a methodology to automatically detect which eigenvectors are harmonics of each other. 
 %
@@ -257,7 +274,31 @@ Looking at the diffusion maps eigenvectors which correspond to modes which are {
 %
 Furthermore, the corresponding eigenvalues provide us with a measure of the relative lengths of the data set along the principal directions. 
 
-Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^n$, we would like to automatically deduce which ones are harmonics/functions of another. 
+
+
+
+\begin{figure}[t]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_discrete1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_discrete2}
+\end{subfigure}
+
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_discrete3}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_discrete4}
+\end{subfigure}
+\caption{ Two-dimensional strip with uniform sampling colored by the first four (non-trivial) eigenvectors from diffusion maps. Note that the first and fourth eigenvectors are one-to-one with $z_1$ and $z_2$, respectively. However, the second and third eigenvectors are higher harmonics of the first eigenvector and do not capture any additional structure within the data set. }
+\label{fig:strip_harmonics}
+\end{figure}
+
+
+
+
+Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^m$, we would like to automatically deduce which ones are harmonics/functions of another. 
 %
 To accomplish this, we will fit a function $f(\phi_1, \dots, \phi_{k-1})$ to $\phi_{k}$. 
 %
@@ -272,71 +313,69 @@ where
 $\Phi_{k-1} = \begin{bmatrix} \phi_1 \\ \vdots \\ \phi_{k-1} \end{bmatrix}$
 and $\beta \in \mathbb{R}^{k-1}$. 
 %
-The coefficients $\alpha$ and $\beta$ are functions of $\phi_{k-1}$ because we use a {\em local} linear fit, and so the coefficients change as a function of the domain. 
+The coefficients $\alpha$ and $\beta$ are functions of $\Phi_{k-1}$ because we use a {\em local} linear fit, and so the coefficients change as a function of the domain. 
 
 At each point $\Phi_{k-1}(i)$, we approximate $\phi_k(i)$ by fitting a local linear function using the remaining $m-1$ data points. 
 %
 We solve the following optimization problem 
 \begin{equation} \label{eq:opt_problem}
-\hat{\alpha}_k (i) , \hat{\beta}_k(i)  = \argmin_{\alpha, \beta} \sum_{j \ne i} w_i(\Phi_{k-1}(i), \Phi_{k-1}(j)) \left( \phi_{k}(j) - (\alpha + \beta^T \Phi_{k-1}(j)) \right)^2.
+\hat{\alpha}_k (i) , \hat{\beta}_k(i)  = \argmin_{\alpha, \beta} \sum_{j \ne i} K(\Phi_{k-1}(i), \Phi_{k-1}(j)) \left( \phi_{k}(j) - (\alpha + \beta^T \Phi_{k-1}(j)) \right)^2.
 \end{equation}
 %
-where $w$ is a weighting function.
+where $K$ is a kernel weighting function.
 %
-We will use Gaussian weights, 
+We will use a Gaussian kernel, 
 %
 \begin{equation}
-w_i(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_{k-1} (j) \|^2}{\epsilon^2} \right),
+K(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_{k-1} (j) \|^2}{\epsilon^2} \right),
 \end{equation}
 %
 and take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(i)$.
 %
-The solution of \eqref{eq:opt_problem} is given by the solution of an eigenvector problem \cite{...} (TODO: add details in appendix/at end?).
-
 We then define the normalized leave-one-out cross-validation error for this local linear fit as
 \begin{equation} \label{eq:cv_error}
 r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \phi_{k} (i) - (\hat{\alpha}_k(i) + \hat{\beta}_k(i)^T \Phi_{k-1}(i))  \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }}
 \end{equation}
-%
-%We will use a local linear function 
-%\begin{equation}
-%f_{k}(\phi_1, \dots, \phi_{k-1}) = a_0 + a_1 \phi_1 + \dots + a_{k-1} \phi_{k-1}
-%\end{equation}
-%where the coefficients $a_0, \dots, a_{k-1}$ are functions of $\phi_1, \dots, \phi_{k-1}$. 
-%
-%To find these coefficients, we want to minimize the local weighted sum of squares
-%\begin{equation} \label{eq:opt_problem}
-%\sum_{i=1}^n w_i(x) \left( \phi_{k}(x) - f_{k} (\phi_1(x), \dots, \phi_{k-1}(x)) \right)^2
-%\end{equation}
-%where $w$ is a weighting function.
-%%
-%We will use Gaussian weights, 
-%%
-%\begin{equation}
-%w_i(x) = \exp \left( - \frac{\|\Phi_{k-1}(x) - \Phi_{k-1} (x_i) \|^2}{\epsilon^2} \right), \text{where } \Phi_{k-1}(x) = \begin{bmatrix}
-%\phi_1(x) \\
-%\vdots \\
-%\phi_{k-1}(x)
-%\end{bmatrix} .
-%\end{equation}
-%%
-%We take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(x)$.
-%
-%Let $\hat{f}_{k}(\phi_1(x_i), \dots, \phi_{k-1}(x_i))$ denote the minimum achieved in \eqref{eq:opt_problem}, when the minimization is performed over $x_j$ with $j \ne i$. 
-%
-%We then define the normalized leave-one-out cross-validation error as
-%\begin{equation} \label{eq:cv_error}
-%r_{k} = \sum_{i=1}^n \left( \phi_{k} (x_i) - \hat{f}_{k}(\phi_1(x_i), \dots, \phi_{k-1}(x_i)) \right)^2
-%\end{equation}
-%\begin{equation} \label{eq:cv_error}
-%r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \phi_{k} (x_i) - \hat{f}_{k}(\Phi_{k-1}(x_i)) \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (x_i) \right) }}
-%\end{equation}
 %
 Note that a small value of $r_k$ implies that $\phi_{k}$ can be accurately approximated from $\phi_1, \dots, \phi_{k-1}$, and is therefore a harmonic of a previous mode.
 %
 A large value of $r_{k}$ indicates that $\phi_{k}$ parameterizes a new direction in the data.
 %
 Because $r_{k} \approx 1$ if $\phi_{k}$ parameterizes a new direction, we define $r_1 = 1$.
+
+\eqref{eq:cv_error} can easily be computed \cite{wasserman2006all}.
+%
+We begin by computing the matrix
+\begin{equation}
+X_{k-1}(i) = \begin{bmatrix}
+1 & \phi_1(1) - \phi_1(i) & \dots & \phi_{k-1}(1)- \phi_{k-1}(i) \\
+1 & \phi_1(2) - \phi_1(i) & \dots & \phi_{k-1}(2)- \phi_{k-1}(i) \\
+\vdots & \vdots & \ddots & \vdots \\
+1 & \phi_1(m) - \phi_1(i) & \dots & \phi_{k-1}(m)- \phi_{k-1}(i) 
+\end{bmatrix}
+\end{equation}
+%
+and the matrix $W_{k-1}(i) = diag \left( K(\Phi_{k-1}(i), \Phi_{k-1}(1)), \dots, K(\Phi_{k-1}(i), \Phi_{k-1}(m)) \right)$.
+%
+We then calculate the smoothing matrix $L_{k-1} \in \mathbb{R}^{m \times m}$, where 
+\begin{equation}
+L_{k-1} =
+\begin{bmatrix}
+e_1^T \left( X_{k-1}^T(1) W_{k-1}(1) X_{k-1}(1) \right) ^{-1} X_{k-1}^T(1) W_{k-1}(1) \\
+e_1^T \left( X_{k-1}^T(2) W_{k-1}(2) X_{k-1}(2) \right) ^{-1} X_{k-1}^T(2) W_{k-1}(2) \\
+\vdots \\
+e_1^T \left( X_{k-1}^T(m) W_{k-1}(m) X_{k-1}(m) \right) ^{-1} X_{k-1}^T(m) W_{k-1}(m) \\
+\end{bmatrix},
+\end{equation}
+%
+where $e_1^T = (1, 0, \dots, 0)$. 
+%
+We can then write
+%
+\begin{equation} 
+r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \frac{ \phi_{k} (i) - \sum_{j=1}^m L_{k-1}(i,j) \phi_{k}(j) }{1-L_{k-1}(i,i)} \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }}
+\end{equation}
+
 
 \subsection{Illustrative Examples}
 
@@ -350,13 +389,20 @@ However, these data sets will also illustrate the issues of harmonics.
 
 Our first illustrative example will consist of two different swiss roll data sets.
 %
-Each data set consists of $m=1500$ points uniformly distributed on the swiss roll. 
+The data are
+\begin{equation}
+\begin{aligned}
+z_1 =& (4 \pi \sqrt{t_1} + 1) \cos(4 \pi \sqrt{t_1}) \\
+z_2 =& (4 \pi \sqrt{t_1} + 1) \sin(4 \pi \sqrt{t_1}) \\
+z_3 =& h t_2
+\end{aligned}
+\end{equation}
 %
-Both swiss rolls are the same in the angular/spiral direction.
+where $t_1, t_2 \sim Unif(0,1)$.
 %
-However, height of the first swiss roll is $h = 15 \pi$, while the heigh of the second is $h = 6 \pi$. 
+The height of the first swiss roll is $h = 15 \pi$, while the height of the second is $h = 6 \pi$. 
 %
-These two data sets are shown in Figure~\ref{fig:swiss_rolls}(a)~and~(b), respectively.
+Each data set consists of $m=1500$ points, shown shown in Figure~\ref{fig:swiss_rolls}(a)~and~(b).
 %
 We expect to recover the eigenvector which parameterizes the height farther down in the spectrum for the second data set relative to the first, as this second data set is shorter.
 
@@ -370,53 +416,53 @@ Figure~\ref{fig:swiss_rolls}~(e--h) shows the two data sets, colored by the two 
 %
 As expected, these eigenvectors parameterize the arc length along the spiral, and the height of the swiss roll. 
 
-\begin{figure}
+\begin{figure}[t]
 %
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll1}
+\includegraphics[height=1.25in]{swissroll1}
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll2}
+\includegraphics[height=1.25in]{swissroll2}
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll1_evals}
+\includegraphics[height=1.25in]{swissroll1_evals}
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll2_evals}
+\includegraphics[height=1.25in]{swissroll2_evals}
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll1_color1} 
+\includegraphics[height=1.25in]{swissroll1_color1} 
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll2_color1}
+\includegraphics[height=1.25in]{swissroll2_color1}
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll1_color2}
+\includegraphics[height=1.25in]{swissroll1_color2}
 \caption{}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[height=1.5in]{swissroll2_color2}
+\includegraphics[height=1.25in]{swissroll2_color2}
 \caption{}
 \end{subfigure}
 %
@@ -430,9 +476,9 @@ For the second example, we consider a torus defined by
 %
 \begin{equation}
 \begin{aligned}
-x =& (r_1 + r_2 \cos \theta_2 ) \cos \theta_1 \\
-y =& (r_1 + r_2 \cos \theta_2 ) \sin \theta_1 \\
-z =& r_2 \sin \theta_2
+z_1 =& (r_1 + r_2 \cos \theta_2 ) \cos \theta_1 \\
+z_2 =& (r_1 + r_2 \cos \theta_2 ) \sin \theta_1 \\
+z_3 =& r_2 \sin \theta_2
 \end{aligned}
 \end{equation}
 %
@@ -479,9 +525,9 @@ Clearly, as the torus becomes thinner, the second pair of relevant eigenfunction
 
 We will now demonstrate our methodology on simulation data from a model problem arising in the study of cellular dynamics. 
 %
-Although the system consists of many stochastic and noisy particles on the microscale, it exhibits coherent dynamics on the macroscale which are governed by only a few parameters.
+Although on the microscale the system consists of many stochastic and noisy particles, it exhibits coherent dynamics on the macroscale which are governed by only a few parameters.
 %
-However, in general, this mapping from microscale to macroscale is not always obvious.
+In general, this mapping from microscale to macroscale is not always obvious.
 %
 We will show how we can use our methodology to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
 %
@@ -623,6 +669,8 @@ When $\lambda \rightarrow 0$, the dynamics are described by two wave equations, 
 %
 When $\lambda \rightarrow \infty$, the dynamics are described by one heat equation, and the initial conditions are insignificant -- the velocity distribution quickly equilibrates and we see purely diffusive behavior.
 %
+We therefore expect the observed dimensionality to change from two to one as a function of $\lambda$. 
+%
 For general dynamical systems, the governing macroscopic variables and asymptotic behavior may not be immediately obvious, and instead need to be inferred from the microscopic data.
 %
 We will demonstrate how we can use diffusion maps to parameterize the simulation data, as well as detect the effective dimensionality of the data.
@@ -693,11 +741,11 @@ For some examples, physical intuition and {\em a priori} knowledge can aid in co
 For example, when looking at a protein, the observers may be the locations of the $\alpha$-carbon atoms, as these backbone atoms are known to describe most of the relevant dynamics within the protein. 
 %
 Observers can also remove unimportant sources of variation; 
-for example, the bispectrum \cite{...} and the scattering transform \cite{...} are both invariant to rotations. 
+for example, the bispectrum \cite{zhao2014rotationally} and the scattering transform \cite{mallat2012group} are both invariant to rotations. 
 %
 Observers should also be robust to noise. 
 %
-The scattering transform \cite{...} is robust to small deformations, and histograms serve to linearize noise \cite{...}.
+The scattering transform \cite{mallat2012group} is robust to small deformations, and histograms serve to linearize noise \cite{talmon2013empirical}.
 
 After constructing appropriate observers, we must consider what metric to use in the diffusion maps calculation. 
 %
@@ -705,7 +753,7 @@ Again, the simplest option is to use the Euclidean distance, but this can often 
 %
 For molecular simulation data, it is often appropriate to use the Euclidean distance {\em after} aligning configurations with respect to rotations, as global rotations of the entire molecule are not meaningful.
 %
-For dynamical systems which are obscured by large variance noise, the Mahalanobis distance often yields a more informative parameterization of the data \cite{...}.
+For dynamical systems which are obscured by large variance noise, the Mahalanobis distance often yields a more informative parameterization of the data \cite{talmon2013empirical}.
 %
 Another option is the Earth Mover's Distance, a multiscale distance metric which is stable and robust to noise.
 
@@ -890,9 +938,9 @@ To detect this transition in the data, we look at the eigenvalues corresponding 
 %
 Let $\mu_{i_1} \ge \mu_{i_2}$ denote these two eigenvalues. 
 %
-From the relationship in \ref{...}, we plot  
+According to the relationship in \eqref{eq:evals} and \eqref{eq:evals_relationship}, we plot  
 \begin{equation}
- \frac{\log \mu_{i_1}}{\log \mu_{i_2}} ;
+ \frac{\log \mu_{i_2}}{\log \mu_{i_1}} ;
 \end{equation}
 when this ratio becomes small, the data are effectively one-dimensional, as the second dimension is very small compared with the first. 
 %
@@ -900,15 +948,22 @@ This is plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} as a fun
 
 For this specific example, we can compare the empirically detected change in dimensionality with the analytically-predicted shift. 
 %
-From \cite{...}, the relevant time scales for the velocity jump process are
+From \cite{othmer2000diffusion}, the relevant time scales for the velocity jump process are
+%\begin{equation}
+%\begin{aligned}
+%\tau_{drift} =& \frac{L}{s} \\
+%\tau_{diff} =& \frac{L^2 \lambda}{s^2}
+%\end{aligned}
+%\end{equation}
+%%
+%Here, we take $L = t_{max} s$ as a characteristic length scale for the simulations. 
+%
 \begin{equation}
 \begin{aligned}
-\tau_{drift} =& \frac{L}{s} \\
-\tau_{diff} =& \frac{L^2 \lambda}{s^2}
+\tau_{drift} =& t_{max} \\
+\tau_{diff} =& t_{max}^2 \lambda
 \end{aligned}
 \end{equation}
-%
-Here, we take $L = t_{max} s$ as a characteristic length scale for the simulations. 
 %
 When $\frac{\tau_{diff}}{\tau_{drift}} =  t_{max}  \lambda \gg 1$, then the dynamics are effectively one-dimensional. 
 %

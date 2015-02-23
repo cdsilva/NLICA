@@ -36,9 +36,9 @@ load('torus1.mat')
 make_fig(3,2);
 plot3(x,y,z,'.', 'markersize', 8)
 % view(-20, 70)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 print('torus1.eps','-depsc')
@@ -99,9 +99,9 @@ load('torus2.mat')
 make_fig(3,2);
 plot3(x,y,z,'.', 'markersize', 8)
 % view(-20, 75)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 print('torus2.eps','-depsc')
@@ -163,9 +163,9 @@ load('torus3.mat')
 make_fig(3,2);
 plot3(x,y,z,'.', 'markersize', 8)
 % view(-20, 70)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 print('torus3.eps','-depsc')

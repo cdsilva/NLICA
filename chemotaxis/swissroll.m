@@ -52,10 +52,10 @@ load swissroll1.mat
 
 make_fig(2,2);
 plot3(x,y,z,'.', 'markersize', 10)
-view(-20, 70)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+view(-20, 80)
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 print('swissroll1.eps','-depsc')
@@ -68,10 +68,10 @@ print('swissroll1.eps','-depsc')
 % 
 make_fig(3,2);
 scatter3(x,y,z,50,sign(corr(V(:,2),t))*V(:,2),'.')
-view(-20, 75)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+view(-20, 80)
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 cbar = colorbar('peer',gca); 
@@ -80,10 +80,10 @@ print('swissroll1_color1.eps','-depsc')
 
 make_fig(3,2);
 scatter3(x,y,z,50,sign(corr(V(:,3),z))*V(:,3),'.')
-view(-20, 75)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+view(-20, 80)
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 cbar = colorbar('peer',gca); 
@@ -195,10 +195,10 @@ load swissroll2.mat
 
 make_fig(2,2);
 plot3(x,y,z,'.', 'markersize', 10)
-view(-20, 75)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+view(-20, 80)
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 print('swissroll2.eps','-depsc')
@@ -211,10 +211,10 @@ print('swissroll2.eps','-depsc')
 
 make_fig(3,2);
 scatter3(x,y,z,50,sign(corr(V(:,2),t))*V(:,2),'.')
-view(-20, 75)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+view(-20, 80)
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 cbar = colorbar('peer',gca); 
@@ -223,10 +223,10 @@ print('swissroll2_color1.eps','-depsc')
 
 make_fig(3,2);
 scatter3(x,y,z,50,sign(corr(V(:,6),z))*V(:,6),'.')
-view(-20, 75)
-xlabel('x')
-ylabel('y')
-zlabel('z')
+view(-20, 80)
+xlabel('z_1')
+ylabel('z_2')
+zlabel('z_3')
 axis equal
 grid on
 cbar = colorbar('peer',gca); 
