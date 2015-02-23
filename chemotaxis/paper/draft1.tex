@@ -118,25 +118,23 @@ All of these considerations (recently developed plus what we propose here) provi
 
 \subsection{Manifold learning and the Laplace operator}
 
-We consider a continuous $d$-dimensional manifold $\mathcal{M}_d$ embedded in $\mathbb{R}^n$, and we are interested in uncovering a parameterization of this manifold. 
+We first consider the problem of parameterizing a continuous $d$-dimensional manifold $\mathcal{M}_d$ embedded in $\mathbb{R}^n$.
 %
-Many algorithms have been proposed for such a task.
+For linear hyperplanes,  the principal axes parameterize the manifold.
 %
-Historically, principal component analysis (PCA) \cite{shlens2005tutorial} has been used to parmeterize linear manifolds (planes and hyperplanes), where the principal components parameterize the underlying hyperplane.
-%
-However, in the case when the manifold is curved, such linear techniques can fail to capture the underlying structure. 
+However, in the case when the manifold is curved, it is more difficult to define such a set of coordinates. 
 
-In recent years, it has been noted that eigenfunctions of the Laplace-Beltrami operator on the manifold with Neumann boundary conditions \cite{....} can provide coordinates which parameterize the manifold. 
+In recent years, it has been noted that eigenfunctions of the Laplace-Beltrami operator with Neumann boundary conditions on the manifold \cite{....} can parameterize the manifold. 
 %
 To provide intuition as to why this is the case, consider a two-dimensional strip with edge lengths $L_x$ and $L_y$. 
 %
-The eigenvalues of the Laplacian with Neumann boundary conditions are given by
-\begin{equation}
+The eigenvalues of the Laplace-Beltrami operator with Neumann boundary conditions are given by
+\begin{equation} \label{eq:evals}
 \tilde{\mu}_{k_1, k_2} = \left( \frac{k_1 \pi}{L_x} \right)^2 + \left( \frac{k_2 \pi}{L_y} \right)^2
 \end{equation}
 for $k_1, k_2 = 0, 1, 2, \dots$,
 and the corresponding eigenfunctions are 
-\begin{equation}
+\begin{equation} \label{eq:efuncs}
 \tilde{\phi}_{k_1, k_2} = \cos \left( \frac{k_1 \pi x}{L_x} \right) \cos \left( \frac{k_2 \pi y}{L_y} \right)
 \end{equation}
 where $x$ and $y$ denote the two coordinates of the rectangular domain. 
@@ -149,8 +147,14 @@ Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_
 Although these eigenfunctions can only be written analytically for very special cases, it has been observed empirically that the eigenfunctions often yield appropriate/good coordinates to parameterize the underlying manifold. 
 
 \begin{figure}
-\includegraphics[width=0.5\textwidth]{strip_cnts1}
-\includegraphics[width=0.5\textwidth]{strip_cnts2}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_cnts1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_cnts2}
+\end{subfigure}
+\caption{Two-dimensional strip colored by the eigenfunction (a) $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi x}{L_x} \right)$, and (b) $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi y}{L_y} \right)$ .}
+\label{fig:strip_efuncs}
 \end{figure}
 
 
@@ -166,13 +170,13 @@ Although these eigenfunctions can only be written analytically for very special 
 
 In most applications, we are not given a description of the continuous manifold. 
 %
-Instead, we are often given data {\em sampled} from the underlying manifold $\mathcal{M}_d$, and we would like to uncover a parameterization of the data.
+Instead, we are given data {\em sampled} from the underlying manifold $\mathcal{M}_d$, and we would like to uncover a parameterization of the data.
 %
 We will do this by constructing a matrix which approximates the Laplace-Beltrami operator with Neumann boundary conditions. 
 %
 The eigenvectors of this matrix then approximate the eigenfunctions of this operator.
 
-Assume we are given $m$ observations $z(1), \dots, z(m) \in \mathbb{R}^n$, which lie on a $d$-dimensional, nonlinear manifold $\mathcal{M}_d$, with $d \ll n$. 
+Assume we are given $m$ observations $z(1), \dots, z(m) \in \mathcal{M}_d$. 
 %
 We first construct the matrix $W \in \mathbb{R}^{m \times m}$, with
 \begin{equation} \label{eq:W}
@@ -186,30 +190,43 @@ We then construct the diagonal matrix $D \in \mathbb{R}^{m \times m}$, with $D_{
 %
 In the limit of infinite data uniformly sampled from $\mathcal{M}_d$ ($m \rightarrow \infty$ and $\epsilon \rightarrow 0$ with the appropriate rate), the matrix $I-A$ approaches the Laplace-Beltrami operator on the manifold $\mathcal{M}_d$ \cite{...}. 
 %
-Therefore, the eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ of $A$ approximate the eigenfunctions of the Laplacian (with Neumann boundary conditions) on $\mathcal{M}_d$, such that
-$\phi_{j}(i)$ is the $j^{th}$ embedding coordinate for $z(i)$.
-%
-The eigenvalues of the Laplacian operator $\tilde{\mu}_0, \tilde{\mu}_1, \dots, \tilde{\mu}_{m-1}$ are related to the eigenvalues of $A$, $\mu_0, \mu_1, \dots, \mu_{m-1}$, by 
+Therefore, the eigenvectors $\phi_0, \phi_1, \dots, \phi_{m-1}$ of $A$ approximate the eigenfunctions of the Laplace-Beltrami operator (with Neumann boundary conditions) on $\mathcal{M}_d$,
+and the eigenvalues $\mu_0, \mu_1, \dots, \mu_{m-1}$ of $A$ are related to the eigenvalues of the operator by 
 \begin{equation} \label{eq:evals_relationship}
 \mu_k = e^{-\tilde{\mu}_k t}.
 \end{equation}
 %
-We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$, and if the data are low-dimensional, we only need to retain a few of the leading eigenvectors to adequately describe the data.
+where $t$ is ....
+%
+As discussed previously, the eigenfunctions provide a parameterization of the manifold, such that $\phi_{j}(i)$ yields the $j^{th}$ embedding coordinate for $z(i)$.
+%
+We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$, and if the data do lie on a low-dimensional manifold, we only need to retain a few of the leading eigenvectors to adequately describe the data.
 %
 Because the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$),  $\mu_0 = 1$ and $\phi_0$ is a trivial constant vector which is not used as an embedding coordinate.
 
-However, the data need not be sampeld uniformly from the underlying manifold.
+However, the data need not be sampled uniformly from the underlying manifold.
 %
-If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some density $U$, then the matrix $I-A$ approximates the Fokker-Planck operator with potential $2U$, e.g., $(I-A) \phi \rightarrow \nabla^2 \phi - 2\nabla\phi \cdot \nabla U$. 
-
+If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some density (TODO: check density vs. potential) $U$, then the matrix $I-A$ approximates the Fokker-Planck operator with potential $2U$, e.g., $(I-A) \phi \rightarrow \nabla^2 \phi - 2\nabla\phi \cdot \nabla U$. 
+%
+If the sampling density of the data on the manifold is not meaningful, it can also be factored out via the appropriate normalization of the matrix $W$. TODO: add details?
 
 
 \begin{figure}
-\includegraphics[width=0.5\textwidth]{strip_discrete1}
-\includegraphics[width=0.5\textwidth]{strip_discrete2}
-\includegraphics[width=0.5\textwidth]{strip_nonuniform1}
-\includegraphics[width=0.5\textwidth]{strip_nonuniform2}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_discrete1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_discrete2}
+\end{subfigure}
 
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_nonuniform1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=\textwidth]{strip_nonuniform2}
+\end{subfigure}
+\caption{(a, b) Two-dimensional strip with uniform sampling colored by the (a) first, and (b) fourth (non-trivial) eigenvector from diffusion maps. (c, d)Two-dimensional strip with data sampled from a Gaussian distribution in the x-direction and uniform sampling in the y-direction, colored by the (c) first, and (d) third (non-trivial) eigenvector from diffusion maps. Note that in both cases we uncover parameterizations which are one-to-one with the x- and y-directions. }
+\label{fig:strip_evecs}
 \end{figure}
 
 TODO: add two sets of figures: one with data uniformly sampled, one with data with Gaussian distribiution
@@ -222,13 +239,13 @@ Common practice is to use these tools for nonlinear data where these things are 
 
 
 
-In diffusion maps, we order the eigenvectors by the magnitude of the corresponding eigenvalues, in the hopes that the top eigenvectors provide us with a parameterization of the underlying manifold.
+In diffusion maps, we order the eigenvectors by the magnitude of the corresponding eigenvalues, in the hopes that the leading eigenvectors provide us with a parameterization of the underlying manifold.
 %
-However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set. 
+However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set.
 %
 Again, for illustrative purposes, we consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_x  > L_y$. 
 %
-We recall that the eigenfunctions $\phi_{1,0} = \cos \left( \frac {\pi x}{L_x} \right)$ and  $\phi_{0,1} = \cos \left( \frac {\pi y}{L_y} \right)$ provide embedding coordinates for the manifold $|mathcal{M}_d$. 
+We recall that the eigenfunctions $\phi_{1,0} = \cos \left( \frac {\pi x}{L_x} \right)$ and  $\phi_{0,1} = \cos \left( \frac {\pi y}{L_y} \right)$ provide embedding coordinates for the manifold $\mathcal{M}_d$. 
 %
 However, these two eigenvectors $\tilde{\phi}_{1, 0}$ and $\tilde{\phi}_{0, 1}$ are not guaranteed to correspond to the two smallest (non-trivial) eigenvalues (the largest eigenvalue will always be $\tilde{\mu}_{0,0} = 1$ and correspond to a constant eigenfunction; the eigenvalues $\tilde{\mu}_k$ are related to the diffusion maps eigenvalues $\mu_k$ via \eqref{eq:evals_relationship}). 
 %
@@ -236,7 +253,9 @@ In fact, if $L_x > 2 L_y$, then $\tilde{\mu}_{2, 0} < \tilde{\mu}_{0, 1}$, and s
 %
 We therefore require a methodology to automatically detect which eigenvectors are harmonics of each other. 
 %
-Looking at the diffusion maps eigenvalues which correspond to modes which are {\em not} higher harmonics will then provide us with a measure of the relative lengths of the data set along the principal directions. 
+Looking at the diffusion maps eigenvectors which correspond to modes which are {\em not} higher harmonics will yield the most parsimonious representation of the data.
+%
+Furthermore, the corresponding eigenvalues provide us with a measure of the relative lengths of the data set along the principal directions. 
 
 Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^n$, we would like to automatically deduce which ones are harmonics/functions of another. 
 %
@@ -272,7 +291,7 @@ w_i(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_
 %
 and take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(i)$.
 %
-The solution of \eqref{eq:opt_problem} is given by the solution of an eigenvector problem \cite{...}.
+The solution of \eqref{eq:opt_problem} is given by the solution of an eigenvector problem \cite{...} (TODO: add details in appendix/at end?).
 
 We then define the normalized leave-one-out cross-validation error for this local linear fit as
 \begin{equation} \label{eq:cv_error}
@@ -458,25 +477,19 @@ Clearly, as the torus becomes thinner, the second pair of relevant eigenfunction
 
 \section{Chemotaxis: a case study}
 
-The issues discussed above must all be considered and addressed in order to successfully analyze data using manifold learning algorithms. 
+We will now demonstrate our methodology on simulation data from a model problem arising in the study of cellular dynamics. 
 %
-To illustrate this point, we will use a model problem arising in the study of cellular dynamics. 
-%
-%In this example, constructing appropriate observers with an informative metric will allow us to perform informative analysis. 
-%
-Automatically detecting the ``important'' components will allow us to deduce when the dimension of the underlying dynamical system changes. 
-%
-In this way, we can deduce how many variables are required to write an accurate reduced model. 
-
-Often, systems which are stochastic and noisy on the microscale exhibit coherent dynamics on the macroscale which are governed by only a few parameters.
-%
-For example, fluid flow, which can be described via the position and velocity of every fluid particle, is modeled at the macroscale using the Navier-Stokes equations.
+Although the system consists of many stochastic and noisy particles on the microscale, it exhibits coherent dynamics on the macroscale which are governed by only a few parameters.
 %
 However, in general, this mapping from microscale to macroscale is not always obvious.
 %
-We would like to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
+We will show how we can use our methodology to extract a parameterization of data collected at the microscale which is consistent with the macroscopic behavior, without any {\em a priori} knowledge of the appropriate microscopic or macroscopic model.
 %
 Furthermore, determining the dimensionality of such a parameterization can inform us to the requisite dimensionality of a reduced model which captures the relevant macroscopic behavior. 
+
+
+%For example, fluid flow, which can be described via the position and velocity of every fluid particle, is modeled at the macroscale using the Navier-Stokes equations.
+%
 
 %In this letter, we will demonstrate how this goal can be achieved through a data-driven method based on geometric analysis and manifold learning. 
 %
@@ -484,7 +497,7 @@ Furthermore, determining the dimensionality of such a parameterization can infor
 %
 %We will show that both are essential for data-driven algorithms to successfully uncover the underlying system dynamics. 
 
-We will illustrate these points using a model problem which arises in studies of cellular chemotaxis \cite{othmer2000diffusion}, where 
+Our model problem arises in studies of cellular chemotaxis \cite{othmer2000diffusion}, where 
 biological cells work together and exhibit coherent macroscopic dynamics regulated by extracellular sensed signals, in order to accomplish tasks such as finding food or navigating away from toxins.
 %
 Several microscopic models have been proposed to describe chemotaxis dynamics \cite{othmer1988models, codling2008random}.
@@ -677,11 +690,10 @@ However, for more complex data, the raw data may contain other sources of variab
 %
 For some examples, physical intuition and {\em a priori} knowledge can aid in constructing appropriate observers. 
 %
-For example, when looking at a protein, the ``observers'' may be the locations of the $\alpha$-carbon atoms. 
+For example, when looking at a protein, the observers may be the locations of the $\alpha$-carbon atoms, as these backbone atoms are known to describe most of the relevant dynamics within the protein. 
 %
-Observers can also factor out other sources of variation. 
-%
-For example, the bispectrum \cite{...} and the scattering transform \cite{...} are both observers which are invariant to rotations. 
+Observers can also remove unimportant sources of variation; 
+for example, the bispectrum \cite{...} and the scattering transform \cite{...} are both invariant to rotations. 
 %
 Observers should also be robust to noise. 
 %
@@ -691,11 +703,11 @@ After constructing appropriate observers, we must consider what metric to use in
 %
 Again, the simplest option is to use the Euclidean distance, but this can often prove uninformative. 
 %
-For molecular simulation data, it is often appropriate to use the root-mean-squared displacement {\em after} aligning configurations with respect to rotations, as global rotations of the entire molecule are not meaningful.
+For molecular simulation data, it is often appropriate to use the Euclidean distance {\em after} aligning configurations with respect to rotations, as global rotations of the entire molecule are not meaningful.
 %
 For dynamical systems which are obscured by large variance noise, the Mahalanobis distance often yields a more informative parameterization of the data \cite{...}.
 %
-Another option is the Earth Mover's Distance, a multi scale distance metric which is stable and robust to noise.
+Another option is the Earth Mover's Distance, a multiscale distance metric which is stable and robust to noise.
 
 For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
 %
@@ -765,7 +777,7 @@ Note: histograms are not essential for computing EMD, however, they make it comp
 \subsection{Results}
 
 
-
+\subsubsection{Using the appropriate metric}
 
 
 Figure~\ref{fig:dmaps_embed_emd} shows the results of analyzing two sets of chemotaxis simulations using diffusion maps. 
@@ -818,11 +830,13 @@ The convergence of the eigenvalues at $\lambda \approx 125$ indicates switching 
 \label{fig:detect_change}
 \end{figure}
 
+\subsubsection{Detecting changes in dynamical behavior}
+
 We have seen that the eigenvalues $\mu_i$, which quantify the importance of each embedding coordinate, reveal the relative importance of the variables which govern the macroscopic dynamics.
 %
 We can also use these eigenvalues to detect changes in dynamical behavior.
 %
-We showed that at the two asymptotic regimes ($\lambda \rightarrow 0$ and $\lambda \rightarrow \infty$), there is a gap between the two eigenvalues, as one of the two macroscopic variables is significantly more important to the dynamical behavior.
+We expect a gap between the two eigenvalues at the two asymptotic regimes ($\lambda \rightarrow 0$ and $\lambda \rightarrow \infty$), as one of the two macroscopic variables is significantly more important to the dynamical behavior.
 %
 For intermediate $\lambda$ values, we expect the gap between $|\mu_1|$ and $|\mu_2|$ to narrow, with the $\lambda$ value where $|\mu_1| \approx |\mu_2|$ corresponding to the transition between ``wave-like'' and ``heat-like'' behavior. 
 
@@ -862,7 +876,7 @@ We can therefore detect changes in dynamical behavior using data-driven techniqu
 
 
 
-\subsection{Detect dimensionality}
+\subsection{Detecting changes in dimensionality}
 
 Often in dynamical systems, one would like to detect a change in the dimensionally of the system. 
 %
@@ -876,7 +890,7 @@ To detect this transition in the data, we look at the eigenvalues corresponding 
 %
 Let $\mu_{i_1} \ge \mu_{i_2}$ denote these two eigenvalues. 
 %
-We plot  
+From the relationship in \ref{...}, we plot  
 \begin{equation}
  \frac{\log \mu_{i_1}}{\log \mu_{i_2}} ;
 \end{equation}

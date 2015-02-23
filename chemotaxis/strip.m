@@ -19,7 +19,7 @@ axis equal
 xlabel('x')
 ylabel('y')
 cbar = colorbar('peer',gca); 
-set(get(cbar,'xlabel'),'String','\phi_{1,0}');
+set(get(cbar,'xlabel'),'String','$\tilde{\phi}_{1,0}$', 'interpreter','latex');
 print('strip_cnts1.eps','-depsc')
 
 make_fig(3,2);
@@ -30,8 +30,9 @@ axis equal
 xlabel('x')
 ylabel('y')
 cbar = colorbar('peer',gca); 
-set(get(cbar,'xlabel'),'String','\phi_{0,1}');
+set(get(cbar,'xlabel'),'String','$\tilde{\phi}_{0,1}$', 'interpreter','latex');
 print('strip_cnts2.eps','-depsc')
+
 
 %%
 
