@@ -392,15 +392,15 @@ Our first illustrative example will consist of two different swiss roll data set
 The data are
 \begin{equation}
 \begin{aligned}
-z_1 =& (4 \pi \sqrt{t_1} + 1) \cos(4 \pi \sqrt{t_1}) \\
-z_2 =& (4 \pi \sqrt{t_1} + 1) \sin(4 \pi \sqrt{t_1}) \\
-z_3 =& h t_2
+z_1 =& \theta \cos \theta \\
+z_2 =& \theta \sin \theta \\
+z_3 =& h t
 \end{aligned}
 \end{equation}
 %
-where $t_1, t_2 \sim Unif(0,1)$.
+where $\theta$ and $t$ are random variables, sampled such that the data is uniformly distributed along the swiss roll. 
 %
-The height of the first swiss roll is $h = 15 \pi$, while the height of the second is $h = 6 \pi$. 
+The height of the first swiss roll is $h = 40$, while the height of the second is $h = 20$. 
 %
 Each data set consists of $m=1500$ points, shown shown in Figure~\ref{fig:swiss_rolls}(a)~and~(b).
 %
@@ -466,7 +466,7 @@ As expected, these eigenvectors parameterize the arc length along the spiral, an
 \caption{}
 \end{subfigure}
 %
-\caption{Swiss roll example. (a) Data set 1; $h=6 \pi$. (b) Data set 2; $h = 15 \pi$. (c) Diffusion maps eigenvalue spectrum for data set 1. (d) Diffusion maps eigenvalue spectrum for data set 2. (e) Data set 1, colored by the first diffusion maps eigenvector. (f) Data set 2, colored by the first diffusion maps eigenvector. (g) Data set 1, colored by the second diffusion maps eigenvector which is not a harmonic of the first. (h) Data set 2, colored by the second diffusion maps eigenvector which is not a harmonic of the first. } 
+\caption{Swiss roll example. (a) Data set 1; $h= 40$. (b) Data set 2; $h = 20$. (c) Diffusion maps eigenvalue spectrum for data set 1. (d) Diffusion maps eigenvalue spectrum for data set 2. (e) Data set 1, colored by the first diffusion maps eigenvector. (f) Data set 2, colored by the first diffusion maps eigenvector. (g) Data set 1, colored by the second diffusion maps eigenvector which is not a harmonic of the first. (h) Data set 2, colored by the second diffusion maps eigenvector which is not a harmonic of the first. } 
 \label{fig:swiss_rolls}	
 \end{figure}
 
@@ -924,7 +924,7 @@ We can therefore detect changes in dynamical behavior using data-driven techniqu
 
 
 
-\subsection{Detecting changes in dimensionality}
+\subsubsection{Detecting changes in dimensionality}
 
 Often in dynamical systems, one would like to detect a change in the dimensionally of the system. 
 %
@@ -940,12 +940,22 @@ Let $\mu_{i_1} \ge \mu_{i_2}$ denote these two eigenvalues.
 %
 According to the relationship in \eqref{eq:evals} and \eqref{eq:evals_relationship}, we plot  
 \begin{equation}
- \frac{\log \mu_{i_2}}{\log \mu_{i_1}} ;
+ \frac{\log \mu_{i_1}}{\log \mu_{i_2}} ;
 \end{equation}
 when this ratio becomes small, the data are effectively one-dimensional, as the second dimension is very small compared with the first. 
 %
-This is plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} as a function of $\lambda$. 
+Figure~\ref{fig:chemotaxis_simulations_harmonics} shows the eigenvalue spectra for three different sets of simulations. 
+%
+It now becomes clear that looking at the diffusion maps coordinates {\em modulo} higher harmonics is essential for extracting an informative parameterization of the data, as well as characterizing the dimensionality of the data. 
+%
+From Figures~\ref{fig:chemotaxis_simulations_harmonics}(b-c), we can see that the eigenvalue spectrum does not exhibit any large spectral gaps.
+%
+However, there is a significant gap between the eigenvalues which correspond to new directions in the data, and the corresponding eigenvectors provide us with a two-dimensional parameterization of the data which is consistent with the expected macroscopic dynamics. 
 
+
+
+Figure~\ref{fig:chemotaxis_compare_timescales_evals} shows the diffusion maps eigenvalue ratio as a function of $\lambda$. 
+%
 For this specific example, we can compare the empirically detected change in dimensionality with the analytically-predicted shift. 
 %
 From \cite{othmer2000diffusion}, the relevant time scales for the velocity jump process are
@@ -1000,6 +1010,7 @@ This ratio is also plotted in Figure~\ref{fig:chemotaxis_compare_timescales_eval
 %
 \caption{Diffusion maps embedding for three different chemotaxis simulations. (a) $\lambda = 100$, $s = 10$. (b) $\lambda = 2500$, $s = 50$. (c) $\lambda = 6400$, $s = 80$. For each simulation, the eigenvalue spectrum is shown. From the spectra, we can see that the first two components are informative for (a), components 1 and 3 are informative for (b), and components 1 and  are informative for (c). The corresponding embeddings are shown below. For comparison, the embeddings using the first two components are also shown in (b) and (c), where clearly, the second component is a harmonic of the first and does not describe a new direction in the data. }
 %
+\label{fig:chemotaxis_simulations_harmonics}
 \end{figure}
 
 \begin{figure}[t]
