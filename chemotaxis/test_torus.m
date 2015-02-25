@@ -73,6 +73,7 @@ set(gca, 'xtick', (6:5:size(D,1))-1)
 xlabel('k')
 ylabel('\mu_k')
 axis square
+colorbar off
 print('torus1_evals.eps','-depsc')
 
 %%
@@ -137,6 +138,7 @@ set(gca, 'xtick', (6:5:size(D,1))-1)
 xlabel('k')
 ylabel('\mu_k')
 axis square
+colorbar off
 print('torus2_evals.eps','-depsc')
 
 %%

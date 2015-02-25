@@ -174,13 +174,14 @@ end
 
 
 % lambda_all = [100 2500 6400];
-lambda_all = linspace(1, 4000, 40);
+lambda_all = repmat(linspace(1, 3000, 20), 5, 1);
 s_all = sqrt(lambda_all);
 
 eval1 = zeros(size(lambda_all));
 eval2 = zeros(size(lambda_all));
 
-for sim_num = 1:length(lambda_all)
+figure;
+for sim_num = 1:prod(size(lambda_all))
     
     lambda = lambda_all(sim_num);
     s = s_all(sim_num);
@@ -234,13 +235,16 @@ for sim_num = 1:length(lambda_all)
     
     % dmaps on EMD
     W2 = W2(idx,idx);
-    eps2 = median(W2(:));
+    eps2 = median(W2(:))/10;
     [V2, D2] = dmaps(W2, eps2, 5);
     
     
     % compute regression
     eps_med_scale = 3;
     res = compute_residuals_DMAPS(V2, eps_med_scale);
+    
+%     subplot(5, 10, sim_num)
+%     plot(res, '-o')
     
     [~, idx] = sort(res(2:end), 'descend');
     idx = idx + 1;
@@ -261,19 +265,24 @@ end
 % figure;
 % plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, log(lambda_all.*s_all* tmax))
 
-L = s_all.*tmax;
-tau_run = 1./lambda_all;
-tau_drift = L./s_all;
-tau_diff = L.^2.*lambda_all./(s_all.^2);
+lambda_all2 = linspace(min(lambda_all(:)), max(lambda_all(:)), 1000);
+s_all2 = sqrt(lambda_all2);
+L = s_all2.*tmax;
+tau_run = 1./lambda_all2;
+tau_drift = L./s_all2;
+tau_diff = L.^2.*lambda_all2./(s_all2.^2);
 
 make_fig(4,3);
-[ax,h1,h2] = plotyy(lambda_all, log(eval1)./log(eval2), lambda_all, tau_drift./tau_diff, 'plot','semilogy');
-set(h1, 'marker', '.', 'color','b')
+% [ax,h1,h2] = plotyy(lambda_all, sqrt(log(eval1)./log(eval2)), lambda_all, (tau_drift./tau_diff), 'plot','semilogy');
+[ax,h1,h2] = plotyy(mean(lambda_all), median(sqrt(log(eval1)./log(eval2))), lambda_all2, tau_drift./tau_diff, 'plot','semilogy');
+%set(h1, 'marker', '.', 'color','b')
+set(h1, 'marker', '.', 'linestyle','none','color','b')
 set(h2, 'linestyle', '-', 'color','r')
 % set(h2, 'yscale', 'log')
 set(ax(1), 'ycolor','b')
 set(ax(2), 'ycolor','r')
-ylabel(ax(1), 'log(\mu_{i_1})/log(\mu_{i_2})');
+set(ax(2), 'ylim', [1e-6 1e-0])
+ylabel(ax(1), '$\sqrt{\log\mu_{i_1}/\log\mu_{i_2}}$', 'interpreter','latex');
 ylab = ylabel(ax(2), '\tau_{diff}/\tau_{drift}');
 set(ylab, 'Units', 'Normalized', 'Position', [1.02, 0.5, 0]);
 xlabel('\lambda')

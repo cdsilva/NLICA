@@ -247,9 +247,29 @@ Although we have considered a very simple example for illustrative purposes, com
 
 
 
-
-
-
+\begin{figure}[t]
+\centering
+\begin{subfigure}{0.3\textwidth}
+\includegraphics[height=3cm]{strip_data_L2}
+\includegraphics[height=3.5cm]{strip_spectrum_L2}
+\caption{}
+\end{subfigure}
+%
+\begin{subfigure}{0.3\textwidth}
+\includegraphics[height=3cm]{strip_data_L4}
+\includegraphics[height=3.5cm]{strip_spectrum_L4}
+\caption{}
+\end{subfigure}
+%
+\begin{subfigure}{0.35\textwidth}
+\includegraphics[height=3cm]{strip_data_L8}
+\includegraphics[height=3.5cm]{strip_spectrum_L8}
+\caption{}
+\end{subfigure}
+%
+\caption{Data sets (top) and eigenvalue spectra (bottom) for strips with (a) $L_1 = 2$, $L_2 = 1$, (b) $L_1 = 4$, $L_2 = 1$, (c) $L_1 = 8$, $L_2 = 1$. The empirical eigenvalues are plotted in blue, and the analytical eigenvalues are plotted in red. From the eigenvalues which are identified as important/non-harmonics, the estimated length ratio is (a) 2.0, (b) 4.4, (c) 8.8.  }
+\label{fig:strip_compare_analytic}
+\end{figure}
 
 
 \section{Identifying the Informative Eigenvectors }
@@ -376,21 +396,45 @@ We can then write
 r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \frac{ \phi_{k} (i) - \sum_{j=1}^m L_{k-1}(i,j) \phi_{k}(j) }{1-L_{k-1}(i,i)} \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }}
 \end{equation}
 
+\subsection{Calculating the relative lengths of the manifold}
+
+Once we have determined which eigenvectors parameterize independent directions along the manifold, we can use the corresponding eigenvalues to calculate the relative lengths along these directions. 
+%
+Let $\mu_{i_1}, \mu_{i_2}, \dots$ denote the eigenvalues which correspond to eigenvectors which are {\em not} higher harmonics. 
+%
+From \eqref{eq:evals} and \eqref{eq:evals_relationship}, we propose to use
+\begin{equation} \label{eq:est_lengths}
+L_j \propto \frac{1}{\sqrt{-\log \mu_{i_j}}}
+\end{equation}
+where $L_1, L_2, \dots$ are the relative lengths along the principal directions of the manifold. 
+%
+We can then use this measure to determine how many components are required to retain most of the information within the data set. 
+
+
+
+
 
 \subsection{Illustrative Examples}
 
-We will demonstrate the local linear regression algorithm for identifying informative eigenvectors on two synthetic data sets. 
+We will demonstrate the local linear regression algorithm for identifying informative eigenvectors on three synthetic data sets. 
 %
-Both of these data sets are nonlinear manifolds which provide examples of the flexibility of diffusion maps. 
+The first data set is the strip where the solution is known analytically, and the second and third data sets are nonlinear manifolds which provide examples of the flexibility of diffusion maps. 
 %
 However, these data sets will also illustrate the issues of harmonics. 
 
 \subsubsection{Strip}
 
+Our first illustrative example consists of three different strip data sets. 
+%
+Each of these data sets contains $m=1500$ data points uniformly distributed along the strip. 
+%
+Figure~\ref{fig:strip_compare_analytic} shows the data sets and corresponding eigenspectra.
+%
+The diffusion maps eigenvalues are consistent with the known analytic eigenvalues of the Laplacian, and using \eqref{eq:est_lengths}, we can accurately estimate the relative lengths of the two principal directions in each data set. 
 
 \subsubsection{Swiss Roll}
 
-Our first illustrative example will consist of two different swiss roll data sets.
+Our second illustrative example will consist of two different swiss roll data sets.
 %
 The data are
 \begin{equation}
@@ -401,7 +445,7 @@ z_3 =& h t
 \end{aligned}
 \end{equation}
 %
-where $\theta$ and $t$ are random variables, sampled such that the data is uniformly distributed along the swiss roll. 
+where $\theta$ is uniformly sampled along the arclength of the spiral, and $t \sim Unif(0,1)$. 
 %
 The height of the first swiss roll is $h = 40$, while the height of the second is $h = 20$. 
 %
@@ -475,7 +519,7 @@ As expected, these eigenvectors parameterize the arc length along the spiral, an
 
 \subsubsection{Torus}
 
-For the second example, we consider a torus defined by
+For the third example, we consider a torus defined by
 %
 \begin{equation}
 \begin{aligned}
@@ -499,21 +543,21 @@ Clearly, as the torus becomes thinner, the second pair of relevant eigenfunction
 
 \begin{figure}[t]
 %
-\begin{subfigure}{\textwidth}
-\includegraphics[width=2.5in]{torus1}
-\includegraphics[height=1.5in]{torus1_evals}
+\begin{subfigure}{0.3\textwidth}
+\includegraphics[height=0.75in]{torus1}
+\includegraphics[height=1in]{torus1_evals}
 \caption{}
 \end{subfigure}
 %
-\begin{subfigure}{\textwidth}
-\includegraphics[width=2.5in]{torus2}
-\includegraphics[height=1.5in]{torus2_evals}\\
+\begin{subfigure}{0.32\textwidth}
+\includegraphics[height=0.75in]{torus2}
+\includegraphics[height=1in]{torus2_evals}
 \caption{}
 \end{subfigure}
 %
-\begin{subfigure}{\textwidth}
-\includegraphics[width=2.5in]{torus3}
-\includegraphics[height=1.5in]{torus3_evals}
+\begin{subfigure}{0.35\textwidth}
+\includegraphics[height=0.75in]{torus3}
+\includegraphics[height=1in]{torus3_evals}
 \caption{}
 \end{subfigure}
 %
@@ -941,9 +985,9 @@ To detect this transition in the data, we look at the eigenvalues corresponding 
 %
 Let $\mu_{i_1} \ge \mu_{i_2}$ denote these two eigenvalues. 
 %
-According to the relationship in \eqref{eq:evals} and \eqref{eq:evals_relationship}, we plot  
+According to \eqref{eq:est_lengths}, we plot  
 \begin{equation}
- \frac{\log \mu_{i_1}}{\log \mu_{i_2}} ;
+ \sqrt{\frac{\log \mu_{i_1}}{\log \mu_{i_2}}} ;
 \end{equation}
 when this ratio becomes small, the data are effectively one-dimensional, as the second dimension is very small compared with the first. 
 %
