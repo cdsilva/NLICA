@@ -119,11 +119,15 @@ All of these considerations (recently developed plus what we propose here) provi
 \subsection{Eigenfunctions of the Laplace-Beltrami operator}
 
 \begin{figure}[t]
-\begin{subfigure}{0.5\textwidth}
+\centering
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_cnts1}
+\caption{}
 \end{subfigure}
-\begin{subfigure}{0.5\textwidth}
+%
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_cnts2}
+\caption{}
 \end{subfigure}
 \caption{Two-dimensional strip colored by the eigenfunction (a) $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi z_1}{L_1} \right)$, and (b) $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi z_2}{L_2} \right)$ .}
 \label{fig:strip_efuncs}
@@ -162,18 +166,25 @@ Although these eigenfunctions can only be written analytically for very special 
 \subsection{Discrete approximation of the Laplace-Beltrami operator: diffusion maps}
 
 \begin{figure}[t]
-\begin{subfigure}{0.5\textwidth}
+\centering
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete1}
+\caption{}
 \end{subfigure}
-\begin{subfigure}{0.5\textwidth}
+%
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete4}
+\caption{}
 \end{subfigure}
 
-\begin{subfigure}{0.5\textwidth}
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_nonuniform1}
+\caption{}
 \end{subfigure}
-\begin{subfigure}{0.5\textwidth}
+%
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_nonuniform2}
+\caption{}
 \end{subfigure}
 \caption{(a, b) Two-dimensional strip with uniform sampling colored by the (a) first, and (b) fourth (non-trivial) eigenvector from diffusion maps. (c, d) Two-dimensional strip with data sampled from a Gaussian distribution in $z_1$ and sampled uniformly in $z_2$, colored by the (c) first, and (d) third (non-trivial) eigenvector from diffusion maps. Note that in both cases we uncover parameterizations which are one-to-one with $z_1$ and $z_2$. }
 \label{fig:strip_evecs}
@@ -250,7 +261,7 @@ Although we have considered a very simple example for illustrative purposes, com
 
 In diffusion maps, we order the eigenvectors by the magnitude of the corresponding eigenvalues, in the hopes that the leading eigenvectors provide us with a parameterization of the underlying manifold.
 %
-However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set.
+However, often some eigenvectors are higher harmonics of previous eigenvectors and do not describe new directions in the data set \cite{gerber2007robust}.
 %
 Again, for illustrative purposes, we consider the case where $\mathcal{M}_d$ is a $2$-dimensional rectangular domain with edge lengths $L_1  > L_2$. 
 %
@@ -270,17 +281,20 @@ Furthermore, the corresponding eigenvalues provide us with a measure of the rela
 \subsection{Algorithm: local linear regression}
 
 \begin{figure}[t]
-\begin{subfigure}{0.5\textwidth}
+\centering
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete1}
 \end{subfigure}
-\begin{subfigure}{0.5\textwidth}
+%
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete2}
 \end{subfigure}
 
-\begin{subfigure}{0.5\textwidth}
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete3}
 \end{subfigure}
-\begin{subfigure}{0.5\textwidth}
+%
+\begin{subfigure}{0.45\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete4}
 \end{subfigure}
 \caption{ Two-dimensional strip with uniform sampling colored by the first four (non-trivial) eigenvectors from diffusion maps. Note that the first and fourth eigenvectors are one-to-one with $z_1$ and $z_2$, respectively. However, the second and third eigenvectors are higher harmonics of the first eigenvector and do not capture any additional structure within the data set. }
@@ -346,7 +360,10 @@ X_{k-1}(i) = \begin{bmatrix}
 \end{bmatrix}
 \end{equation}
 %
-and the matrix $W_{k-1}(i) = diag \left( K(\Phi_{k-1}(i), \Phi_{k-1}(1)), \dots, K(\Phi_{k-1}(i), \Phi_{k-1}(m)) \right)$.
+and the matrix 
+\begin{equation}
+W_{k-1}(i) = diag \left( K(\Phi_{k-1}(i), \Phi_{k-1}(1)), \dots, K(\Phi_{k-1}(i), \Phi_{k-1}(m)) \right).
+\end{equation}
 %
 We then calculate the smoothing matrix $L_{k-1} \in \mathbb{R}^{m \times m}$, where 
 \begin{equation}
@@ -395,20 +412,24 @@ The second and third data sets are nonlinear manifolds which demonstrate the fle
 \begin{figure}[t]
 \centering
 \begin{subfigure}{0.3\textwidth}
-\includegraphics[height=3cm]{strip_data_L2}
-\includegraphics[height=3.5cm]{strip_spectrum_L2}
+\includegraphics[height=2.5cm]{strip_data_L2}
+\includegraphics[height=3cm]{strip_spectrum_L2}
 \caption{}
 \end{subfigure}
+%
+\hfill
 %
 \begin{subfigure}{0.3\textwidth}
-\includegraphics[height=3cm]{strip_data_L4}
-\includegraphics[height=3.5cm]{strip_spectrum_L4}
+\includegraphics[height=2.5cm]{strip_data_L4}
+\includegraphics[height=3cm]{strip_spectrum_L4}
 \caption{}
 \end{subfigure}
 %
+\hfill
+%
 \begin{subfigure}{0.35\textwidth}
-\includegraphics[height=3cm]{strip_data_L8}
-\includegraphics[height=3.5cm]{strip_spectrum_L8}
+\includegraphics[height=2.5cm]{strip_data_L8}
+\includegraphics[height=3cm]{strip_spectrum_L8}
 \caption{}
 \end{subfigure}
 %
@@ -431,7 +452,7 @@ The diffusion maps eigenvalues are consistent with the known analytic eigenvalue
 
 \subsubsection{Swiss roll}
 
-\begin{figure}[th]
+\begin{figure}[!th]
 %
 \begin{subfigure}{0.45\textwidth}
 \centering
@@ -519,22 +540,31 @@ As expected, these eigenvectors parameterize the arc length along the spiral, an
 \begin{figure}[t]
 %
 \begin{subfigure}{0.3\textwidth}
+\centering
 \includegraphics[height=0.75in]{torus1}
 \includegraphics[height=1in]{torus1_evals}
 \caption{}
 \end{subfigure}
 %
+\hfill
+%
 \begin{subfigure}{0.32\textwidth}
+\centering
 \includegraphics[height=0.75in]{torus2}
 \includegraphics[height=1in]{torus2_evals}
 \caption{}
 \end{subfigure}
 %
+\hfill
+%
 \begin{subfigure}{0.35\textwidth}
+\centering
 \includegraphics[height=0.75in]{torus3}
 \includegraphics[height=1in]{torus3_evals}
 \caption{}
 \end{subfigure}
+%
+\hfill
 %
 \caption{Torus data sets (left) and corresponding diffusion maps eigenvalues (right). (a) $r_1 = 3$, $r_2 = 1$. (b) $r_1 = 5$, $r_2 = 1$. (c) $r_1 = 10$, $r_2 = 1$. In all three data sets, the first two eigenvalues/eigenvectors correspond to $\sin \theta_1$ and $\cos \theta_1$. The second pair of non-harmonic eigenvectors (corresponding to $\sin \theta_2$ and $\cos \theta_2$) are captured by components 7 and 8, 11 and 12, and 15 and 16, respectively.}
 %
@@ -843,22 +873,23 @@ The histograms are also robust to noise \cite{talmon2013empirical}.
 \subsubsection{Using the appropriate metric}
 
 \begin{figure}[t!]
-\begin{subfigure}{6cm}
+\centering
+\begin{subfigure}{5cm}
 \includegraphics[width=\textwidth]{EMD_withhist_p_1}
 \caption{}
 \label{subfig:small_lambda_p}
 \end{subfigure}
-\begin{subfigure}{6cm}
+\begin{subfigure}{5cm}
 \includegraphics[width=\textwidth]{EMD_withhist_t_1}
 \caption{}
 \label{subfig:small_lambda_t}
 \end{subfigure}
-\begin{subfigure}{6cm}
+\begin{subfigure}{5cm}
 \includegraphics[width=\textwidth]{EMD_withhist_p_400}
 \caption{}
 \label{subfig:large_lambda_p}
 \end{subfigure}
-\begin{subfigure}{6cm}
+\begin{subfigure}{5cm}
 \includegraphics[width=\textwidth]{EMD_withhist_t_400}
 \caption{}
 \label{subfig:large_lambda_t}
@@ -925,7 +956,7 @@ In contrast, the correlations between the embedding coordinates and the macrosco
 
 \begin{figure}[t] 
 \centering
-\includegraphics[width=\textwidth]{detect_change_eigenvalues}
+\includegraphics[width=0.5\textwidth]{detect_change_eigenvalues}
 \caption{The first two eigenvalues from diffusion maps as a function of $\lambda$. Each point is averaged over $10$ simulation experiments (as in Figure~\ref{fig:dmaps_embed_emd}, one experiment consists of data collected at varying $p$ and $t$, for a fixed value of $\lambda$), with error bars denoting one standard deviation. 
 The convergence of the eigenvalues at $\lambda \approx 125$ indicates switching of the dynamical ``mode''.}
 \label{fig:detect_change}
@@ -1014,7 +1045,7 @@ We can therefore detect changes in dynamical behavior using data-driven techniqu
 \begin{figure}[t]
 %
 \centering
-\includegraphics[width=\textwidth]{chemotaxis_compare_timescales_evals}
+\includegraphics[width=0.5\textwidth]{chemotaxis_compare_timescales_evals}
 %
 \caption{Detecting the change in dimensionality. The ratio of the log of the two ``meaningful'' diffusion maps eigenvalues (those which correspond to modes which are not harmonics) is shown in blue, and the ratio of the diffusive and drift time scales are shown in red. When the diffusive time scale is significantly larger than the drift time scale, the data is expected to be effectively one-dimensional. This transition is consistent with the diffusion maps eigenvalues: the data is effectively one-dimensional if the first eigenvalue is significantly larger than the second. }
 %
