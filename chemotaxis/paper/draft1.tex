@@ -102,7 +102,9 @@ However, a major limitation (of spectral methods based on a Laplace operator) is
 
 \item For the example of a square/strip, we know everything analytically, and identifying the ``true'' principal components is a problem/not obvious, and depends both on geometry and density
 
-\item While we can ignore/address nonuniform densities through normalization of the Laplace operator, we still have the problem of identifying the ``true'' components due to geometry. 
+\item While we can ignore/address nonuniform densities through normalization of the Laplace operator, we still have the problem of repeated eigendirections. 
+
+\item Add text about the meaning of the eigenvectors (obtained in the form of eigenvectors of a Laplace operator), as demonstrated in the chemotaxis example. The main idea is the ability to obtain, in a data driven manner, the "true" parsimonious description of the system, which is certain cases (such as particular regimes/modes of the chemotaxis system) may be significantly different from the typical representation and choice of variables used to describe the system (e.g. in the chemotaxis, it will not necessarily be the two fluxes).  
 
 \item
 In this paper, we propose an algorithm to automatically identify those principal components using locally linear regression.
@@ -114,7 +116,7 @@ All of these considerations (recently developed plus what we propose here) provi
 
 
 
-\section{Manifold Learning and Some Relevant Issues}
+\section{Manifold Learning Based on Laplace Operators}
 
 \subsection{Eigenfunctions of the Laplace-Beltrami operator}
 
@@ -139,7 +141,7 @@ For linear hyperplanes,  the principal axes parameterize the manifold.
 %
 However, in the case when the manifold is curved, it is more difficult to define a set of coordinates. 
 
-In recent years, it has been noted that eigenfunctions of the Laplace-Beltrami operator with Neumann boundary conditions can be used to parameterize the manifold \cite{Belkin2003, coifman2005geometric, singer2008non}. 
+In recent years, it has been noted that eigenfunctions of the Laplace-Beltrami operator can be used to parameterize the manifold \cite{Belkin2003, coifman2005geometric, singer2008non}. 
 %
 To provide intuition as to why this is the case, consider a two-dimensional strip with edge lengths $L_1$ and $L_2$. 
 %
@@ -194,9 +196,9 @@ In most applications, we are not given a description of the continuous manifold.
 %
 Instead, we are given data {\em sampled} from the underlying manifold, and we would like to uncover a parameterization of the data.
 %
-We will do this by constructing a matrix which approximates the Laplace-Beltrami operator with Neumann boundary conditions. 
+We will do this by constructing a matrix which approximates the Laplace-Beltrami operator with Neumann boundary conditions (TODO: is it explicit in the construction?). 
 %
-The eigenvectors of this matrix then approximate the eigenfunctions of this operator.
+The eigenvectors of this matrix then approximate the eigenfunctions of this operator \cite{...}.
 
 Assume we are given $m$ observations $z(1), \dots, z(m) \in \mathcal{M}_d$. 
 %
@@ -269,11 +271,13 @@ We recall that the eigenfunctions $\tilde{\phi}_{1,0} = \cos \left( \frac {\pi z
 %
 However, these two eigenvectors $\tilde{\phi}_{1, 0}$ and $\tilde{\phi}_{0, 1}$ are not guaranteed to correspond to the two smallest (non-trivial) eigenvalues (the largest eigenvalue will always be $\tilde{\mu}_{0,0} = 1$ and correspond to a constant eigenfunction; these eigenvalues are related to the diffusion maps eigenvalues $\mu_k$ via \eqref{eq:evals_relationship}). 
 %
-In fact, if $L_1 > 2 L_2$, then $\tilde{\mu}_{2, 0} < \tilde{\mu}_{0, 1}$, and so the second (non-trivial) eigenvector (when the eigenvectors are ordered by their corresponding eigenvalues) will be a harmonic of the first and still parameterize $z_1$ (see Figure~\ref{fig:strip_harmonics}).
+In fact, if $L_1 > 2 L_2$, then $\tilde{\mu}_{2, 0} < \tilde{\mu}_{0, 1}$, and so the second (non-trivial) eigenvector (when the eigenvectors are ordered by their corresponding eigenvalues) will be a repeated eigendirection of the first and still parameterize $z_1$ (see Figure~\ref{fig:strip_harmonics}).
 %
 We therefore require a methodology to automatically detect which eigenvectors are harmonics of each other. 
 %
 Utilizing only the diffusion maps eigenvectors which correspond to modes which are {\em not} higher harmonics yields the most parsimonious representation of the data.
+%
+We will show how we can automatically detect these modes to obtain a meaningful representation of the data.
 %
 Furthermore, the corresponding eigenvalues provide us with a measure of the relative lengths of the data set along the principal directions. 
 
@@ -302,7 +306,13 @@ Furthermore, the corresponding eigenvalues provide us with a measure of the rela
 \end{figure}
 
 
-Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^m$, we would like to automatically deduce which ones are higher harmonics of previous eigenvectors. 
+Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{n-1} \in \mathbb{R}^m$, we would like to automatically deduce which ones capture new directions in the data, and which ones are merely repeated eigendirections. 
+%
+This problem was addressed previously in \cite{...} by performing successive iterations of diffusion maps, interspersed with advection along the first principal direction at each iteration. 
+%
+However, both the advection procedure and the successive eigendecompositions are very expensive and intractable for larger data set. 
+%
+Here, we propose an alternative approach to address the problem of repeated eigendirections. 
 %
 We will attempt to fit a function $f(\phi_1, \dots, \phi_{k-1})$ to $\phi_{k}$. 
 %
@@ -332,10 +342,12 @@ where $K$ is a kernel weighting function.
 We will use a Gaussian kernel, 
 %
 \begin{equation}
-K(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_{k-1} (j) \|^2}{\epsilon^2} \right),
+K(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_{k-1} (j) \|^2}{\epsilon_{reg}^2} \right),
 \end{equation}
 %
-and take $\epsilon = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(i)$.
+where $\epsilon_{reg}$ is the kernel scale. 
+%
+We typically take $\epsilon_{reg} = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(i)$, as we empirically found this choice to yield good results. 
 %
 We then define the normalized leave-one-out cross-validation error for this local linear fit as
 \begin{equation} \label{eq:cv_error}
@@ -396,7 +408,7 @@ L_j \propto \frac{1}{\sqrt{-\log \mu_{i_j}}}
 \end{equation}
 where $L_1, L_2, \dots$ are the relative lengths along the principal directions of the manifold. 
 %
-We can use this measure to determine how many components are required to retain most of the information within the data set: if $L_j$ is small, then this component can be disregarded. 
+We can use this measure to determine how many components are required to retain most of the information within the data set: if $L_j$ is small, then this component can be disregarded (TODO: define small). 
 
 
 \subsection{Illustrative examples} \label{sec:illustrative_examples}
