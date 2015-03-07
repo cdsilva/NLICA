@@ -170,7 +170,6 @@ corr(V2(:,2),all_p(idx)')
 corr(V2(:,3),all_time(idx)')
 
 
-return
 %%
 
 num_hist = 6;
