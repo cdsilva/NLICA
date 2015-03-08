@@ -9,16 +9,17 @@ markersize = 500;
 
 
 % rate of switching velocity
-lambda = 1000;
+lambda = 1;
 % speed of particles
 s = sqrt(lambda);
 
 % number of particles
 N = 1000;
-% time step
-dt = 1;
 % maximum simulation time
-tmax = 10;
+tmax = 10000;
+tmin = 0.1*tmax;
+% time step
+dt = (tmax - tmin) / 9;
 nsteps = floor(tmax / dt) + 1;
 
 %initial probility of a particle moving to the right (vel=+1)
@@ -29,7 +30,7 @@ min_start = -10;
 max_start = 10;
 
 % histogram parameters
-%nbins = 128;
+% nbins = 512;
 nbins = 32;
 x_hist = linspace(min_start-s*tmax, max_start+s*tmax, nbins);
 hist_all = zeros(nbins, nsteps*nsim);
@@ -75,7 +76,7 @@ end
 %% dmaps on raw histograms
 
 % use data after initial "relaxation" time
-idx = (all_time > 1);
+idx = (all_time > tmin);
 
 
 %%
