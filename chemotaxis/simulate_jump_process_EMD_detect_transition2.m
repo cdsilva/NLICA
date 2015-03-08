@@ -6,15 +6,18 @@ rng(123);
 
 %% simulations
 
-nlambda = 10;
-
-lambda_all = linspace(1, 400, nlambda);
+% nlambda = 10;
+% lambda_all = linspace(1, 400, nlambda);
+lambda_all = 1:10:200;
+nlambda = length(lambda_all);
 
 % number of particles
 N = 1000;
 
-ntmax = 10;
-tmax_all = linspace(10, 400, ntmax);
+% ntmax = 10;
+% tmax_all = linspace(10, 400, ntmax);
+tmax_all = 10:10:200;
+ntmax = length(tmax_all);
 
 %initial probility of a particle moving to the right (vel=+1)
 nsim = 10;
@@ -23,15 +26,15 @@ pinit = linspace(0.1, 0.9, nsim);
 % histogram parameters
 nbins = 32;
 
-niter = 1;
+niter = 3;
 
 eval1 = zeros(nlambda, ntmax, niter);
 eval2 = zeros(nlambda, ntmax, niter);
 t_dom = zeros(nlambda, ntmax, niter);
 
-f1 = figure;
-f2 = figure;
-fig_idx = 1;
+% f1 = figure;
+% f2 = figure;
+% fig_idx = 1;
 
 
 for j1=1:nlambda
@@ -45,12 +48,12 @@ for j1=1:nlambda
             
             % maximum simulation time
             tmax = tmax_all(j2);
-%             tmin = 0.1*tmax;
+            %             tmin = 0.1*tmax;
             tmin = tmax/10;
             
             % time step
             dt = (tmax - tmin) / 9;
-            nsteps = floor(tmax / dt) + 1;
+            nsteps = floor(tmax / dt+1e-6) + 1;
             
             
             % histogram parameters
@@ -108,7 +111,7 @@ for j1=1:nlambda
             
             W2 = W2(idx,idx);
             eps2 = median(W2(:));
-            [V2, D2] = dmaps(W2, eps2, 10);
+            [V2, D2] = dmaps(W2, eps2, 5);
             
             
             %
@@ -126,20 +129,20 @@ for j1=1:nlambda
             if abs(corr(all_time(idx)', V2(:, idx2(1)))) > abs(corr(all_time(idx)', V2(:, idx2(2))))
                 t_dom(j1, j2, k) = 1;
             end
-            
-            figure(f1);
-            subplot(nlambda, ntmax, fig_idx)
-            scatter(V2(:, idx2(1)), V2(:, idx2(2)),50, all_p(idx), '.')
-            title(sprintf('t=%d, \\lambda=%4.0f', tmax, lambda))
-            %         axis off
-            
-            figure(f2);
-            subplot(nlambda, ntmax, fig_idx)
-            scatter(V2(:, idx2(1)), V2(:, idx2(2)),50, all_time(idx), '.')
-            title(sprintf('t=%d, \\lambda=%4.0f', tmax, lambda))
-            %         axis off
-            
-            fig_idx = fig_idx + 1;
+            %
+            %             figure(f1);
+            %             subplot(nlambda, ntmax, fig_idx)
+            %             scatter(V2(:, idx2(1)), V2(:, idx2(2)),50, all_p(idx), '.')
+            %             title(sprintf('t=%d, \\lambda=%4.0f', tmax, lambda))
+            %             %         axis off
+            %
+            %             figure(f2);
+            %             subplot(nlambda, ntmax, fig_idx)
+            %             scatter(V2(:, idx2(1)), V2(:, idx2(2)),50, all_time(idx), '.')
+            %             title(sprintf('t=%d, \\lambda=%4.0f', tmax, lambda))
+            %             %         axis off
+            %
+            %             fig_idx = fig_idx + 1;
             
         end
     end
@@ -149,18 +152,25 @@ end
 %%
 
 if niter > 1
-    C = mean(sqrt(log(eval1)./log(eval2)), niter);
+    C = mean(sqrt(log(eval1)./log(eval2)), 3);
 else
     C = sqrt(log(eval1)./log(eval2));
 end
+
 figure;
 imagesc(lambda_all, tmax_all, C')
 set(gca, 'xdir','normal')
 set(gca, 'ydir','normal')
 colorbar
+hold on
+plot(1:max(lambda_all), N./(1:max(lambda_all)), '-w')
 
 figure;
-imagesc(lambda_all, tmax_all, t_dom')
+if niter > 1
+    imagesc(lambda_all, tmax_all, mean(t_dom, 3)')
+else
+    imagesc(lambda_all, tmax_all, t_dom')
+end
 set(gca, 'xdir','normal')
 set(gca, 'ydir','normal')
 colorbar
