@@ -68,8 +68,9 @@
 
 
 \begin{abstract}
-
-TODO
+Nonlinear manifold learning algorithms have proven useful for the anlaysis of complex data sets. 
+%
+However, these algorithms still encounter several challenges when faced with real data. 
 \end{abstract}
 
 %\sloppy
@@ -85,11 +86,11 @@ TODO
 
 In recent years, data mining algorithms have proven useful for many disciplines and applications \cite{....}. 
 %
-In particular, for dynamical systems, data-driven methodologies have been shown to be essential when a simple macroscopic model cannot be written analytically due to the complexity of the system.
+In particular, for dynamical systems, data-driven methodologies have been essential when a simple macroscopic model cannot be written analytically due to the complexity of the system.
 %
 For simulations, the governing model is often very high-dimensional and the macroscale dynamics are not obvious; for experimental systems, an explicit model is often unknown. 
 %
-For such cases, data obtained from observations and/or simulations of the dynamical system combined with these methodologies give rise to a low-dimensional description which can not only provide insight into the underlying dynamics, but also serve as a first step in constructing macroscale models which are consistent with the observed microscale behavior. 
+For such cases, data obtained from observations and/or simulations of the dynamical system combined with such methodologies give rise to a low-dimensional description which can not only provide insight into the underlying dynamics, but also serve as a first step in constructing macroscale models which are consistent with the observed microscale behavior. 
 
 
 %For many engineering applications, it is often advantageous or even essential to effectively parameterize a system's dynamics. 
@@ -104,33 +105,31 @@ For such cases, data obtained from observations and/or simulations of the dynami
 %This low-dimensional description can not only provide insight into the underlying dynamics, but also serve as a first step in constructing macroscale models which are consistent with the observed microscale behavior. 
 %
 
-Due to the complexity and range of microscale behaviors possible in dynamical systems, we use manifold learning, a nonlinear data-driven analysis technique, to analyze data.
+Due to the complexity and range of microscale behaviors possible in dynamical systems, we use manifold learning, a nonlinear data-driven technique, to analyze data.
 %
 Most manifold learning algorithms \cite{...} construct parameterizations of the data through the spectral analysis of a Laplace operator.
 %
 The data is then embedded in a new, low-dimensional coordinate system given by the eigenvectors of this operator. 
 %
-Our hope is that these coordinates, obtained in a data-driven manner, will describe the variables which govern the macroscale dynamical behavior of the system and enable us to introduce a reduced macroscale ab-initio model. 
+Our hope is that these coordinates, obtained in a data-driven manner, will describe the variables which govern the macroscale dynamical behavior of the system and enable us to introduce a reduced macroscale {\em ab initio} model. 
 
-These algorithms were first applied to synthetic data sets to illustrate their geometric properties and flexibility. 
+These manifold learning algorithms were first applied to synthetic data sets to illustrate their geometric properties and flexibility. 
 %
-Only recently have they been applied to experimental and simulation data, which was possible due to advances in data representation (observers) and metrics. 
+Only recently have they been applied to experimental and simulation data, which was possible due to advances in data representation (observers) and metrics \cite{...}. 
 %
-From a geometric perspective, not all eigenvectors are guaranteed to parameterize unique directions within the data; some eigenvectors are 	``repeated eigendirections'' which describe the same mode. 
+A critical shortcoming of these methods is that from a geometric perspective, not all eigenvectors are guaranteed to parameterize unique directions within the data; some eigenvectors are ``repeated eigendirections'' which describe the same mode. 
 %
-Identifying those eigenvectors is critical for obtaining an accurate parameterization of the system which captures the true dimensionality of the macroscale dynamics.  
+Identifying those eigenvectors is critical for obtaining a parameterization of the system which captures the true dimensionality of the macroscale dynamics.  
 %
-This is a challenging task which is often done manually, and few methods have been proposed to automate the identification of the unique eigendirections. 
+This is a challenging task which is often done manually, and few methods have been proposed to automate the identification of the unique eigendirections \cite{...}. 
 
 In this paper, we propose an algorithm to automatically identify the unique eigendirections using local linear regression.
 %
-We first demonstrate our algorithm on synthetic examples where we have a closed-form solution for the eigenvectors and eigenvalues of the Laplace operator.  
-%
-This will allow us to validate our proposed approach.
+We first demonstrate our algorithm on synthetic examples where we have a closed-form solution for the eigenvectors and eigenvalues of the Laplace operator, which will allow us to validate our proposed approach.
 %
 We then consider a complex data set from a stochastic dynamical system which models cellular chemotaxis. 
 %
-The recent advances in observers and metrics, coupled with the proposed approach for factoring out repeated eigendirections, provide a data analysis pipeline which can successfully analyze data from this simulation.
+The recent advances in observers and metrics, coupled with the proposed approach for identifying the unique eigendirections, provide a data analysis pipeline which can successfully analyze data from this simulation.
 %
 This pipeline will allow us to detect changes in the regime/mode of the system, as well as changes in the underlying dimensionality of the macroscale dynamics.  
 
@@ -170,9 +169,7 @@ This pipeline will allow us to detect changes in the regime/mode of the system, 
 
 \section{Manifold Learning Based on Laplace Operators}
 
-Data from dynamical systems is most often high-dimensional, since it is collected at the microscale.
-%
-However, the macroscale dynamics often evolve to a low-dimensional description. 
+Although data from dynamical systems is most often high-dimensional, since it is collected at the microscale, the macroscale dynamics often evolve to a low-dimensional description. 
 %
 In such cases, the high-dimensional microscale data will be restricted to a low-dimensional manifold embedded in the high-dimensional space. 
 %
@@ -197,7 +194,7 @@ We will show how to extract a $d$-dimensional parameterization of the observatio
 \includegraphics[width=\textwidth]{strip_cnts2}
 \caption{}
 \end{subfigure}
-\caption{Two-dimensional strip colored by the eigenfunction (a) $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi z_1}{L_1} \right)$, and (b) $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi z_2}{L_2} \right)$ .}
+\caption{Two-dimensional strip colored by the eigenfunction (a) $\tilde{\phi}_{1, 0} = \cos \left( {\pi z_1}/{L_1} \right)$, and (b) $\tilde{\phi}_{0, 1} = \cos \left( {\pi z_2}/{L_2} \right)$ .}
 \label{fig:strip_efuncs}
 \end{figure}
 
@@ -229,14 +226,14 @@ and the corresponding eigenfunctions are
 \end{equation}
 where $z_1$ and $z_2$ denote the two coordinates of the strip \cite{singer2008non}. 
 %
-We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( \frac{\pi z_1}{L_1} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( \frac{\pi z_2}{L_2} \right)$ are one-to-one with the $z_1$ and $z_2$ coordinates, respectively, and therefore yield a parameterization of the underlying manifold (see Figure~\ref{fig:strip_efuncs}). 
+We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( {\pi z_1}/{L_1} \right)$ and $\tilde{\phi}_{0, 1} = \cos \left( {\pi z_2}/{L_2} \right)$ are one-to-one with the $z_1$ and $z_2$ coordinates, respectively, and therefore yield a parameterization of the underlying manifold (see Figure~\ref{fig:strip_efuncs}). 
 %
 Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ provide a measure of $L_1$ versus $L_2$: as the ratio between $L_1$ and $L_2$ increases, the gap between $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ also increases (this will be discussed further in Section~\ref{sec:relative_lengths}).
 %
 The analytic form of the eigenfunctions in \eqref{eq:efuncs} illustrates the two issues we address in this paper. 
 %
 First, $z_1$ and $z_2$ are not necessarily decoupled in subsequent eigenfunctions. 
-TODO: address this in later section
+% TODO: address this in later section
 %
 Second, eigenfunctions with $k_1+k_2 \ge 2$ do not describe any additional directions along the strip; we will refer to these as ``repeated eigendirections,'' and we will refer to the eigenfunctions with $k_1+k_2 =1$ as ``unique eigendirections.''
 %
@@ -307,35 +304,35 @@ If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some densi
 \end{equation}
 where $U = -2 \log q$. 
 %
-Alternatively, one can factor out the density effects in the diffusion maps matrix.
+Alternatively, one can factor out the density effects in the weight matrix.
 %
 Given data $z(1), \dots, z(m) \in \mathcal{M}_d$, we construct the matrix
 %
 \begin{equation}
-\tilde{W} = D^{-1} W D^{-1}.
+\tilde{W} = D^{-1} W D^{-1},
 \end{equation}
 %
-Pre- and post-multiplication by $D^{-1}$ removes any density effects from $W$. 
+where pre- and post-multiplication by $D^{-1}$ removes any density effects from $W$. 
 %
 We then construct the diagonal matrix $\tilde{D} \in \mathbb{R}^{m \times m}$, with $\tilde{D}_{ii} = \sum_j \tilde{W}_{ij}$, and the matrix $\tilde{A}  = \tilde{D}^{-1} \tilde{W}.$
 %
-The matrix $\tilde{A}$ is comparable to the matrix $A$, but with sampling density effects removed, such that $I-\tilde{A}$ approaches the Laplace-Beltrami operator even if the data is nonuniformly sampled from the underlying manifold \cite{coifman2005geometric}. 
+The matrix $\tilde{A}$ is comparable to the matrix $A$, but with sampling density effects removed, such that $I-\tilde{A}$ approaches the Laplace-Beltrami operator on $\mathcal{M}_d$ even if the data is nonuniformly sampled from the underlying manifold \cite{coifman2005geometric}. 
 
 As discussed previously, the eigenfunctions provide a parameterization of the manifold, such that $\phi_{j}(i)$ yields the $j^{th}$ embedding coordinate for $z(i)$; this embedding is called diffusion maps \cite{...}.
 %
 We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$.%, and if the data do lie on a low-dimensional manifold, we only need to retain a few of the leading eigenvectors to adequately describe the data.
 %
 Because the matrix $A$ is row-stochastic ($\sum_j A_{ij} = 1$),  $\mu_0 = 1$ and $\phi_0$ is a trivial constant vector.
-
-Figure~\ref{fig:strip_evecs} shows data sampled from a strip, colored by diffusion maps eigenvectors. 
 %
-In cases of both uniform and nonuniform sampling, the eigenvectors are one-to-one with $z_1$ and $z_2$, and thus parameterize the manifold. 
+Figure~\ref{fig:strip_evecs} shows data sampled from a strip, colored by eigenvectors of $A$. 
+%
+In cases of both uniform and nonuniform sampling, the selected eigenvectors are one-to-one with $z_1$ and $z_2$, and thus parameterize the manifold. 
 %
 Although we have considered a very simple example for illustrative purposes, common practice is to use these tools for high-dimensional, nonlinear data sets.
 
 From the previous section, we know that the eigenfunctions with $(k_1, k_2) =(1, 0)$ and $(k_1, k_2) =(0, 1)$ provide embedding coordinates for the manifold; these two eigenfunctions are both uncoupled and not repeated.  
 %
-From \eqref{eq:evals}, we see that if we sort the eigenvectors by the magnitude of the corresponding eigenvalues, these eigenvectors are guaranteed to appear before any coupled or repeated eigendirections. 
+From \eqref{eq:evals}, we see that sorting the eigenvectors by the magnitude of the corresponding eigenvalues implies that these eigenvectors are guaranteed to appear before any coupled or repeated eigendirections. 
 %
 However, these two eigenvectors are {\em not} guaranteed to appear as the first two (non-trivial) eigenvectors, as harmonics of the first eigendirection (i.e., $\cos \left( n \pi z_1 / L_1 \right)$ with $n > 1$) could appear before the second.
 %
@@ -398,11 +395,11 @@ TODO: elaborate on their method and find other advantages of our proposed method
 %
 Here, we propose an alternative approach to address the problem of repeated eigendirections. 
 %
-We will attempt to fit a function $f(\phi_1, \dots, \phi_{k-1})$ to $\phi_{k}$. 
+Our approach is motivated by simple trigonometric arguments, such as the fact that $\cos2x$ (a repeated eigendirection) can be written as a function of $\cos x$ (a unique eigendirection). 
 %
-Our approach is motivated by simple trigonometric arguments, such as $\cos2x$ can be written as a function of $\cos x$. 
+We will therefore attempt to fit a function $f(\phi_1, \dots, \phi_{k-1})$ to $\phi_{k}$. 
 %
-Thus, if the resulting fit is accurate, then we assume $\phi_{k}$ is a repeated eigendirection of $\phi_1, \dots, \phi_{k-1}$. 
+If the resulting fit is accurate, we will assume $\phi_{k}$ is a repeated eigendirection of $\phi_1, \dots, \phi_{k-1}$. 
 %
 We will use a local linear function 
 \begin{equation}
@@ -437,18 +434,18 @@ We typically take $\epsilon_{reg} = M / 3$, where $M$ is the median of the pairw
 %
 We then define the normalized leave-one-out cross-validation error for this local linear fit as
 \begin{equation} \label{eq:cv_error}
-r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \phi_{k} (i) - (\hat{\alpha}_k(i) + \hat{\beta}_k(i)^T \Phi_{k-1}(i))  \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }}
+r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \phi_{k} (i) - (\hat{\alpha}_k(i) + \hat{\beta}_k(i)^T \Phi_{k-1}(i))  \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }}.
 \end{equation}
 %
-Note that a small value of $r_k$ implies that $\phi_{k}$ can be accurately approximated from $\phi_1, \dots, \phi_{k-1}$. We will assume it means that $\phi_k$ is a harmonic of previous modes, i.e., a repeated eigendirction.
+Note that a small value of $r_k$ implies that $\phi_{k}$ can be accurately approximated from $\phi_1, \dots, \phi_{k-1}$. 
 %
-Conversely, a large value of $r_{k}$ indicates that $\phi_{k}$ parameterizes a new direction in the data.
+We will assume this implies that $\phi_k$ is a harmonic of previous modes, i.e., a repeated eigendirction, and conversely, a large value of $r_{k}$ indicates that $\phi_{k}$ parameterizes a unique eigendirection in the data.
 %
 We choose to set $r_1 = 1$.
 
 The error in \eqref{eq:cv_error} can easily be computed \cite{wasserman2006all}.
 %
-We begin by computing the matrix
+We begin by constructing the matrix
 \begin{equation}
 X_{k-1}(i) = \begin{bmatrix}
 1 & \phi_1(1) - \phi_1(i) & \dots & \phi_{k-1}(1)- \phi_{k-1}(i) \\
@@ -484,9 +481,9 @@ r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \frac{ \phi_{k} (i) - \sum_{j=1}^m L_{k
 
 \subsection{Calculating the relative lengths of the manifold} \label{sec:relative_lengths}
 
-For the strip example, once the eigenvectors which parameterize unique eigendirections along the manifold have been determined, the corresponding eigenvalues can be used to calculate the relative lengths along these directions. 
+For a two-dimensional strip, once the eigenvectors which parameterize unique eigendirections have been determined, the corresponding eigenvalues can be used to calculate the relative lengths along these directions. 
 %
-For more general manifolds, we believe the eigenvalues can still provide a measure of the relative significance of the unique eigendirections.
+For more general manifolds, we presume that the eigenvalues can still provide a measure of the relative significance of the unique eigendirections.
 %
 Let $\mu_{i_1}, \mu_{i_2}, \dots$ denote the eigenvalues corresponding to eigenvectors which parameterize unique eigendirections (i.e., those eigenvectors where $r_{i_j}$ is large). 
 %
@@ -495,9 +492,8 @@ For the strip example, from \eqref{eq:evals} and \eqref{eq:evals_relationship}, 
 L_j \propto \frac{1}{\sqrt{-\log \mu_{i_j}}}.
 \end{equation}
 %
-This measure is used to determine how many components are required to retain most of the information within the data set.
-%
-For example, if $L_j$ is smaller than a predefined threshold, then this component can be disregarded. 
+These lengths are used to determine how many components are required to retain most of the information within the data set; 
+for example, if $L_j$ is smaller than a predefined threshold, then this component can be disregarded. 
 
 
 \subsection{Illustrative examples} \label{sec:illustrative_examples}
@@ -540,17 +536,17 @@ The second and third data sets are nonlinear manifolds which demonstrate the fle
 
 Our first illustrative example consists of three different two-dimensional strip data sets. 
 %
-Each data set contains $m=1500$ data points uniformly sampled from the strip. 
+Each data set contains $m=2000$ data points uniformly sampled from the strip. 
 %
 Figure~\ref{fig:strip_compare_analytic} shows the data sets and corresponding eigenspectra.
 %
-The eigenvalues are colored by the leave-one-out cross-validation error as defined in \eqref{eq:cv_error}; a small value of $r_k$ indicate that the corresponding eigenvector is a repeated eigendirection, while a large value of $r_k$ indicates that the corresponding eigenvector describes a new direction in the data. 
+The eigenvalues are colored by the leave-one-out cross-validation error as defined in \eqref{eq:cv_error}; a small value of $r_k$ indicates that the corresponding eigenvector is a repeated eigendirection, while a large value of $r_k$ indicates that the corresponding eigenvector describes a new direction in the data. 
 %
 The analytic eigenvalues of the Laplacian (see \eqref{eq:evals} and \eqref{eq:evals_relationship}) are also indicated in red. 
 
-We observe that the eigenvalues are consistent with the known analytic eigenvalues of the Laplacian (see \eqref{eq:evals} and \eqref{eq:evals_relationship}).
+We observe that the eigenvalues are consistent with the known analytic eigenvalues of the Laplacian.
 %
-Furthermore, the two unique eigendirections can be identified, since their corresponding regression error $r_k$ is large. 
+Furthermore, the two unique eigendirections can easily be identified, since their corresponding regression error $r_k$ is large. 
 %
 As expected, we observe that the gap between the two meaningful eigenvalues increases as the strip becomes longer. 
 %
@@ -565,48 +561,56 @@ Using \eqref{eq:est_lengths}, we can accurately estimate the relative lengths of
 \centering
 \includegraphics[height=1.25in]{swissroll1}
 \caption{}
+\label{subfig:swissroll1}
 \end{subfigure}
-\hfill
+%\hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
 \includegraphics[height=1.25in]{swissroll2}
 \caption{}
+\label{subfig:swissroll2}
 \end{subfigure}
-\hfill
+%\hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
 \includegraphics[height=1.25in]{swissroll1_evals}
 \caption{}
+\label{subfig:swissroll1_evals}
 \end{subfigure}
-\hfill
+%\hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
 \includegraphics[height=1.25in]{swissroll2_evals}
 \caption{}
+\label{subfig:swissroll2_evals}
 \end{subfigure}
-\hfill
+%\hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
 \includegraphics[height=1.25in]{swissroll1_color1} 
 \caption{}
+\label{subfig:swissroll1_color1}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
 \includegraphics[height=1.25in]{swissroll2_color1}
 \caption{}
+\label{subfig:swissroll2_color1}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
 \includegraphics[height=1.25in]{swissroll1_color2}
 \caption{}
+\label{subfig:swissroll1_color2}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.45\textwidth}
 \centering
 \includegraphics[height=1.25in]{swissroll2_color2}
 \caption{}
+\label{subfig:swissroll2_color2}
 \end{subfigure}
 %
 \caption{Swiss roll example. (a) Data set 1; $h= 40$. (b) Data set 2; $h = 20$. (c) Eigenvalue spectrum from the analysis of data set 1. (d) Eigenvalue spectrum from the analysis data set 2. (e) Data set 1, colored by the first eigenvector. (f) Data set 2, colored by the first eigenvector. (g) Data set 1, colored by the second eigenvector. (h) Data set 2, colored by the fifth eigenvector. } 
@@ -624,23 +628,23 @@ z_3 =& h t
 \end{aligned}
 \end{equation}
 %
-such that $z_1, z_2$ are uniformly sampled along the arclength of the spiral, and $t \sim Unif(0,1)$. 
+where $\theta$ is sampled such that $z_1, z_2$ are uniformly sampled along the arclength of the spiral, and $t \sim Unif(0,1)$. 
 %
 Note that, in this example, $z_1, z_2, z_3$ are the original coordinates; however, the data lie on a two-dimensional manifold parameterized by the $\theta$ and $t$. 
 %
 The height of the first swiss roll is $h = 40$, while the height of the second is $h = 20$. 
 %
-Each data set consists of $m=1500$ points, shown shown in Figure~\ref{fig:swiss_rolls}(a)~and~(b).
+Each data set consists of $m=1500$ points, shown shown in Figures~\ref{subfig:swissroll1}--\ref{subfig:swissroll2}.
 %
 %We expect to recover the eigenvector which parameterizes the height farther down in the spectrum for the second data set relative to the first, as this second data set is shorter.
 
-Figure~\ref{fig:swiss_rolls}~(c)~and~(d) shows the eigenvalue spectra from the analysis of the two data sets.
+Figures~\ref{subfig:swissroll1_evals}--\ref{subfig:swissroll2_evals} shows the eigenvalue spectra from the analysis of the two data sets.
 %
 Similar to Figure~\ref{fig:strip_compare_analytic}, the bars are colored by the leave-one-out cross-validation error, where a small value of $r_k$ indicates that the corresponding eigenvector is a repeated eigendirection. 
 %
 From these plots, one can conclude that the first two eigenvectors $\phi_1$ and $\phi_2$ parameterize the first data set, while $\phi_1$ and $\phi_5$ parameterize the second. 
 %
-Figure~\ref{fig:swiss_rolls}~(e--h) shows the two data sets, colored by the two eigenvectors identified by our method as parameterizing the unique eigendirections. 
+Figures~\ref{subfig:swissroll1_color1}--\ref{subfig:swissroll2_color2} shows the two data sets, colored by the two eigenvectors identified by our method as parameterizing the unique eigendirections. 
 %
 As expected, these eigenvectors are one-to-one with the arc length along the spiral, and the height of the swiss roll. 
 
@@ -844,7 +848,7 @@ Two is a {\em distance metric} between the observations that captures a notion o
 %%
 %Another option is the Earth Mover's Distance, a multiscale distance metric which is stable and robust to noise \cite{rubner2000earth}.
 
-For the chemotaxis example, we use histograms of the particle positions as observers \cite{talmon2013empirical}. 
+For the chemotaxis example, we use histograms of the particle positions as observers. 
 %
 Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
 %
@@ -860,13 +864,12 @@ Although the brute-force computation of the EMD is computationally expensive, th
 %
 For the special case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions of the data \cite{rubner2000perceptual}, which can be approximated from histograms as
 \begin{equation}
-\| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|
+\| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|,
 \end{equation}
-where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$, and $z_k$ denotes the $k^{th}$ bin. 
+where the histograms $z(i), z(j)$ are defined on $n$ equally-spaced bins in $\mathbb{R}$ (for our specific simulations, we will take $n=32$), and $z_k$ denotes the $k^{th}$ bin. 
 %
-We note that although histograms are not essential for using EMD, histograms make the computation feasible. 
+We note that although histograms are not essential for using EMD, they make the computation feasible. 
 %
-For our specific simulations, we will take $n=32$. 
 
 %\subsubsection{Constructing appropriate observers}
 %
@@ -1006,13 +1009,13 @@ Figure~\ref{fig:chemotaxis_simulations_harmonics} shows the results of analyzing
 %
 We see from the eigenspectra and the cross-validation errors $r_k$ that the second unique eigendirection moves down in the spectrum as $\lambda$ increases. 
 %
-Plotting the data using the two eigenvectors identified as corresponding to unique eigendirections yields two-dimensional embeddings which capture the macroscopic variables $p$ and $t$ (we only show the correspondence of the two identified unique eigendirections with $p$ in the middle row of Figure~\ref{fig:chemotaxis_simulations_harmonics} and report that the correspondence between these eigendirections and $t$ is also consistent). 
+Plotting the data using the two eigenvectors identified as corresponding to unique eigendirections yields two-dimensional embeddings which capture the macroscopic variables $p$ and $t$ (we only show the correspondence of the two identified unique eigendirections with $p$ in the middle row of Figure~\ref{fig:chemotaxis_simulations_harmonics}; the correspondence between these eigendirections and $t$ is similarly consistent). 
 %
 In contrast, plotting the data using the two leading eigenvectors $\phi_1$ and $\phi_2$ produces uninformative embeddings for large values of $\lambda$, as $\phi_2$ is a repeated eigendirection which does not parameterize any new directions in the data.
 %
-From the top row of Figure~\ref{fig:chemotaxis_simulations_harmonics}, we can see that the eigenvalue spectrum does not exhibit any large spectral gaps.
+From the top row of Figure~\ref{fig:chemotaxis_simulations_harmonics}, we see that the eigenvalue spectra do not exhibit any large spectral gaps.
 %
-However, there is a significant gap between the eigenvalues which correspond to new directions in the data (colored in blue), and the corresponding eigenvectors provide us with an informative two-dimensional parameterization of the data. %which is consistent with the expected macroscopic dynamics. 
+However, the gap between the eigenvalues which correspond to new directions in the data (colored in blue) increases with $\lambda$, indicating that the underlying manifold becomes more narrow/one-dimensional, and the corresponding eigenvectors provide us with an informative two-dimensional parameterization of the data. %which is consistent with the expected macroscopic dynamics. 
 %
 It now becomes clear that looking at the eigenvectors {\em modulo} repeated eigendirections is essential for extracting an informative parameterization of the data, as well as characterizing the dimensionality of the data. 
 
@@ -1127,7 +1130,7 @@ When $\lambda \rightarrow 0$, the right-hand side of \eqref{eqn:coupled_pdes} te
 %\[
 %\frac{1}{\lambda} \frac{\partial^2 \rho}{\partial t^2} + 2 \frac{\partial \rho}{\partial t} = D \frac{\partial ^2 \rho}{\partial x^2}
 %\]
-When $\lambda \rightarrow \infty$, \eqref{eq:second_order_pde} approaches the heat equation,
+When $\lambda \rightarrow \infty$ with $s^2/\lambda$ fixed, \eqref{eq:second_order_pde} approaches the heat equation,
 \begin{equation}
 2 \frac{\partial \rho}{\partial t} = D \frac{\partial ^2 \rho}{\partial x^2},
 \end{equation}
@@ -1234,20 +1237,22 @@ when this ratio becomes small, the data are effectively one-dimensional, as the 
 
 
 
-Figure~\ref{fig:chemotaxis_compare_timescales_evals} shows the eigenvalue ratio in \eqref{eq:chemotaxis_eval_ratio} as a function of $\lambda$ and the time scale of observation $t_{max}$, and we observe changes in the estimated dimensionality.
+Figure~\ref{fig:chemotaxis_compare_timescales_evals} shows the eigenvalue ratio in \eqref{eq:chemotaxis_eval_ratio} as a function of $\lambda$ and the time scale of observation $t_{max}$.
+%
+From this eigenvalue ratio, we detect changes in the estimated dimensionality as we vary the relevant parameters.
+%
+or small $\lambda$ and/or short $t_{max}$, the data are effectively two-dimensional, as both $p$ and $t$ are important to the observed dynamics. 
+%
+However, when $\lambda$ and/or $t_{max}$ is large, the system rapidly equilbrates and the data are effectively one-dimensional, parameterized by $t$. 
 %
 %We therefore expect the observed dimensionality to change from two to one as a function of $\lambda$. 
 %
 %For general dynamical systems, the governing macroscopic variables and asymptotic behavior may not be immediately obvious, and instead need to be inferred from the microscopic data.
 %
-For this specific example, these changes are consistent with the analytically-predicted shift when 
+For this specific example, these changes are consistent with the analytically-predicted shift at 
 \begin{equation}
 \frac{t_{max}}{N} = \frac{1}{\lambda}.
 \end{equation} 
-%
-For small $\lambda$ and/or short $t_{max}$, the data are effectively two-dimensional, as both $p$ and $t$ are important to the observed dynamics. 
-%
-However, when $\lambda$ and/or $t_{max}$ is large, the system rapidly equilbrates and the data are effectively one-dimensional, parameterized by $t$. 
 %
 %From \cite{othmer2000diffusion}, the relevant time scales for the velocity jump process are
 %%\begin{equation}

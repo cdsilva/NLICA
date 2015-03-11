@@ -89,7 +89,7 @@ z = z / 2;
 data = [x y z]; % data
 
 W = squareform(pdist(data)).^2;
-eps = 4;
+eps = 5;
 
 [V, D] = dmaps(W, eps, neigs);
 
@@ -106,7 +106,7 @@ ylabel('z_2')
 zlabel('z_3')
 axis equal
 grid on
-% print('swissroll2.eps','-depsc')
+print('swissroll2.eps','-depsc')
 
 make_fig(3,2);
 scatter3(x,y,z,50,sign(corr(V(:,2),theta))*V(:,2),'.')
@@ -118,7 +118,7 @@ axis equal
 grid on
 cbar = colorbar('peer',gca); 
 set(get(cbar,'xlabel'),'String','\phi_1');
-% print('swissroll2_color1.eps','-depsc')
+print('swissroll2_color1.eps','-depsc')
 
 make_fig(3,2);
 scatter3(x,y,z,50,sign(corr(V(:,6),z))*V(:,6),'.')
@@ -130,7 +130,7 @@ axis equal
 grid on
 cbar = colorbar('peer',gca); 
 set(get(cbar,'xlabel'),'String','\phi_5');
-% print('swissroll2_color2.eps','-depsc')
+print('swissroll2_color2.eps','-depsc')
 
 make_fig(3,2);
 make_colored_bars(diag(D(2:end,2:end)), res(2:end))
@@ -138,5 +138,5 @@ set(gca, 'ylim', [0.9 1])
 xlabel('k')
 ylabel('\mu_k')
 axis square
-% print('swissroll2_evals.eps','-depsc')
+print('swissroll2_evals.eps','-depsc')
 
