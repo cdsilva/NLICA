@@ -1,13 +1,13 @@
 clear all
 close all
 
-rng(123);
+rng(321);
 markersize = 500;
 
 
 %% simulations
 
-lambda_all = [100 2500 6400];
+lambda_all = [100 1600 6400];
 s_all = sqrt(lambda_all);
 comp2 = [3 4 5];
 
@@ -71,7 +71,7 @@ for sim_num = 1:length(lambda_all)
     
     
     % use data after initial "relaxation" time
-    idx = (all_time > 1);
+    idx = (all_time > 0);
     
     %% compute EMD between histograms
     
@@ -99,12 +99,6 @@ for sim_num = 1:length(lambda_all)
     [V2, D2] = dmaps(W2, eps2, 10);
     
     
-    if corr(V2(:,2), all_time(idx)') < 0
-        V2(:,2) = -V2(:,2);
-    end
-    if corr(V2(:,3), all_p(idx)') < 0
-        V2(:,3) = -V2(:,3);
-    end
     
     %%
     eps_med_scale = 3;
@@ -119,6 +113,15 @@ for sim_num = 1:length(lambda_all)
     ylabel('\mu_k')
     axis square
     print(sprintf('chemotaxis%d_evals.eps', sim_num),'-depsc')
+    
+    
+    if corr(V2(:,2), all_time(idx)') < 0
+        V2(:,2) = -V2(:,2);
+    end
+    if corr(V2(:,comp2(sim_num)), all_p(idx)') < 0
+        V2(:,comp2(sim_num)) = -V2(:,comp2(sim_num));
+    end
+    
     
     make_fig(3,2);
     scatter(V2(:,2),V2(:,3),50, all_p(idx), '.')
@@ -143,6 +146,7 @@ for sim_num = 1:length(lambda_all)
     axis tight
     axis square
     print(sprintf('chemotaxis%d_embed_good.eps', sim_num),'-depsc')
+    
     
     %
     % figure;
@@ -169,6 +173,7 @@ for sim_num = 1:length(lambda_all)
     
 end
 
+return
 
 %%
 
@@ -215,7 +220,7 @@ for sim_num = 1:prod(size(lambda_all))
     
     
     % use data after initial "relaxation" time
-    idx = (all_time > 1);
+    idx = (all_time > 0);
     
     % compute EMD between histograms
     
@@ -243,8 +248,8 @@ for sim_num = 1:prod(size(lambda_all))
     eps_med_scale = 3;
     res = compute_residuals_DMAPS(V2, eps_med_scale);
     
-%     subplot(5, 10, sim_num)
-%     plot(res, '-o')
+    %     subplot(5, 10, sim_num)
+    %     plot(res, '-o')
     
     [~, idx] = sort(res(2:end), 'descend');
     idx = idx + 1;
@@ -260,6 +265,8 @@ for sim_num = 1:prod(size(lambda_all))
     
     
 end
+
+return
 
 %%
 % figure;

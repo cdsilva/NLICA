@@ -4,7 +4,7 @@ close all
 %%
 rng(123);
 
-n = 1000;
+n = 2000;
 
 theta1 = 2*pi*rand(n, 1);
 theta2 = 2*pi*rand(n, 1);

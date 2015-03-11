@@ -110,7 +110,7 @@ print('strip_nonuniform2.eps','-depsc')
 
 n = 2000;
 
-rng(321);
+rng(123);
 
 for Lx = [2 4 8]
     
@@ -119,7 +119,7 @@ for Lx = [2 4 8]
     data(:,2) = data(:,2) * Ly;
     
     W = squareform(pdist(data)).^2;
-    eps = 0.25^2;
+    eps = 0.15^2;
     
     [V, D] = dmaps(W, 2*eps, 10);
     

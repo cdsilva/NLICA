@@ -9,30 +9,27 @@ markersize = 500;
 
 
 % rate of switching velocity
-lambda = 1;
+lambda = 400;
 % speed of particles
 s = sqrt(lambda);
 
 % number of particles
 N = 1000;
 % maximum simulation time
-tmax = 10000;
-tmin = 0.1*tmax;
+tmax = 10;
+tmin = 0;
 % time step
-dt = (tmax - tmin) / 9;
+dt = 1;
 nsteps = floor(tmax / dt) + 1;
 
 %initial probility of a particle moving to the right (vel=+1)
 nsim = 10;
 pinit = linspace(0.1, 0.9, nsim);
 
-min_start = -10;
-max_start = 10;
-
 % histogram parameters
 % nbins = 512;
 nbins = 32;
-x_hist = linspace(min_start-s*tmax, max_start+s*tmax, nbins);
+x_hist = linspace(-s*tmax, s*tmax, nbins);
 hist_all = zeros(nbins, nsteps*nsim);
 hist_left = zeros(nbins, nsteps*nsim);
 hist_right = zeros(nbins, nsteps*nsim);
@@ -81,7 +78,15 @@ idx = (all_time > tmin);
 
 %%
 
-tmp_diff = sum((hist_left-hist_right).^2);
+rho_diff = sum((hist_left-hist_right).^2);
+rho_mean_left = x_hist * hist_left;
+rho_mean_right = x_hist * hist_right;
+rho_mean = x_hist * hist_all;
+rho_mean_der = x_hist * (hist_all(:, 2:end) - hist_all(:, 1:end-1));
+rho_mean_der = [0 rho_mean_der];
+
+rho_mean_left_norm = x_hist * (hist_left./repmat(sum(hist_left), nbins, 1));
+rho_mean_right_norm = x_hist * (hist_right./repmat(sum(hist_right), nbins, 1));
 
 %% compute EMD between histograms
 
@@ -141,11 +146,55 @@ corr(V2(:,2),all_time(idx)')
 
 corr(V2(:,3),all_p(idx)')
 
+return
+
 %%
 
+% figure;
+% scatter(V2(:,2),V2(:,3),markersize,rho_diff(idx), '.')
+% xlabel('$\phi_1$', 'interpreter','latex')
+% ylabel('$\phi_2$', 'interpreter','latex')
+% h = colorbar;
+% set(get(h,'xlabel'),'String', 'FLUXES');
+% 
+% figure;
+% scatter(V2(:,2),V2(:,3),markersize,rho_mean_left(idx), '.')
+% xlabel('$\phi_1$', 'interpreter','latex')
+% ylabel('$\phi_2$', 'interpreter','latex')
+% h = colorbar;
+% set(get(h,'xlabel'),'String', 'mean of left particles');
+% 
+% figure;
+% scatter(V2(:,2),V2(:,3),markersize,rho_mean_right(idx), '.')
+% xlabel('$\phi_1$', 'interpreter','latex')
+% ylabel('$\phi_2$', 'interpreter','latex')
+% h = colorbar;
+% set(get(h,'xlabel'),'String', 'mean of right particles');
+
+% figure;
+% scatter(V2(:,2),V2(:,3),markersize,rho_mean(idx), '.')
+% xlabel('$\phi_1$', 'interpreter','latex')
+% ylabel('$\phi_2$', 'interpreter','latex')
+% h = colorbar;
+% set(get(h,'xlabel'),'String', 'mean of particles');
+% 
+% figure;
+% scatter(V2(:,2),V2(:,3),markersize,rho_mean_der(idx), '.')
+% xlabel('$\phi_1$', 'interpreter','latex')
+% ylabel('$\phi_2$', 'interpreter','latex')
+% h = colorbar;
+% set(get(h,'xlabel'),'String', 'mean of derivative');
+
 figure;
-scatter(V2(:,2),V2(:,3),markersize,tmp_diff(idx), '.')
+scatter(V2(:,2),V2(:,3),markersize,rho_mean_right(idx)-rho_mean_left(idx), '.')
 xlabel('$\phi_1$', 'interpreter','latex')
 ylabel('$\phi_2$', 'interpreter','latex')
 h = colorbar;
-set(get(h,'xlabel'),'String', 'FLUXES');
+set(get(h,'xlabel'),'String', 'E\rho^+ - E\rho^-');
+
+figure;
+scatter(V2(:,2),V2(:,3),markersize,rho_mean_right_norm(idx)-rho_mean_left_norm(idx), '.')
+xlabel('$\phi_1$', 'interpreter','latex')
+ylabel('$\phi_2$', 'interpreter','latex')
+h = colorbar;
+set(get(h,'xlabel'),'String', 'E\rho^+_{norm} - E\rho^-_{norm}');

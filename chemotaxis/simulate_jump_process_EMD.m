@@ -12,11 +12,6 @@ lambda = 1;
 % speed of particles
 s = 1;
 
-% % rate of switching velocity
-% lambda = 400;
-% % speed of particles
-% s = 20;
-
 % number of particles
 N = 1000;
 % time step
@@ -29,12 +24,9 @@ nsteps = floor(tmax / dt) + 1;
 nsim = 10;
 pinit = linspace(0.1, 0.9, nsim);
 
-min_start = -10;
-max_start = 10;
-
 % histogram parameters
 nbins = 32;
-x_hist = linspace(min_start-s*tmax, max_start+s*tmax, nbins);
+x_hist = linspace(-s*tmax, s*tmax, nbins);
 hist_all = zeros(nbins, nsteps*nsim);
 hist_left = zeros(nbins, nsteps*nsim);
 hist_right = zeros(nbins, nsteps*nsim);
@@ -49,7 +41,6 @@ figure;
 for j=1:nsim
     % simulate velocity jump process
     [pos, vel, time] = simulate_jumps(N, tmax, dt, lambda, s, pinit(j));
-    %[pos, vel, time] = simulate_jumps_unifdist(N, tmax, dt, lambda, s, pinit(j), min_start, max_start);
     
     % histogram of all particle positions as a function of time
     for i=1:nsteps
@@ -78,7 +69,7 @@ end
 %% dmaps on raw histograms
 
 % use data after initial "relaxation" time
-idx = (all_time > 1);
+idx = (all_time > 0);
 
 W = squareform(pdist(hist_all(:,idx)')).^2;
 eps = median(W(:));
@@ -111,8 +102,6 @@ corr(V(:,3),all_time(idx)')
 
 %% compute EMD between histograms
 
-addpath('FastEMD');
-
 W2 = zeros(nsteps*nsim);
 
 D_for_emd = pdist2(x_hist', x_hist');
@@ -127,8 +116,6 @@ for i1=1:nsteps*nsim
         W2(i2, i1) = W2(i1, i2);
     end
 end
-
-rmpath('FastEMD');
 
 %% dmaps on EMD
 
@@ -183,7 +170,7 @@ axis(axis_lim)
 xlabel('$\phi_1$', 'interpreter','latex', 'fontsize', 20)
 ylabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 h = colorbar;
-set(get(h,'xlabel'),'String', 't', 'fontsize', 20);
+set(get(h,'ylabel'),'String', 't', 'fontsize', 20);
 curr_ax = get(ax, 'position');
 curr_ax(1) = curr_ax(1) + 0.02;
 set(ax, 'position', curr_ax);
@@ -215,7 +202,7 @@ arrow_pos(1,1) = arrow_pos(1,1) + ax_size;
 arrow_pos(5:6,2) = arrow_pos(5:6,2) + ax_size/2;
 arrow_pos(5,1) = arrow_pos(5,1) + ax_size;
 
-xx = linspace(min_start-s*tmax, max_start+s*tmax, 500);
+xx = linspace(-s*tmax, s*tmax, 500);
 
 for j=1:num_hist
     axes('position',ax_pos(j, :));
@@ -239,7 +226,7 @@ axis(axis_lim)
 xlabel('$\phi_1$', 'interpreter','latex', 'fontsize', 20)
 ylabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
 h = colorbar;
-set(get(h,'xlabel'),'String', 'p', 'fontsize', 20);
+set(get(h,'ylabel'),'String', 'p', 'fontsize', 20);
 curr_ax = get(ax, 'position');
 curr_ax(1) = curr_ax(1) + 0.02;
 set(ax, 'position', curr_ax);
@@ -258,5 +245,38 @@ for j=1:num_hist
 end
 %print(sprintf('EMD_withhist_p_%d', lambda), '-r300','-djpeg')
 saveas(gcf, sprintf('EMD_withhist_p_%d', lambda), 'epsc')
+
+
+%%
+
+rho_mean_left_norm = x_hist * (hist_left./repmat(sum(hist_left), nbins, 1));
+rho_mean_right_norm = x_hist * (hist_right./repmat(sum(hist_right), nbins, 1));
+
+figure;
+set(gcf,'PaperPositionMode','auto');
+scatter(V2(:,2),V2(:,3),markersize,rho_mean_right_norm(idx)-rho_mean_left_norm(idx), '.');
+ax = gca;
+axis(axis_lim)
+xlabel('$\phi_1$', 'interpreter','latex', 'fontsize', 20)
+ylabel('$\phi_2$', 'interpreter','latex', 'fontsize', 20)
+h = colorbar;
+set(get(h,'ylabel'),'String', 'E\rho^+ - E\rho^-', 'fontsize', 20);
+curr_ax = get(ax, 'position');
+curr_ax(1) = curr_ax(1) + 0.02;
+set(ax, 'position', curr_ax);
+hold on
+
+for j=1:num_hist
+    axes('position',ax_pos(j, :));
+    yy = interp1(x_hist, hist_all2(:, i(j)),xx, 'pchip');
+    plot(xx, yy)
+    %bar(x_hist, hist_all2(:, i(j)))
+    set(gca, 'xtick', [])
+    set(gca, 'ytick', [])
+end
+for j=1:num_hist
+    annotation('arrow', [points_x(j) arrow_pos(j, 1)], [points_y(j) arrow_pos(j, 2)])
+end
+saveas(gcf, sprintf('EMD_withhist_rho_%d', lambda), 'epsc')
 
 

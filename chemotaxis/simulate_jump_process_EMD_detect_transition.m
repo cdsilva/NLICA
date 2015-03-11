@@ -6,177 +6,176 @@ rng(123);
 
 %% simulations
 
-nlambda = 10;
-
-lambda_all = linspace(1, 1000, nlambda);
-s_all = sqrt(lambda_all);
+% nlambda = 10;
+% lambda_all = linspace(1, 400, nlambda);
+lambda_all = 1:10:200;
+nlambda = length(lambda_all);
 
 % number of particles
 N = 1000;
-% time step
-dt = 1;
-% maximum simulation time
-tmax = 100;
-nsteps = floor(tmax / dt) + 1;
 
-t_range_all = 10:10:tmax;
-ntime = length(t_range_all);
+% ntmax = 10;
+% tmax_all = linspace(10, 400, ntmax);
+tmax_all = 10:10:200;
+ntmax = length(tmax_all);
 
 %initial probility of a particle moving to the right (vel=+1)
 nsim = 10;
 pinit = linspace(0.1, 0.9, nsim);
 
 % histogram parameters
-nbins = 256;
-% nbins = 32;
-hist_all = zeros(nbins, nsteps*nsim);
-hist_left = zeros(nbins, nsteps*nsim);
-hist_right = zeros(nbins, nsteps*nsim);
-all_time = zeros(1, nsteps*nsim);
-all_p = zeros(1, nsteps*nsim);
+nbins = 32;
 
-niter = 1;
+niter = 3;
 
-eval1 = zeros(nlambda, ntime, niter);
-eval2 = zeros(nlambda, ntime, niter);
-t_dom = zeros(nlambda, ntime, niter);
+eval1 = zeros(nlambda, ntmax, niter);
+eval2 = zeros(nlambda, ntmax, niter);
+t_dom = zeros(nlambda, ntmax, niter);
 
-f1 = figure;
-f2 = figure;
-fig_idx = 1;
+% f1 = figure;
+% f2 = figure;
+% fig_idx = 1;
 
-%%
 
-for k=1:niter
-    for sim_num = 1:nlambda
-        
-        sim_num
-        
-        lambda = lambda_all(sim_num);
-        s = s_all(sim_num);
-        
-        x_hist = linspace(-s*tmax, s*tmax, nbins);
-        
-        for j=1:nsim
-            % simulate velocity jump process
-            [pos, vel, time] = simulate_jumps(N, tmax, dt, lambda, s, pinit(j));
+for j1=1:nlambda
+    j1
+    for j2=1:ntmax
+        for k=1:niter
             
-            % histogram of all particle positions as a function of time
-            for i=1:nsteps
+            % rate of switching velocity
+            lambda = lambda_all(j1);
+            % speed of particles
+            s = sqrt(lambda);
+            
+            % maximum simulation time
+            tmax = tmax_all(j2);
+            %             tmin = 0.1*tmax;
+            tmin = 0;
+            
+            % time step
+            dt = tmax / 10;
+            nsteps = floor(tmax / dt+1e-6) + 1;
+            
+            
+            % histogram parameters
+            x_hist = linspace(-s*tmax, s*tmax, nbins);
+            hist_all = zeros(nbins, nsteps*nsim);
+            hist_left = zeros(nbins, nsteps*nsim);
+            hist_right = zeros(nbins, nsteps*nsim);
+            all_time = zeros(1, nsteps*nsim);
+            all_p = zeros(1, nsteps*nsim);
+            
+            for j=1:nsim
+                % simulate velocity jump process
+                [pos, vel, time] = simulate_jumps(N, tmax, dt, lambda, s, pinit(j));
                 
-                [hist_all(:,(j-1)*nsteps+i), ~] = hist(pos(:,i),x_hist);
+                % histogram of all particle positions as a function of time
+                for i=1:nsteps
+                    
+                    [hist_all(:,(j-1)*nsteps+i), ~] = hist(pos(:,i),x_hist);
+                    
+                    idx = (vel(:,i) == -1);
+                    [hist_left(:,(j-1)*nsteps+i), ~] = hist(pos(idx,i),x_hist);
+                    
+                    idx = (vel(:,i) == 1);
+                    [hist_right(:,(j-1)*nsteps+i), ~] = hist(pos(idx,i),x_hist);
+                    
+                end
                 
-                idx = (vel(:,i) == -1);
-                [hist_left(:,(j-1)*nsteps+i), ~] = hist(pos(idx,i),x_hist);
-                
-                idx = (vel(:,i) == 1);
-                [hist_right(:,(j-1)*nsteps+i), ~] = hist(pos(idx,i),x_hist);
+                % store times and probabilities
+                all_time((j-1)*nsteps+1:j*nsteps) = time;
+                all_p((j-1)*nsteps+1:j*nsteps) = pinit(j);
                 
             end
             
-            % store times and probabilities
-            all_time((j-1)*nsteps+1:j*nsteps) = time;
-            all_p((j-1)*nsteps+1:j*nsteps) = pinit(j);
+            % use data after initial "relaxation" time
+            idx = (all_time > tmin);
             
-        end
-        
-        
-        
-        % compute EMD between histograms
-        
-        W = zeros(nsteps*nsim);
-        
-        for i1=1:nsteps*nsim
-            for i2=1:i1-1
-                
-                emd_dist = sum(abs(cumsum(hist_all(:,i1)) - cumsum(hist_all(:,i2))));
-                
-                W(i1, i2) = emd_dist^2;
-                W(i2, i1) = W(i1, i2);
+            % compute EMD between histograms
+            
+            W2 = zeros(nsteps*nsim);
+            
+            D_for_emd = pdist2(x_hist', x_hist');
+            
+            for i1=1:nsteps*nsim
+                for idx2=1:i1-1
+                    
+                    emd_dist = sum(abs(cumsum(hist_all(:,i1)) - cumsum(hist_all(:,idx2))));
+                    
+                    W2(i1, idx2) = emd_dist^2;
+                    W2(idx2, i1) = W2(i1, idx2);
+                end
             end
-        end
-        
-        % dmaps on EMD
-        
-        for i1=1:ntime
             
-            %% TODO check-- min time be 1??
-            idx = find(all_time > t_range_all(i1)-9 & all_time <= t_range_all(i1));
-            W2 = W(idx,idx);
+            
+            % dmaps on EMD
+            
+            W2 = W2(idx,idx);
             eps2 = median(W2(:));
-            [V2, D2] = dmaps(W2, eps2, 10);
+            [V2, D2] = dmaps(W2, eps2, 5);
+            
             
             %
             eps_med_scale = 3;
             res = compute_residuals_DMAPS(V2, eps_med_scale);
             
             %         i2 = find(res > 0.3);
-            [~, i2] = sort(res, 'descend');
-            i2 = sort(i2(1:2));
+            [~, idx2] = sort(res, 'descend');
+            idx2 = sort(idx2(1:2));
             %         i2 = [2 3];
             
-            eval1(sim_num, i1, k) = D2(i2(1), i2(1));
-            eval2(sim_num, i1, k) = D2(i2(2), i2(2));
+            eval1(j1, j2, k) = D2(idx2(1), idx2(1));
+            eval2(j1, j2, k) = D2(idx2(2), idx2(2));
             
-            if abs(corr(all_time(idx)', V2(:, i2(1)))) > abs(corr(all_time(idx)', V2(:, i2(2))))
-                t_dom(sim_num, i1, k) = 1;
+            if abs(corr(all_time(idx)', V2(:, idx2(1)))) > abs(corr(all_time(idx)', V2(:, idx2(2))))
+                t_dom(j1, j2, k) = 1;
             end
-                    figure(f1);
-                    subplot(nlambda, ntime, fig_idx)
-                    scatter(V2(:, i2(1)), V2(:, i2(2)),50, all_p(idx), '.')
-                    title(sprintf('t=%d, \\lambda=%4.0f', i1, lambda))
-                    %         axis off
-            
-                    figure(f2);
-                    subplot(nlambda, ntime, fig_idx)
-                    scatter(V2(:, i2(1)), V2(:, i2(2)),50, all_time(idx), '.')
-                    title(sprintf('t=%d, \\lambda=%4.0f', i1, lambda))
-                    %         axis off
-            
-                    fig_idx = fig_idx + 1;
+            %
+            %             figure(f1);
+            %             subplot(nlambda, ntmax, fig_idx)
+            %             scatter(V2(:, idx2(1)), V2(:, idx2(2)),50, all_p(idx), '.')
+            %             title(sprintf('t=%d, \\lambda=%4.0f', tmax, lambda))
+            %             %         axis off
+            %
+            %             figure(f2);
+            %             subplot(nlambda, ntmax, fig_idx)
+            %             scatter(V2(:, idx2(1)), V2(:, idx2(2)),50, all_time(idx), '.')
+            %             title(sprintf('t=%d, \\lambda=%4.0f', tmax, lambda))
+            %             %         axis off
+            %
+            %             fig_idx = fig_idx + 1;
             
         end
-        
     end
 end
 
 
 %%
 
-C = mean(sqrt(log(eval1)./log(eval2)), 3);
-C2 = repmat(t_range_all, nlambda, 1).*N./repmat(lambda_all', 1, ntime);
+if niter > 1
+    C = mean(sqrt(log(eval1)./log(eval2)), 3);
+else
+    C = sqrt(log(eval1)./log(eval2));
+end
 
-% X = unique(lam_vec);
-% Y = unique(t_vec);
-% C = zeros(length(X), length(Y));
-% C2 = zeros(length(X), length(Y));
-%
-% for i=1:length(eval1_vec)
-%     i1 = find(X == lam_vec(i));
-%     i2 = find(Y == t_vec(i));
-%     C(i1, i2) = C(i1, i2) + sqrt(log(eval1_vec(i))./log(eval2_vec(i)));
-%     C2(i1, i2) = C2(i1, i2) + max(lam_vec(i)*t_vec(i), 1/(lam_vec(i)*t_vec(i)));
-% end
-%
-% C  = C / niter;
-% C2  = C2 / niter;
-
-
-figure;
-imagesc(lambda_all, t_range_all, C')
+make_fig(4,3);
+imagesc(lambda_all, tmax_all, C')
 set(gca, 'xdir','normal')
 set(gca, 'ydir','normal')
-colorbar
-
+h = colorbar;
+set(get(h,'ylabel'),'String', '$\sqrt{\log \mu_{i_1} / \log \mu_{i_2}}$', 'interpreter','latex');
+hold on
+plot(1:max(lambda_all), N./(1:max(lambda_all)), '-w', 'linewidth',2)
+xlabel('\lambda')
+ylabel('t_{max}')
+saveas(gcf, 'tmax_lambda_transition', 'epsc')
 
 figure;
-imagesc(lambda_all, t_range_all, (C2'))
-set(gca, 'xdir','normal')
-set(gca, 'ydir','normal')
-colorbar
-
-figure;
-imagesc(lambda_all, t_range_all, t_dom')
+if niter > 1
+    imagesc(lambda_all, tmax_all, mean(t_dom, 3)')
+else
+    imagesc(lambda_all, tmax_all, t_dom')
+end
 set(gca, 'xdir','normal')
 set(gca, 'ydir','normal')
 colorbar

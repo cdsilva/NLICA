@@ -394,13 +394,15 @@ Given the eigenvectors $\phi_1, \phi_2, \dots, \phi_{m-1} \in \mathbb{R}^m$, we 
 This problem was addressed previously in \cite{...} by performing successive iterations of diffusion maps, interspersed with advection along the first eigendirection at each iteration. 
 %
 However, both the advection procedure and the successive eigendecompositions are very expensive and intractable for larger data set. 
-TODO: find other advantages of our proposed method. 
+TODO: elaborate on their method and find other advantages of our proposed method (for example, theirs is ad hoc). 
 %
 Here, we propose an alternative approach to address the problem of repeated eigendirections. 
 %
 We will attempt to fit a function $f(\phi_1, \dots, \phi_{k-1})$ to $\phi_{k}$. 
 %
-If the resulting fit is accurate, then we assume $\phi_{k}$ is a repeated eigendirection of $\phi_1, \dots, \phi_{k-1}$. 
+Our approach is motivated by simple trigonometric arguments, such as $\cos2x$ can be written as a function of $\cos x$. 
+%
+Thus, if the resulting fit is accurate, then we assume $\phi_{k}$ is a repeated eigendirection of $\phi_1, \dots, \phi_{k-1}$. 
 %
 We will use a local linear function 
 \begin{equation}
@@ -412,7 +414,7 @@ as our functional approximation, where
 $\Phi_{k-1} = \begin{bmatrix} \phi_1 & \dots & \phi_{k-1} \end{bmatrix}^T$,
 $\alpha \in \mathbb{R}$, and $\beta \in \mathbb{R}^{k-1}$. 
 %
-The coefficients $\alpha$ and $\beta$ are functions of $\Phi_{k-1}$ because we use a {\em local} linear fit, and so the coefficients change as a function of the domain. 
+The coefficients $\alpha$ and $\beta$ are functions of $\Phi_{k-1}$ because we use a {\em local} linear fit in the $k-1$-dimensional $\Phi_{k-1}$ space, and so the coefficients change as a function of the domain. 
 
 At each point $\Phi_{k-1}(i)$, we approximate $\phi_k(i)$ by fitting a local linear function using the remaining $m-1$ data points. 
 %
@@ -438,11 +440,11 @@ We then define the normalized leave-one-out cross-validation error for this loca
 r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \phi_{k} (i) - (\hat{\alpha}_k(i) + \hat{\beta}_k(i)^T \Phi_{k-1}(i))  \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }}
 \end{equation}
 %
-Note that a small value of $r_k$ implies that $\phi_{k}$ can be accurately approximated from $\phi_1, \dots, \phi_{k-1}$, and is therefore a harmonic of a previous mode.
+Note that a small value of $r_k$ implies that $\phi_{k}$ can be accurately approximated from $\phi_1, \dots, \phi_{k-1}$. We will assume it means that $\phi_k$ is a harmonic of previous modes, i.e., a repeated eigendirction.
 %
 Conversely, a large value of $r_{k}$ indicates that $\phi_{k}$ parameterizes a new direction in the data.
 %
-Because $r_{k} \approx 1$ if $\phi_{k}$ parameterizes a new direction, we choose to define $r_1 = 1$.
+We choose to set $r_1 = 1$.
 
 The error in \eqref{eq:cv_error} can easily be computed \cite{wasserman2006all}.
 %
@@ -482,11 +484,13 @@ r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \frac{ \phi_{k} (i) - \sum_{j=1}^m L_{k
 
 \subsection{Calculating the relative lengths of the manifold} \label{sec:relative_lengths}
 
-Once the eigenvectors which parameterize unique eigendirections along the manifold have been determined, the corresponding eigenvalues can be used to calculate the relative lengths along these directions. 
+For the strip example, once the eigenvectors which parameterize unique eigendirections along the manifold have been determined, the corresponding eigenvalues can be used to calculate the relative lengths along these directions. 
+%
+For more general manifolds, we believe the eigenvalues can still provide a measure of the relative significance of the unique eigendirections.
 %
 Let $\mu_{i_1}, \mu_{i_2}, \dots$ denote the eigenvalues corresponding to eigenvectors which parameterize unique eigendirections (i.e., those eigenvectors where $r_{i_j}$ is large). 
 %
-From \eqref{eq:evals} and \eqref{eq:evals_relationship}, we propose to approximate the relative lengths $L_j$  along the manifold by
+For the strip example, from \eqref{eq:evals} and \eqref{eq:evals_relationship}, we propose to approximate the relative lengths $L_j$  along the manifold by
 \begin{equation} \label{eq:est_lengths}
 L_j \propto \frac{1}{\sqrt{-\log \mu_{i_j}}}.
 \end{equation}
@@ -530,7 +534,7 @@ The second and third data sets are nonlinear manifolds which demonstrate the fle
 \caption{}
 \end{subfigure}
 %
-\caption{Data sets (top) and eigenvalue spectra (bottom) for strips with (a) $L_1 = 2$, $L_2 = 1$, (b) $L_1 = 4$, $L_2 = 1$, (c) $L_1 = 8$, $L_2 = 1$. The empirical eigenvalues are plotted in blue, and the analytical eigenvalues are plotted in red. From the eigenvalues which are identified as important/non-harmonics, the estimated length ratio is (a) 2.0, (b) 4.4, (c) 8.8.  TODO: normalize colors}
+\caption{Data sets (top) and eigenvalue spectra (bottom) for strips with (a) $L_1 = 2$, $L_2 = 1$, (b) $L_1 = 4$, $L_2 = 1$, (c) $L_1 = 8$, $L_2 = 1$. The empirical eigenvalues are plotted in blue, and the analytical eigenvalues are plotted in red. From the eigenvalues which are identified as important/non-harmonics, the estimated length ratio is (a) 2.2, (b) 4.1, (c) 8.7.}
 \label{fig:strip_compare_analytic}
 \end{figure}
 
@@ -726,7 +730,7 @@ Knowing appropriate macroscopic variables and the true dimensionality can help i
 %
 %We will show that both are essential for data-driven algorithms to successfully uncover the underlying system dynamics. 
 
-Our model problem describes the process of cellular chemotaxis \cite{othmer2000diffusion}, where biological cells work together and exhibit coherent macroscopic dynamics regulated by extracellular sensed signals in order to accomplish tasks such as finding food or navigating away from toxins.
+Our model problem describes the process of cellular chemotaxis \cite{othmer2000diffusion}, where biological cells exhibit coherent macroscopic dynamics regulated by extracellular sensed signals in order to accomplish tasks such as finding food or navigating away from toxins.
 %
 Several microscopic models have been proposed to describe chemotaxis dynamics \cite{othmer1988models, codling2008random}.
 %
@@ -749,7 +753,7 @@ We will analyze one such model described by a one-dimensional velocity jump proc
 %Second, it consists of an ensemble of individual stochastic particles which must be described using the appropriate observers.
 %
 %Third, it has an analytic macroscopic description, which serves as a ground truth and will allow us to verify our results which are obtained in an unsupervised manner.
-This specific example has an analytic macroscopic description in which the macroscopic dynamics of the group of cells vary depending on the value of a single system parameter.
+This specific example has an analytic macroscopic description in which the macroscopic dynamics of the group of cells depend on the value of a single system parameter.
 %
 This model serves as a ground truth and will allow us to verify our results which are obtained in an unsupervised manner.
 %
@@ -778,7 +782,7 @@ Furthermore, we will show that changes in dynamical behavior resulting from chan
 
 \subsection{Problem description}
 
-The microscopic model consists of a collection of $N$ cells whose states are defined by their positions and velocities on a line, and the dynamics of each cell are governed by a stochastic process.
+The microscopic model consists of a collection of $N$ cells (for our simulations, we take $N=1000$) whose states are defined by their positions and velocities on a line, and the dynamics of each cell are governed by a stochastic process.
 %
 Let $x_i(t)$ and $v_i(t)$ denote the position and velocity, respectively, of cell $i$ at time $t$.
 %
@@ -797,9 +801,10 @@ At random times, a cell will ``turn around'' and switch the direction of its vel
 %
 The velocity of each cell randomly switches between $\pm s$ following an (independent) Poisson process with rate $\lambda$.
 %
+For our specific simulations, we set $s^2/\lambda=1$, which is consistent with the analysis presented in \cite{...}. 
+%
 We note that we have chosen a very specific one-parameter family of initial conditions which lead to simple dynamics and allow us to illustrate of our main points;
 however, our analysis is not restricted to such specific cases and more complex initial conditions could be used. 
-
 
 \subsection{Observers and metrics}
 
@@ -860,6 +865,8 @@ For the special case of one-dimensional data, the EMD is equivalent to the $L_1$
 where the histograms $z(i), z(j)$ are defined on equally-spaced bins in $\mathbb{R}$, and $z_k$ denotes the $k^{th}$ bin. 
 %
 We note that although histograms are not essential for using EMD, histograms make the computation feasible. 
+%
+For our specific simulations, we will take $n=32$. 
 
 %\subsubsection{Constructing appropriate observers}
 %
@@ -908,36 +915,41 @@ We note that although histograms are not essential for using EMD, histograms mak
 \subsubsection{Identifying the unique eigendirections}
 
 \begin{figure}[t!]
+\def \figwidth {3.5cm}
+
 \centering
-\begin{subfigure}{5cm}
+\begin{subfigure}{\figwidth}
 \includegraphics[width=\textwidth]{EMD_withhist_p_1}
 \caption{}
 \label{subfig:small_lambda_p}
 \end{subfigure}
-\begin{subfigure}{5cm}
+\begin{subfigure}{\figwidth}
 \includegraphics[width=\textwidth]{EMD_withhist_t_1}
 \caption{}
 \label{subfig:small_lambda_t}
 \end{subfigure}
-\begin{subfigure}{5cm}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{EMD_withhist_rho_1}
+\caption{}
+\label{subfig:small_lambda_rho}
+\end{subfigure}
+
+\begin{subfigure}{\figwidth}
 \includegraphics[width=\textwidth]{EMD_withhist_p_400}
 \caption{}
 \label{subfig:large_lambda_p}
 \end{subfigure}
-\begin{subfigure}{5cm}
+\begin{subfigure}{\figwidth}
 \includegraphics[width=\textwidth]{EMD_withhist_t_400}
 \caption{}
 \label{subfig:large_lambda_t}
 \end{subfigure}
-\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a,b) $\lambda=1$, $s=1$, and (c,d) $\lambda=400$, $s=20$.  For each set, we run many simulations, each with $N=1000$ particles.
-%
-We vary the initial conditions such that $0.1 \le p  \le 0.9$, and allow each simulation to evolve for $10$ time units.
-%
-We discard the initial portion of each simulation trajectory ($t < 1$), which corresponds to the initial relaxation of the system.
-%
-The observation $z(i) \in \mathbb{R}^n$ is the histogram of $x_1(i), x_2(i), \dots, x_N(i)$ into $n = 32$ bins.
-%
-The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time. Representative histograms are shown for selected data points.}
+\begin{subfigure}{\figwidth}
+\includegraphics[width=\textwidth]{EMD_withhist_rho_400}
+\caption{}
+\label{subfig:large_lambda_rho}
+\end{subfigure}
+\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a--c) $\lambda=1$, $s=1$, and (d--f) $\lambda=400$, $s=20$.  Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$. We allow each simulation to evolve for $10$ time units, with $dt=1$, and use data with $t > 0$ for analysis. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, d) $p$, the initial probability of a particle moving to the right, (b, e) $t$, time. Representative histograms are shown for selected data points, and (c, f) $E \rho^+ - E \rho^-$, the difference between the average position of the left- and right-moving particles.}
 \label{fig:dmaps_embed_emd}
 \end{figure}
 
@@ -970,7 +982,7 @@ The distances used in the diffusion maps kernel are the earth mover's distances 
 \caption{}
 \end{subfigure}
 %
-\caption{Diffusion maps embedding for three different chemotaxis simulations. (a) $\lambda = 100$, $s = 10$. (b) $\lambda = 2500$, $s = 50$. (c) $\lambda = 6400$, $s = 80$. For each simulation, the eigenvalue spectrum is shown. From the spectra, we can see that the first two components are informative for (a), components 1 and 3 are informative for (b), and components 1 and 4 are informative for (c). The corresponding embeddings are shown below. For comparison, the embeddings using the first two components are also shown in (b) and (c). TODO: change (a) to larger $\lambda$ value so that the correspondences are the same across figures.}
+\caption{Diffusion maps embedding for three different chemotaxis simulation data sets. (a) $\lambda = 100$, $s = 10$. (b) $\lambda = 1600$, $s = 40$. (c) $\lambda = 6400$, $s = 80$. Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$. We allow each simulation to evolve for $10$ time units, with $dt=1$, and use data with $t > 0$ for analysis. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. For each data set, the eigenvalue spectrum, colored by the cross-validation error, is shown. From the spectra, we can see that the first two components are informative for (a), components 1 and 3 are informative for (b), and components 1 and 4 are informative for (c). The corresponding embeddings are shown below. For comparison, the embeddings using the first two components are also shown in (b) and (c).}
 %
 \label{fig:chemotaxis_simulations_harmonics}
 \end{figure}
@@ -978,14 +990,15 @@ The distances used in the diffusion maps kernel are the earth mover's distances 
 
 Figure~\ref{fig:dmaps_embed_emd} shows the results of analyzing two sets of chemotaxis simulations. 
 %
-One set of simulations (Figures~\ref{subfig:small_lambda_p}~and~\ref{subfig:small_lambda_t}) is for a small value of $\lambda$, and the other set (Figures~\ref{subfig:large_lambda_p}~and~\ref{subfig:large_lambda_t}) is for a large value of $\lambda$. 
+One set of simulations (Figures~\ref{subfig:small_lambda_p}--\ref{subfig:small_lambda_rho}) is for a small value of $\lambda$, and the other set (Figures~\ref{subfig:large_lambda_p}--\ref{subfig:large_lambda_rho}) is for a large value of $\lambda$. 
 %
 For both sets of simulations, the macroscopic variables $p$, which controls the initial distribution of the cells, and $t$, the time, are well-correlated with the eigenvectors $\phi_1$ and $\phi_2$. 
 %
-In both cases, $\phi_1$ is significantly more important than $\phi_2$, as indicated by the separation between the first two eigenvalues (for the small $\lambda$ case, $\mu_1 = 0.5138$, and $\mu_2 = 0.3943$, and for the large $\lambda$ case, $\mu_1 = 0.5543$, and $\mu_2 = 0.3807$).
+%In both cases, $\phi_1$ is significantly more important than $\phi_2$, as indicated by the separation between the first two eigenvalues (for the small $\lambda$ case, $\mu_1 = 0.4828$, and $\mu_2 = 0.4287$, and for the large $\lambda$ case, $\mu_1 = 0.6288$, and $\mu_2 = 0.3236$).
 %
 The dominant coordinate $\phi_1$ is correlated with $p$ for the small $\lambda$ case (Figure~\ref{subfig:small_lambda_p}), and correlated with $t$ for the large $\lambda$ case (Figure~\ref{subfig:large_lambda_t}), indicating that the relative importance of $p$ and $t$ changes in the two simulations.
 %
+TODO: should we mention fluxes here??
 
 As illustrated in the synthetic data sets we discussed previously, the two leading eigenvectors are not guaranteed to correspond to unique eigendirections. 
 %
@@ -999,67 +1012,69 @@ In contrast, plotting the data using the two leading eigenvectors $\phi_1$ and $
 %
 From the top row of Figure~\ref{fig:chemotaxis_simulations_harmonics}, we can see that the eigenvalue spectrum does not exhibit any large spectral gaps.
 %
-However, there is a significant gap between the eigenvalues which correspond to new directions in the data, and the corresponding eigenvectors provide us with an informative two-dimensional parameterization of the data. %which is consistent with the expected macroscopic dynamics. 
+However, there is a significant gap between the eigenvalues which correspond to new directions in the data (colored in blue), and the corresponding eigenvectors provide us with an informative two-dimensional parameterization of the data. %which is consistent with the expected macroscopic dynamics. 
 %
 It now becomes clear that looking at the eigenvectors {\em modulo} repeated eigendirections is essential for extracting an informative parameterization of the data, as well as characterizing the dimensionality of the data. 
 
 
 
-\subsubsection{Detecting changes in dynamical behavior}
-
-
-\begin{figure}[t] 
-\centering
-\includegraphics[width=0.5\textwidth]{detect_change_eigenvalues}
-\caption{The first two eigenvalues from our analysis as a function of $\lambda$. Each point is averaged over $10$ experiments (as in Figure~\ref{fig:dmaps_embed_emd}, one experiment consists of data collected at varying $p$ and $t$, for a fixed value of $\lambda$), with error bars denoting one standard deviation. 
-The convergence of the eigenvalues at $\lambda \approx 125$ indicates switching of the dynamical ``mode''.}
-\label{fig:detect_change}
-\end{figure}
-
-%We have seen that the eigenvalues $\mu_i$, which quantify the importance of each embedding coordinate, reveal the relative importance of the variables which govern the macroscopic dynamics.
+%\subsubsection{Detecting changes in dynamical behavior}
 %
-We can use the eigenvalues from our analysis to detect changes in dynamical behavior.
 %
-From Figure~\ref{fig:dmaps_embed_emd}, we can see that the dominant eigendirection is correlated with $p$ when $\lambda$ is small, and correlated with $t$ when $\lambda$ is large. 
+%%\begin{figure}[t] 
+%%\centering
+%%\includegraphics[width=0.5\textwidth]{detect_change_eigenvalues}
+%%\caption{The first two eigenvalues from our analysis as a function of $\lambda$. Each point is averaged over $10$ experiments (as in Figure~\ref{fig:dmaps_embed_emd}, one experiment consists of data collected at varying $p$ and $t$, for a fixed value of $\lambda$), with error bars denoting one standard deviation. 
+%%The convergence of the eigenvalues at $\lambda \approx 125$ indicates switching of the dynamical ``mode''.}
+%%\label{fig:detect_change}
+%%\end{figure}
 %
-%We expect an intermediate $\lambda$ value where $p$ and $t$ are equally important. 
+%%We have seen that the eigenvalues $\mu_i$, which quantify the importance of each embedding coordinate, reveal the relative importance of the variables which govern the macroscopic dynamics.
 %%
-%From the analytic macroscopic description, we expect a gap between the two eigenvalues at the two asymptotic regimes ($\lambda \rightarrow 0$, where the dynamics are described by two uncoupled wave equations \eqref{...}, and $\lambda \rightarrow \infty$, where the dynamics are described by a single heat equation \eqref{...}), as one of the two macroscopic variables is significantly more important to the dynamical behavior.
+%We can use the eigenvalues from our analysis to detect changes in dynamical behavior.
 %%
-%For intermediate $\lambda$ values, we expect the gap between $|\mu_1|$ and $|\mu_2|$ to narrow, with the $\lambda$ value where $|\mu_1| \approx |\mu_2|$ corresponding to the transition between ``wave-like'' and ``heat-like'' behavior. 
+%From Figure~\ref{fig:dmaps_embed_emd}, we can see that the dominant eigendirection is correlated with $p$ when $\lambda$ is small, and correlated with $t$ when $\lambda$ is large. 
+%%
+%%We expect an intermediate $\lambda$ value where $p$ and $t$ are equally important. 
+%%%
+%%From the analytic macroscopic description, we expect a gap between the two eigenvalues at the two asymptotic regimes ($\lambda \rightarrow 0$, where the dynamics are described by two uncoupled wave equations \eqref{...}, and $\lambda \rightarrow \infty$, where the dynamics are described by a single heat equation \eqref{...}), as one of the two macroscopic variables is significantly more important to the dynamical behavior.
+%%%
+%%For intermediate $\lambda$ values, we expect the gap between $|\mu_1|$ and $|\mu_2|$ to narrow, with the $\lambda$ value where $|\mu_1| \approx |\mu_2|$ corresponding to the transition between ``wave-like'' and ``heat-like'' behavior. 
+%%
+%We performed a new set of simulations over a range of $\lambda$ values;  
+%Figure~\ref{fig:detect_change} shows the first two eigenvalues, $\mu_1$ and $\mu_2$, from our analysis as a function of $\lambda$.
+%%
+%For small $\lambda$ (corresponding to Figures~\ref{subfig:small_lambda_p}~and~\ref{subfig:small_lambda_t}), the two eigenvalues are well-separated, as the first mode (which parameterizes $p$) is significantly more important than the second mode (which parameterizes $t$).
+%%
+%At intermediate $\lambda$ values, the eigenvalues come together as the system dynamics change and both $p$ and $t$ are of similar importance.
+%%
+%The eigenvalues then separate again at large $\lambda$ (corresponding to Figures~\ref{subfig:large_lambda_p}~and~\ref{subfig:large_lambda_t}), where the $t$ effects dominate the dynamics.
+%%
+%We can therefore detect changes in dynamical behavior using data-driven techniques, without any knowledge of the governing macroscopic model. 
+%%
+%In the next section, we will show that the detected changes in dynamical behavior is consistent with the analytic macroscale model.
 %
-We performed a new set of simulations over a range of $\lambda$ values;  
-Figure~\ref{fig:detect_change} shows the first two eigenvalues, $\mu_1$ and $\mu_2$, from our analysis as a function of $\lambda$.
-%
-For small $\lambda$ (corresponding to Figures~\ref{subfig:small_lambda_p}~and~\ref{subfig:small_lambda_t}), the two eigenvalues are well-separated, as the first mode (which parameterizes $p$) is significantly more important than the second mode (which parameterizes $t$).
-%
-At intermediate $\lambda$ values, the eigenvalues come together as the system dynamics change and both $p$ and $t$ are of similar importance.
-%
-The eigenvalues then separate again at large $\lambda$ (corresponding to Figures~\ref{subfig:large_lambda_p}~and~\ref{subfig:large_lambda_t}), where the $t$ effects dominate the dynamics.
-%
-We can therefore detect changes in dynamical behavior using data-driven techniques, without any knowledge of the governing macroscopic model. 
-
-%\begin{figure}[t]
-%\def\figwidth{4.2cm}
-%\begin{subfigure}{\figwidth}
-%\includegraphics[width=\textwidth]{rawhist_p_1}
-%\caption{}
-%\end{subfigure}
-%\begin{subfigure}{\figwidth}
-%\includegraphics[width=\textwidth]{rawhist_t_1}
-%\caption{}
-%\end{subfigure}
-%\begin{subfigure}{\figwidth}
-%\includegraphics[width=\textwidth]{rawhist_p_400}
-%\caption{}
-%\end{subfigure}
-%\begin{subfigure}{\figwidth}
-%\includegraphics[width=\textwidth]{rawhist_t_400}
-%\caption{}
-%\end{subfigure}
-%\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a,b) $\lambda=1$, $s=1$, and (c,d) $\lambda=400$, $s=20$. The distances used in the diffusion maps kernel are the Euclidean distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time.}
-%\label{fig:dmaps_embed_noemd}
-%\end{figure}
+%%\begin{figure}[t]
+%%\def\figwidth{4.2cm}
+%%\begin{subfigure}{\figwidth}
+%%\includegraphics[width=\textwidth]{rawhist_p_1}
+%%\caption{}
+%%\end{subfigure}
+%%\begin{subfigure}{\figwidth}
+%%\includegraphics[width=\textwidth]{rawhist_t_1}
+%%\caption{}
+%%\end{subfigure}
+%%\begin{subfigure}{\figwidth}
+%%\includegraphics[width=\textwidth]{rawhist_p_400}
+%%\caption{}
+%%\end{subfigure}
+%%\begin{subfigure}{\figwidth}
+%%\includegraphics[width=\textwidth]{rawhist_t_400}
+%%\caption{}
+%%\end{subfigure}
+%%\caption{Diffusion maps embeddings computed from simulation data of the velocity jump process with (a,b) $\lambda=1$, $s=1$, and (c,d) $\lambda=400$, $s=20$. The distances used in the diffusion maps kernel are the Euclidean distances between the histograms of particle positions. The data are colored by (a, c) $p$, the initial probability of a particle moving to the right, and (b, d) $t$, time.}
+%%\label{fig:dmaps_embed_noemd}
+%%\end{figure}
 
 
 
@@ -1114,8 +1129,10 @@ When $\lambda \rightarrow 0$, the right-hand side of \eqref{eqn:coupled_pdes} te
 %\]
 When $\lambda \rightarrow \infty$, \eqref{eq:second_order_pde} approaches the heat equation,
 \begin{equation}
-2 \frac{\partial \rho}{\partial t} = D \frac{\partial ^2 \rho}{\partial x^2}.
+2 \frac{\partial \rho}{\partial t} = D \frac{\partial ^2 \rho}{\partial x^2},
 \end{equation}
+%
+where $D=s^2/\lambda$.
 %
 %Two variables determine the macroscopic state of the system: the initial distribution, which is controlled by a single parameter $p$, and the time, $t$.
 %
@@ -1139,8 +1156,16 @@ For the large $\lambda$ case (heat equation), shown in Figures \ref{subfig:large
 On the other hand, for large times, we observe that the initial distribution $p$ is less organized in Figure \ref{subfig:large_lambda_p}, as the velocities have equilibrated and the initial distribution is less detectable in the particle density.
 %
 Overall, in both cases, we obtain, in an unsupervised data-driven manner, an accurate picture of the macroscopic variables that govern the system dynamics.
+
+
+Furthermore, this analytic macroscopic descrption shows us that when $\lambda$ is small, the system dynamics can be described by the densities $\rho^+$ and $\rho^-$, and when $\lambda$ is large, the dynamics are described by $\rho = \rho^+ + \rho^-$. 
 %
-TODO: address fluxes
+Figures~\ref{subfig:small_lambda_rho}~and~\ref{subfig:large_lambda_rho} show the data, colored by the difference in the average position of the left- and right-moving particles. 
+%
+Clearly, for small $\lambda$, where both $\rho^+$ and $\rho^-$ are required to describe the dynamics, the data is organized by the differences in the two densities. 
+%
+However, for large $\lambda$, the two densities rapidly equilibrate, and no organization based on the differences between the two densities is visible.  
+
 
 
 %
@@ -1171,7 +1196,7 @@ To emphasize the importance of using an appropriate distance metric, we analyzed
 %
 We empirically found that there is no appreciable correlation between the embedding coordinates and the macroscopic variables $p$ and $t$ (the correlations between the embedding coordinates and the governing macroscopic variables are all  less than 60\%, with the correlations for the small $\lambda$ case being less than 20\%). 
 %
-In contrast, the correlations between the embedding coordinates and the macroscopic variables when using EMD in the diffusion maps calculation are all greater than 90\%.
+In contrast, the correlations between the embedding coordinates and the macroscopic variables when using EMD in the diffusion maps calculation are all greater than 80\%.
 %
 This emphasizes the importance of using a metric which accurately describes the distances between observations.
 
@@ -1180,9 +1205,9 @@ This emphasizes the importance of using a metric which accurately describes the 
 \begin{figure}[t]
 %
 \centering
-\includegraphics[width=0.5\textwidth]{chemotaxis_compare_timescales_evals}
+\includegraphics[width=0.5\textwidth]{tmax_lambda_transition}
 %
-\caption{Detecting the change in dimensionality. The ratio of the log of the two eigenvalues which correspond to unique eigendirections is shown in blue, and the ratio of the diffusive and drift time scales are shown in red. When the diffusive time scale is significantly larger than the drift time scale, the data is expected to be effectively one-dimensional. This transition is consistent with the empirical eigenvalues: the data is effectively one-dimensional if the first eigenvalue is significantly larger than the second. }
+\caption{Detecting the change in dimensionality. The ratio of the log of the two eigenvalues which correspond to unique eigendirections is plotted as a function of the timescale of the simulation ($t_{max}$) and $\lambda$. Each data point is the average eigenvalue ratio over three data sets. Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$. We allow each simulation to evolve for $t_{max}$ time units, with $dt=t_{max}/10$, and use data with $t > 0$ for analysis. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The curve $1/\lambda = t_{max}/N$ is shown in white. When the diffusive time scale is significantly larger than the drift time scale, the data is expected to be effectively one-dimensional. This transition is consistent with the empirical eigenvalues: the data are effectively one-dimensional when $t_{max}$ and/or $\lambda$ are large, since the first eigenvalue is significantly larger than the second. }
 %
 \label{fig:chemotaxis_compare_timescales_evals}
 %
@@ -1209,35 +1234,40 @@ when this ratio becomes small, the data are effectively one-dimensional, as the 
 
 
 
-Figure~\ref{fig:chemotaxis_compare_timescales_evals} shows the eigenvalue ratio in \eqref{eq:chemotaxis_eval_ratio} as a function of $\lambda$. 
-%
-We observe changes in the estimated dimensionality as a function of $\lambda$.
+Figure~\ref{fig:chemotaxis_compare_timescales_evals} shows the eigenvalue ratio in \eqref{eq:chemotaxis_eval_ratio} as a function of $\lambda$ and the time scale of observation $t_{max}$, and we observe changes in the estimated dimensionality.
 %
 %We therefore expect the observed dimensionality to change from two to one as a function of $\lambda$. 
 %
 %For general dynamical systems, the governing macroscopic variables and asymptotic behavior may not be immediately obvious, and instead need to be inferred from the microscopic data.
 %
-For this specific example, these changes are consistent with the analytically-predicted shift. 
+For this specific example, these changes are consistent with the analytically-predicted shift when 
+\begin{equation}
+\frac{t_{max}}{N} = \frac{1}{\lambda}.
+\end{equation} 
 %
-From \cite{othmer2000diffusion}, the relevant time scales for the velocity jump process are
+For small $\lambda$ and/or short $t_{max}$, the data are effectively two-dimensional, as both $p$ and $t$ are important to the observed dynamics. 
+%
+However, when $\lambda$ and/or $t_{max}$ is large, the system rapidly equilbrates and the data are effectively one-dimensional, parameterized by $t$. 
+%
+%From \cite{othmer2000diffusion}, the relevant time scales for the velocity jump process are
+%%\begin{equation}
+%%\begin{aligned}
+%%\tau_{drift} =& \frac{L}{s} \\
+%%\tau_{diff} =& \frac{L^2 \lambda}{s^2}
+%%\end{aligned}
+%%\end{equation}
+%%%
+%%Here, we take $L = t_{max} s$ as a characteristic length scale for the simulations. 
+%%
 %\begin{equation}
 %\begin{aligned}
-%\tau_{drift} =& \frac{L}{s} \\
-%\tau_{diff} =& \frac{L^2 \lambda}{s^2}
+%\tau_{drift} =& t_{max} \\
+%\tau_{diff} =& t_{max}^2 \lambda
 %\end{aligned}
 %\end{equation}
 %%
-%Here, we take $L = t_{max} s$ as a characteristic length scale for the simulations. 
-%
-\begin{equation}
-\begin{aligned}
-\tau_{drift} =& t_{max} \\
-\tau_{diff} =& t_{max}^2 \lambda
-\end{aligned}
-\end{equation}
-%
-When $\frac{\tau_{diff}}{\tau_{drift}} =  t_{max}  \lambda \gg 1$, then the dynamics are effectively one-dimensional. 
-%
+%When $\frac{\tau_{diff}}{\tau_{drift}} =  t_{max}  \lambda \gg 1$, then the dynamics are effectively one-dimensional. 
+%%
 This ratio is also plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} as a function of $\lambda$, and the transition is consistent with the transition predicted by the diffusion maps eigenvalues. 
 
 
