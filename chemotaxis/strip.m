@@ -22,6 +22,7 @@ cbar = colorbar('peer',gca);
 set(get(cbar,'xlabel'),'String','$\tilde{\phi}_{1,0}$', 'interpreter','latex');
 print('strip_cnts1.eps','-depsc')
 
+return
 make_fig(3,2);
 h = pcolor(X, Y, cos(pi*Y/Ly));
 set(h, 'edgecolor','none');
