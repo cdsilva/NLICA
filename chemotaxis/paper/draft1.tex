@@ -76,6 +76,8 @@ A key shortcoming is the existence of repeated eigendirections, where several em
 %
 In this paper, we propose an algorithm, based on local linear regression, to automatically detect which coordinates are repeated eigendirections. 
 %
+We propose using only the eigenvectors which correspond to unique eigendirections to embed the data, and show that this reduced diffusion maps embedding induces a metric which is equivalent to the standard diffusion distance. 
+%
 We first demonstrate the utility and flexibility of our approach on synthetic data sets. 
 %
 We then apply our algorithm to data collected from a stochastic simulation of cellular chemotaxis. 
@@ -266,7 +268,7 @@ We then construct the diagonal matrix $\tilde{D} \in \mathbb{R}^{m \times m}$, w
 %
 The matrix $\tilde{A}$ is comparable to the matrix $A$, but with sampling density effects removed, such that $I-\tilde{A}$ approaches the Laplace-Beltrami operator on $\mathcal{M}_d$ even if the data is nonuniformly sampled from the underlying manifold \cite{coifman2005geometric}. 
 
-As discussed previously, the eigenfunctions provide a parameterization of the manifold, such that $\phi_{j}(i)$ yields the $j^{th}$ embedding coordinate for $z(i)$; this embedding is called diffusion maps \cite{coifman2005geometric, coifman2006geometric}.
+As discussed previously, the eigenfunctions provide a parameterization of the manifold, such that $\phi_{j}(i)$ yields the $j^{th}$ embedding coordinate for $z(i)$; this is the standard diffusion maps embedding \cite{coifman2005geometric, coifman2006geometric}.
 %
 We order the eigenvectors such that $|\mu_0| \ge |\mu_1| \ge \dots \ge |\mu_{m-1}|$.
 %
@@ -422,6 +424,33 @@ We can then write
 r_{k} = \sqrt{ \frac{\sum_{i=1}^n \left( \frac{ \phi_{k} (i) - \sum_{j=1}^m S_{k-1}(i,j) \phi_{k}(j) }{1-S_{k-1}(i,i)} \right)^2} {\sum_{i=1}^n  \left( \phi_{k} (i) \right)^2 }} .
 \end{equation}
 
+
+We propose using {\em only} those eigenvectors for which $r_k$ is large to embed the data, as this will yield a more parsimonious representation of the data. 
+%
+However, it also preserves some features of the standard diffusion map embedding. 
+%
+In standard diffusion maps, we define the diffusion distance as
+\begin{equation}
+D^2(z(i), z(j)) = \sum_{k=0}^{m-1} \mu_k^t \left( \phi_k(i) - \phi_k(j)  \right)^2.
+\end{equation}
+%
+Let $I = \{i_1, i_2, \dots, i_d \}$ denote the indices of the unique eigenvectors along the manifold (i.e.,$r_{i_1}, \dots, r_{i_d}$ are large). 
+%
+Under the assumption that $\phi_j = f \left( \phi_{i_1}, \dots, \phi_{i_d} \right)$ for $j \not\in I$, and if $f$ is Lipshitz with Lipshitz constant $K$, then one can show that 
+\begin{equation}
+\sqrt{\frac{1}{1+K \sum_{k \not\in I} \mu_k^t}} D^2(z(i), z(j)) \le \sum_{k \in I} \mu_k^t \left( \phi_k(i) - \phi_k(j)  \right)^2 \le D^2(z(i), z(j)).
+\end{equation}
+%
+Therefore, provided the eigenvalues $\mu_k$ decay sufficiently fast, the distance induced by the $d$ eigenvectors identified as parameterizing unique eigendirections $\phi_{i_1}, \dots, \phi_{i_d}$ is equivalent to the standard diffusion distance. 
+%
+We will refer to this distance 
+\begin{equation}
+\tilde{D}^2(z(i), z(j)) = \sum_{k \in I} \mu_k^t \left( \phi_k(i) - \phi_k(j)  \right)^2
+\end{equation}
+%
+as the {\em reduced} diffusion distance, and the embedding obtained from the corresponding eigenvectors as the reduced diffusion maps embedding. 
+%
+
 \subsection{Calculating the relative lengths of the manifold} \label{sec:relative_lengths}
 
 For a two-dimensional strip, once the eigenvectors which parameterize unique eigendirections have been determined, the corresponding eigenvalues can be used to calculate the relative lengths along these directions. 
@@ -435,7 +464,7 @@ For the strip example, from \eqref{eq:evals} and \eqref{eq:evals_relationship}, 
 L_j \propto \frac{1}{\sqrt{-\log \mu_{i_j}}}.
 \end{equation}
 %
-These lengths can then be used to determine how many components are required to retain most of the information within the data set; 
+These lengths can then be used to truncate the reduced diffusion maps embedding and determine how many components are required to retain most of the information within the data set; 
 for example, if $L_j$ is smaller than a predefined threshold, then this component can be disregarded. 
 
 
@@ -703,6 +732,10 @@ For our specific simulations, we set $s^2/\lambda=1$, which is consistent with t
 %
 We note that we have chosen a very specific one-parameter family of initial conditions which lead to simple dynamics and allow us to illustrate of our main points;
 however, our analysis is not restricted to such specific cases and more complex initial conditions could be used. 
+%
+Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$. 
+%
+We allow each simulation to evolve for $t_{max}$ time units with a fixed time step $dt$, and use data with $t > 0$ for analysis. 
 
 \begin{figure}[t!]
 \def \figwidth {0.25\textwidth}
@@ -738,7 +771,7 @@ however, our analysis is not restricted to such specific cases and more complex 
 \caption{}
 \label{subfig:large_lambda_rho}
 \end{subfigure}
-\caption{Embeddings using the first two eigenvectors of the (unnormalized) Laplacian $A$ computed from simulation data of the velocity jump process with (a--c) $\lambda=1$, $s=1$, and (d--f) $\lambda=400$, $s=20$.  Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$. We allow each simulation to evolve for $10$ time units, with $dt=1$, and use data with $t > 0$ for analysis. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, d) $p$, the initial probability of a particle moving to the right, (b, e) $t$, time. Representative histograms are shown for selected data points, and (c, f) $E \rho^+ - E \rho^-$, the difference between the average position of the left- and right-moving particles.}
+\caption{Embeddings using the first two diffusion maps eigenvectors computed from simulation data of the velocity jump process with (a--c) $\lambda=1$, $s=1$, and (d--f) $\lambda=400$, $s=20$.  We set $t_{max} = 10$ and $dt=1$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The data are colored by (a, d) $p$, the initial probability of a particle moving to the right, (b, e) $t$, time. Representative histograms are shown for selected data points, and (c, f) $E \rho^+ - E \rho^-$, the difference between the average position of the left- and right-moving particles.}
 \label{fig:dmaps_embed_emd}
 \end{figure}
 
@@ -754,9 +787,9 @@ Two is a {\em distance metric} between the observations that captures a notion o
 
 For the chemotaxis example, we use histograms of the particle positions as observers. 
 %
-Histograms are invariant to the indexing of the particles, while retaining the spatial locations of the particles.
+Histograms are invariant to the indexing of the particles, while retaining information about the spatial locations of the particles.
 %
-The histograms are also robust to noise \cite{talmon2013empirical}. 
+Histograms are also robust to noise \cite{talmon2013empirical}. 
 %
 Instead of the standard Euclidean distance, we use the earth mover's distance (EMD) \cite{rubner2000earth} as the metric between pairs of histograms. 
 %
@@ -766,13 +799,13 @@ It therefore not only considers where the densities are inconsistent, but also h
 %
 Although the brute-force computation of the EMD is computationally expensive, there has been a plethora of work in developing efficient algorithms for its approximation \cite{Pele-eccv2008, Pele-iccv2009}.
 %
-For the special case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions of the data \cite{rubner2000perceptual}, which can be approximated from histograms as
+For the specific case of one-dimensional data, the EMD is equivalent to the $L_1$-norm between the cumulative distribution functions of the data \cite{rubner2000perceptual}, which can be approximated from histograms as
 \begin{equation}
 \| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|,
 \end{equation}
-where the histograms $z(i), z(j)$ are defined on $n$ equally-spaced bins in $\mathbb{R}$ (for our specific simulations, we will take $n=32$), and $z_k$ denotes the $k^{th}$ bin. 
+where the histograms $z(i), z(j)$ are defined on $n$ equally-spaced bins in $\mathbb{R}$ (for our simulations, we will take $n=32$), and $z_k$ denotes the $k^{th}$ bin. 
 %
-We note that although histograms are not essential for using EMD, they make the computation feasible. 
+We note that although histograms are not theoretically essential for using EMD, they make the computation feasible. 
 
 
 \subsection{Results}
@@ -808,11 +841,10 @@ We note that although histograms are not essential for using EMD, they make the 
 \caption{}
 \end{subfigure}
 %
-\caption{Diffusion maps embedding for three different chemotaxis simulation data sets. (a) $\lambda = 100$, $s = 10$. (b) $\lambda = 1600$, $s = 40$. (c) $\lambda = 6400$, $s = 80$. Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$. We allow each simulation to evolve for $10$ time units, with $dt=1$, and use data with $t > 0$ for analysis. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. For each data set, the eigenvalue spectrum, colored by the cross-validation error, is shown. From the spectra, we can see that the first two components are informative for (a), components 1 and 3 are informative for (b), and components 1 and 4 are informative for (c). The corresponding embeddings are shown below. For comparison, the embeddings using the first two components are also shown in (b) and (c).}
+\caption{Diffusion maps embeddings for three different chemotaxis simulation data sets. (a) $\lambda = 100$, $s = 10$. (b) $\lambda = 1600$, $s = 40$. (c) $\lambda = 6400$, $s = 80$. We set $t_{max} = 10$ and $dt=1$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. For each data set, the eigenvalue spectrum, colored by the cross-validation error, is shown. From the spectra, we can see that the first two components are informative for (a), components 1 and 3 are informative for (b), and components 1 and 4 are informative for (c). The corresponding reduced diffusion maps embeddings are shown in the middle row. For comparison, the standard diffusion maps embeddings using the first two components are also shown in the bottom row in (b) and (c).}
 %
 \label{fig:chemotaxis_simulations_harmonics}
 \end{figure}
-
 
 Figure~\ref{fig:dmaps_embed_emd} shows the results of analyzing two sets of chemotaxis simulations. 
 %
@@ -832,13 +864,11 @@ Figure~\ref{fig:chemotaxis_simulations_harmonics} shows the results of analyzing
 %
 We see from the eigenspectra and the cross-validation errors $r_k$ that the second unique eigendirection moves down in the spectrum as $\lambda$ increases. 
 %
-Plotting the data using the two eigenvectors identified as corresponding to unique eigendirections yields two-dimensional embeddings which capture the macroscopic variables $p$ and $t$ (we only show the correspondence of the two identified unique eigendirections with $p$ in the middle row of Figure~\ref{fig:chemotaxis_simulations_harmonics}; the correspondence between these eigendirections and $t$ is similarly consistent). 
+The two-dimensional reduced diffusion maps embeddings capture the macroscopic variables $p$ and $t$ (we only show the correspondence of the two identified unique eigendirections with $p$ in the middle row of Figure~\ref{fig:chemotaxis_simulations_harmonics}; the correspondence between these eigendirections and $t$ is similarly consistent). 
 %
-In contrast, plotting the data using the two leading eigenvectors $\phi_1$ and $\phi_2$ produces uninformative embeddings for large values of $\lambda$, as $\phi_2$ is a repeated eigendirection which does not parameterize any new directions in the data.
+In contrast, the standard diffusion maps embeddings using the two leading eigenvectors $\phi_1$ and $\phi_2$ produce uninformative embeddings for large values of $\lambda$, as $\phi_2$ is a repeated eigendirection which does not parameterize any new directions in the data.
 %
-From the top row of Figure~\ref{fig:chemotaxis_simulations_harmonics}, we see that the eigenvalue spectra do not exhibit any large spectral gaps.
-%
-However, the gap between the eigenvalues which correspond to new directions in the data (colored in blue) increases with $\lambda$, indicating that the underlying manifold becomes more narrow/one-dimensional, and the corresponding eigenvectors provide us with an informative two-dimensional parameterization of the data. %which is consistent with the expected macroscopic dynamics. 
+Furthermore, although the eigenvalue spectra do not exhibit any large spectral gaps, the gap between the eigenvalues which correspond to new directions in the data (colored in blue) increases with $\lambda$, indicating that the underlying manifold becomes more narrow/one-dimensional, and the corresponding eigenvectors provide us with an informative two-dimensional parameterization of the data. %which is consistent with the expected macroscopic dynamics. 
 %
 It now becomes clear that looking at the eigenvectors {\em modulo} repeated eigendirections is essential for extracting an informative parameterization of the data, as well as characterizing the dimensionality of the data.
 
@@ -865,7 +895,7 @@ Alternatively, \eqref{eqn:coupled_pdes} can be rewritten as one, second--order P
 %
 From \eqref{eq:second_order_pde}, we see that, for fixed values of $\lambda$ and $s$, the macroscopic state of the system (the probability density of the cells) is indeed a function of two variables $p$ and $t$. 
 %
-This implies that for fixed $\lambda$ and $s$, the {\em microscopic} data in a high-dimensional ambient space (e.g., the positions of all $N$ cells) should lie on a two-dimensional manifold parameterized by $p$ and $t$, 
+This implies that for fixed $\lambda$ and $s$, the {\em microscopic} data in a high-dimensional ambient space (e.g., the positions of all $N$ cells) should lie on a two-dimensional manifold parameterized by $p$ (which controls the initial ratio of $\rho^+$ and $\rho^-$) and $t$ (which describes the evolution), 
 and uncovering the low-dimensional structure of the microscopic data reveals this manifold.
 %
 This is consistent with the results presented in Figures~\ref{fig:dmaps_embed_emd}~and~\ref{fig:chemotaxis_simulations_harmonics}, where the two-dimensional embeddings obtained from microscopic simulation data are one-to-one with $p$ and $t$.
@@ -893,7 +923,7 @@ When $\lambda \rightarrow 0$, the dynamics are described by two wave equations, 
 %
 When $\lambda \rightarrow \infty$, the dynamics are described by one heat equation, and the initial conditions are insignificant -- the velocity distribution quickly equilibrates and we see purely diffusive behavior.
 
-The relative importance of $p$ and $t$ from the analytic description are consistent with the results in Figure~\ref{fig:dmaps_embed_emd}, where $p$ appears as the ``more important'' coordinate when $\lambda$ is small and as the ``less important'' coordinate when $\lambda$ is large. 
+The relative importance of $p$ and $t$ from the analytic description are consistent with the results in Figure~\ref{fig:dmaps_embed_emd}, where $p$ is correlated with the dominant coordinate when $\lambda$ is small and correlated with the subdominant coordinate when $\lambda$ is large. 
 %
 Furthermore, in the small $\lambda$ regime (wave equation), shown in Figures \ref{subfig:small_lambda_p} and \ref{subfig:small_lambda_t}, the points corresponding to small times are more tightly clustered than the points corresponding to large times.
 %
@@ -907,23 +937,23 @@ On the other hand, for large times, we observe that the initial distribution $p$
 %
 Overall, in both cases, we obtain, in an unsupervised data-driven manner, an accurate picture of the macroscopic variables that govern the system dynamics.
 
-Furthermore, this analytic macroscopic descrption shows us that when $\lambda$ is small, the system dynamics can be described by the densities $\rho^+$ and $\rho^-$, and when $\lambda$ is large, the dynamics are described by $\rho = \rho^+ + \rho^-$. 
+Furthermore, this analytic macroscopic descrption shows us that when $\lambda$ is small, the system dynamics can be described by the two densities $\rho^+$ and $\rho^-$, and when $\lambda$ is large, the dynamics are described by a single density $\rho = \rho^+ + \rho^-$. 
 %
 Figures~\ref{subfig:small_lambda_rho}~and~\ref{subfig:large_lambda_rho} show the data, colored by the difference in the average position of the left- and right-moving particles. 
 %
 Clearly, for small $\lambda$, where both $\rho^+$ and $\rho^-$ are required to describe the dynamics, the data is organized by the differences in the two densities. 
 %
-However, for large $\lambda$, the two densities rapidly equilibrate, and no organization based on the differences between the two densities is visible.  
+However, for large $\lambda$, the two densities rapidly equilibrate, and negligible organization based on the differences between the two densities is visible.  
 
-\subsubsection{Using an appropriate metric}
+%\subsubsection{Using an appropriate metric}
 
-To emphasize the importance of using an appropriate distance metric, we analyzed the two sets of simulation data using the standard Euclidean distance between the histograms to compute the distances in \eqref{eq:W}.
+This analytic macroscopic description also allows us to emphasize the importance of using an appropriate distance metric.
 %
-We empirically found that there is no appreciable correlation between the embedding coordinates and the macroscopic variables $p$ and $t$ (the correlations between the embedding coordinates and the governing macroscopic variables are all  less than 60\%, with the correlations for the small $\lambda$ case being less than 20\%). 
+We analyzed the two sets of simulation data from Figure~\ref{fig:dmaps_embed_emd} using the standard Euclidean distance between the histograms to compute the distances in \eqref{eq:W}.
 %
-In contrast, the correlations between the embedding coordinates and the macroscopic variables when using EMD in the diffusion maps calculation are all greater than 80\%.
+We empirically found that there is no appreciable correlation between the embedding coordinates and the macroscopic variables $p$ and $t$ (the correlations between the embedding coordinates and the governing macroscopic variables are all less than 60\%, with the correlations for the small $\lambda$ case being less than 20\%). 
 %
-This emphasizes the importance of using a metric which accurately describes the distances between observations.
+In contrast, the correlations between the embedding coordinates and the macroscopic variables when using EMD in the diffusion maps calculation are all greater than 80\%, and so using a metric which accurately describes the distances between observations is essential for obtaining an informative parameterization of data. 
 
 \subsubsection{Detecting changes in dimensionality}
 
@@ -932,7 +962,7 @@ This emphasizes the importance of using a metric which accurately describes the 
 \centering
 \includegraphics[width=0.5\textwidth]{tmax_lambda_transition}
 %
-\caption{Detecting the change in dimensionality. The ratio of the log of the two eigenvalues which correspond to unique eigendirections is plotted as a function of the timescale of the simulation ($t_{max}$) and $\lambda$. Each data point is the average eigenvalue ratio over three data sets. Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$. We allow each simulation to evolve for $t_{max}$ time units, with $dt=t_{max}/10$, and use data with $t > 0$ for analysis. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The curve $1/\lambda = t_{max}/N$ is shown in white. When the diffusive time scale is significantly larger than the drift time scale, the data is expected to be effectively one-dimensional. This transition is consistent with the empirical eigenvalues: the data are effectively one-dimensional when $t_{max}$ and/or $\lambda$ are large, since the first eigenvalue is significantly larger than the second. }
+\caption{Detecting the change in dimensionality. The ratio of the log of the two eigenvalues which correspond to unique eigendirections is plotted as a function of $t_{max}$ and $\lambda$. Each data point is the average eigenvalue ratio over three data sets, and in each simulation, $dt=t_{max}/10$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of particle positions. The curve $1/\lambda = t_{max}/N$ is shown in white. }
 %
 \label{fig:chemotaxis_compare_timescales_evals}
 %
@@ -940,21 +970,19 @@ This emphasizes the importance of using a metric which accurately describes the 
 
 Detecting changes in dimensionality is essential for the analysis and modeling of dynamical systems. 
 %
-For this example, we show that the true dimensionally of a data set can be estimated by looking at the eigenvalues corresponding to unique eigendirections. 
-%
-Let $\mu_{i_1} \ge \mu_{i_2}$ denote these two eigenvalues. 
+For this example, the true dimensionally of a data set can be estimated by looking at the two eigenvalues $\mu_{i_1} \ge \mu_{i_2}$ corresponding to unique eigendirections. 
 %
 According to \eqref{eq:est_lengths}, we plot  
 \begin{equation}\label{eq:chemotaxis_eval_ratio}
  \sqrt{\frac{\log \mu_{i_1}}{\log \mu_{i_2}}} ;
 \end{equation}
-when this ratio becomes small, the data are effectively one-dimensional, as the second dimension is very small compared with the first. 
+when this ratio becomes small, the data are effectively one-dimensional, as the second direction is very small compared with the first. 
 
 Figure~\ref{fig:chemotaxis_compare_timescales_evals} shows the eigenvalue ratio in \eqref{eq:chemotaxis_eval_ratio} as a function of $\lambda$ and the time scale of observation $t_{max}$.
 %
 From this eigenvalue ratio, we detect changes in the estimated dimensionality as we vary the relevant parameters.
 %
-or small $\lambda$ and/or short $t_{max}$, the data are effectively two-dimensional, as both $p$ and $t$ are important to the observed dynamics. 
+For small $\lambda$ and/or short $t_{max}$, the data are effectively two-dimensional, as both $p$ and $t$ are important to the observed dynamics. 
 %
 However, when $\lambda$ and/or $t_{max}$ is large, the system rapidly equilbrates and the data are effectively one-dimensional, parameterized by $t$. 
 %
@@ -963,25 +991,19 @@ For this specific example, these changes are consistent with the analytically-pr
 \frac{t_{max}}{N} = \frac{1}{\lambda}.
 \end{equation} 
 %
-This ratio is also plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} as a function of $\lambda$, and the transition is consistent with the transition predicted by the diffusion maps eigenvalues. 
-
+This curve is also plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} as a function of $\lambda$ and is consistent with the transition predicted by the diffusion maps eigenvalues. 
 
 \section{Conclusions}
 
-This paper aims to bridge the fields of data mining and dynamical systems. 
+This paper addresses the issue of repeated eigendirections, one of the key shortcomings in applying diffusion maps analysis to real complex data. 
 %
-For data mining methods to be informative with regards to the underlying system dynamics, processing the appropriate statistical moments or observables instead of individual particles is essential. 
+We show that, using local linear regression, we can automatically detect which eigenvectors correspond to unique eigendirections in the data. 
 %
-In addition, one must also define the appropriate distance metric between the observations.
+From this detection, we can then obtain a reduced diffusion maps embedding which is both parsimonious and endures a metric which is equivalent to the standard diffusion distance. 
 %
-These two components induce the ``correct" Riemannian geometry and allow for informative analyses, such as meaningful and compact parameterization, phase shift detection, and dynamical characterization, through manifold learning.
+We then showed that these algorithms can allow us to analyze data from a complex dynamical system, enabling the extraction of good reduced coordinates and also the detection of changes in the dimensionality of the macroscopic dynamics. 
 %
-In this paper, these concepts were demonstrated using a dynamical model of cellular chemotaxis with a known macroscopic behavior.
-%
-We showed that, using histograms as observers and EMD as a distance metric, diffusion maps can uncover a parameterization of the microscale data which is consistent with the analytic macroscopic model.
-%
-We are confident that such techniques can help inform modeling efforts for systems where the macroscopic dynamics and behavior are not currently known. 
-
+In the future, we are confident that our proposed methodology will aid in the analysis of more complex data sets for which the dimensionality of the underlying manifold is unknown. 
 
 \section*{Acknowledgment}
 The authors would like to thank TODO.
