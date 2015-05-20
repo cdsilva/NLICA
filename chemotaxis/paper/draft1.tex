@@ -21,6 +21,7 @@
 %\usepackage{algorithm}
 %\usepackage{subfigure}
 \usepackage{subcaption}
+\usepackage{hyperref}
 
 \graphicspath{{../}}
 
@@ -60,7 +61,7 @@
 \ead{yannis@princeton.edu}
 
 \address[princeton]{Department of Chemical and Biological Engineering, Princeton University, Princeton, NJ, 08540, USA}
-\address[technion]{Technion - Israel Institute of Technology, Haifa, 3200003, Israel}
+\address[technion]{Department of Electrical Engineering, Technion - Israel Institute of Technology, Haifa, 3200003, Israel}
 \address[yale]{Department of Mathematics, Yale University, New Haven, CT, 06520, USA}
 \address[princetonpacm]{Program in Applied and Computational Mathematics, Princeton University, Princeton, NJ, 08540, USA}
 %
@@ -87,7 +88,7 @@ a metric which is equivalent to the standard diffusion distance.
 %
 We first demonstrate the utility and flexibility of our approach on synthetic data sets.
 %
-We then apply our algorithm to data collected from a stochastic simulation of cellular chemotaxis, where our approach for factoring out repeated eigendirections allows us to detect changes in dynamical behavior and the underlying
+We then apply our algorithm to data collected from a stochastic model of cellular chemotaxis, where our approach for factoring out repeated eigendirections allows us to detect changes in dynamical behavior and the underlying
 intrinsic system dimensionality directly from data.
 %
 \end{abstract}
@@ -124,15 +125,15 @@ the spectral analysis of a Laplace operator \cite{Belkin2003,coifman2005geometri
 The data is then embedded in a new low-dimensional coordinate system
 given by the eigenvectors of this operator.
 %
-The premise is that these coordinates, obtained in a data-driven manner, are the right macroscopic ``observables",
+The premise is that these coordinates, obtained in a data-driven manner, are the right macroscopic ``observables", i.e., 
 the variables which parametrize the macroscale dynamical behavior of the system, thus enabling the construction of a reduced macroscale model.
 
 Such manifold learning algorithms were initially applied to synthetic data sets, to illustrate
 their geometric properties and flexibility \cite{coifman2005geometric, nadler2006diffusion}.
 %
-More recently they have been applied to experimental and simulation data,
+More recently they have been applied to experimental as well as simulation data,
 enabled by advances in data representation (observers) and
-metrics \cite{rubner2000earth,mallat2012group,talmon2013empirical,zhao2014rotationally, rohrdanz2011determination}.
+metrics \cite{rubner2000earth,mallat2012group,talmon2013empirical,zhao2014rotationally, rohrdanz2011determination, talmon2015manifold}.
 %
 A nontrivial shortcoming of these methods is that, from a geometric perspective,
 not all eigenvectors are guaranteed to parametrize unique directions within the data;
@@ -144,7 +145,7 @@ parametrization of the system which captures the true dimensionality of the macr
 %
 This task is often done manually, and few methods have been proposed to automate the identification of the unique eigendirections \cite{gerber2007robust}.
 
-In this paper, we propose an algorithm to automatically identify the unique eigendirections using local linear regression \cite{wasserman2006all}.
+In this paper, we propose an algorithm to automatically identify such unique eigendirections using local linear regression \cite{wasserman2006all}.
 %
 We first demonstrate and validate our algorithm on synthetic examples, where a closed-form solution for the
 eigenvectors and eigenvalues of the Laplace operator is known.
@@ -175,7 +176,7 @@ For linear hyperplanes, the principal axes parametrize the manifold.
 %
 However, in the case when the manifold is nonlinear, a set of appropriate coordinates is not readily apparent.
 %
-By using a particular manifold learning technique based on the construction of a Laplace operator, namely, diffusion maps, we will show how to extract a $d$-dimensional parametrization of the observations which is consistent with the geometry of the manifold \cite{Belkin2003, coifman2005geometric, singer2008non}.
+By using a particular manifold learning technique based on the construction of a Laplace operator, namely, {\em diffusion maps}, we will show how to extract a $d$-dimensional parametrization of the observations which is consistent with the geometry of the manifold \cite{Belkin2003, coifman2005geometric, singer2008non}.
 
 \subsection{Eigenfunctions of the Laplace-Beltrami operator}
 
@@ -202,7 +203,7 @@ By using a particular manifold learning technique based on the construction of a
 \label{subfig:strip_evecs_nonuniform}
 \end{subfigure}
 %
-\caption{(a) Two-dimensional continuous strip colored by the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( {\pi z_1}/{L_1} \right)$, and $\tilde{\phi}_{0, 1} = \cos \left( {\pi z_2}/{L_2} \right)$. (b) Two-dimensional strip with uniform sampling colored by the first and fourth (non-trivial) eigenvectors of the discrete Laplacian. (c) Two-dimensional strip with data sampled from a Gaussian distribution in $z_1$ and sampled uniformly in $z_2$, colored by the first and third (non-trivial) eigenvectors of the discrete Laplacian. Note that in all cases we uncover parametrizations which are one-to-one with $z_1$ and $z_2$.}
+\caption{(a) Two-dimensional continuous strip colored by the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( {\pi z_1}/{L_1} \right)$, and $\tilde{\phi}_{0, 1} = \cos \left( {\pi z_2}/{L_2} \right)$. (b) Data, uniformly sampled from a two-dimensional strip, colored by the first and fourth (non-trivial) eigenvectors of the discrete Laplacian. (c) Data, sampled from a Gaussian distribution in $z_1$ and sampled uniformly in $z_2$, colored by the first and third (non-trivial) eigenvectors of the discrete Laplacian. Note that in all cases we uncover parametrizations which are one-to-one with $z_1$ and $z_2$ on the domain.}
 \end{figure}
 
 In recent years it has been noted that the eigenfunctions of the \emph{continuous}
@@ -212,11 +213,11 @@ We start by considering such a continuous setting, where rigorous analysis is po
 %
 Using such an example, we will demonstrate that the existence of repeated eigendirections is
 inherent to the manifold learning setup based on Laplace operators,
-and that the identification of the unique eigendirections is nontrivial.
+and that the identification of the unique eigendirections requires some additional effort.
 %
 The fact that these challenges arise in the continuous setting implies that, even in the limit of infinite data, such repeated eigendirections still pose a problem for data analysis.
 
-To illustrate why these eigenfunctions provide appropriate coordinates, consider a two-dimensional strip with edge lengths $L_1$ and $L_2$.
+To review and illustrate why these eigenfunctions provide appropriate coordinates, consider a two-dimensional strip with edge lengths $L_1$ and $L_2$.
 %
 The eigenvalues of the Laplace-Beltrami operator with Neumann boundary conditions are given by
 \begin{equation} \label{eq:evals}
@@ -231,7 +232,7 @@ where $z_1$ and $z_2$ denote the two coordinates of the strip \cite{singer2008no
 %
 We note that the eigenfunctions $\tilde{\phi}_{1, 0} = \cos \left( {\pi z_1}/{L_1} \right)$ and
 $\tilde{\phi}_{0, 1} = \cos \left( {\pi z_2}/{L_2} \right)$ are one-to-one with the $z_1$ and $z_2$ coordinates,
-respectively, and therefore provide a parametrization of the underlying manifold (see Figure~\ref{subfig:strip_efuncs}).
+respectively, on the domain, and therefore provide a parametrization of the underlying manifold (see Figure~\ref{subfig:strip_efuncs}).
 %
 Furthermore, the corresponding eigenvalues $\tilde{\mu}_{1,0}$ and $\tilde{\mu}_{0,1}$ provide an estimate of the
 relative magnitude of $L_1$ versus $L_2$: as the ratio between $L_1$ and $L_2$ increases,
@@ -249,11 +250,11 @@ Second, eigenfunctions with $k_1+k_2 \ge 2$ do not describe any
 additional directions intrinsic to the strip geometry; we will refer to these as ``repeated eigendirections,''
 and we will refer to the eigenfunctions with $k_1+k_2 =1$ as ``unique eigendirections.''
 %
-Clearly, this problem of repeated eigendirections also arises for more complex manifolds of more than two variables.
+Clearly, this problem of repeated eigendirections also arises for more curved of more than two variables.
 %
 We note that, although the eigenfunctions can only be written analytically for very special cases,
 it has been observed empirically that they often provide appropriate coordinates
-to usefully parametrize more complex, nonlinear manifolds.
+to usefully parametrize more complicated, nonlinear manifolds.
 %
 
 
@@ -279,23 +280,28 @@ Given observations $z(1), \dots, z(m) \in \mathcal{M}_d$, we first construct the
 where $\| \cdot \|$ denotes the appropriate norm for the observations, and $\epsilon$ is a characteristic distance between the observations.
 %
 The kernel's scale $\epsilon$ can be chosen using several heuristics \cite{rohrdanz2011determination, coifman2008graph};
-we often take $\epsilon$ to be the median of the pairwise distances between the data points.
+we often take $\epsilon$ to be the median of the pairwise distances between the data points. 
+%
+The underlying assumption is that, even in cases where the samples embedded in the high dimensional space lie on a highly nonlinear manifold, within $\epsilon$-local neighborhoods, the Euclidean distance respects the tangent plane to the manifold and thus locally conveys meaningful relationships,. 
 %
 We then construct the diagonal matrix $\mathbf{D} \in \mathbb{R}^{m \times m}$, with $\mathbf{D}_{ii} = \sum_j \mathbf{W}_{ij}$,
-and form the matrix $\widetilde{\mathbf{W}} = \mathbf{D}^{-\alpha} \mathbf{W} \mathbf{D}^{-\alpha}$, where $0 < \alpha < 1$.
+and form the matrix $\widetilde{\mathbf{W}} = \mathbf{D}^{-\alpha} \mathbf{W} \mathbf{D}^{-\alpha}$, where $0 \le \alpha \le 1$.
 %
 Next, we construct the diagonal matrix $\widetilde{\mathbf{D}} \in \mathbb{R}^{m \times m}$, with $\widetilde{\mathbf{D}}_{ii} = \sum_j \widetilde{\mathbf{W}}_{ij}$, and the matrix $\mathbf{A}  = \widetilde{\mathbf{D}}^{-1} \widetilde{\mathbf{W}}.$
 
 If the data $z(1), \dots, z(m)$ are sampled from $\mathcal{M}_d$ with some density $q$, then, for $\epsilon \rightarrow 0$ and $m \rightarrow \infty$ (with the appropriate rates), the discrete matrix converges to the following continuous limit operators with Neumann boundary conditions (as discussed in the previous section) \cite{coifman2006geometric}
-\begin{align}
+\begin{align} 
+\label{eq:limiting_op1}
 \frac{1}{\epsilon^2}(\mathbf{I}-\mathbf{A}) \phi &\rightarrow \nabla^2 \phi - 2\nabla U \cdot \nabla \phi, &&\alpha = 0 \\
+\label{eq:limiting_op2}
 \frac{1}{\epsilon^2}(\mathbf{I}-\mathbf{A}) \phi &\rightarrow \nabla^2 \phi - \nabla U \cdot \nabla \phi, &&\alpha = 1/2 \\
+\label{eq:limiting_op3}
 \frac{1}{\epsilon^2}(\mathbf{I}-\mathbf{A}) \phi &\rightarrow \nabla^2 \phi, &&\alpha = 1
 \end{align}
 where $U = - \log q$.
 %
 The different limit operators, depending on the choice of $\alpha$, imply that nonuniform
-sampling on the manifold may have different effects.
+sampling on the manifold may have different effects via the potential $U$ in \eqref{eq:limiting_op1}--\eqref{eq:limiting_op3}.
 %
 In particular, by setting $\alpha=1$, one can factor out the density effects in the
 weight matrix, and the discrete Laplacian matrix approaches the Laplace-Beltrami operator on the manifold $\mathcal{M}_d$.
@@ -338,7 +344,7 @@ From \eqref{eq:evals}, we see that sorting the eigenvectors by the magnitude of
 the corresponding eigenvalues implies that these two eigenvectors are guaranteed to
 appear before any coupled or repeated eigendirections.
 %
-However, these eigenvectors are {\em not} guaranteed to appear as the first two (non-trivial) eigenvectors,
+However, these eigenvectors are {\em not} guaranteed to appear as {\em the first two} (non-trivial) eigenvectors,
 as harmonics of the first eigendirection (i.e., $\cos \left( n \pi z_1 / L_1 \right)$ with $n > 1$) could appear before the second.
 %
 We note that, in contrast to our simple illustrative example, for most data sets of interest, the coordinates for the underlying manifold are unknown and cannot easily be obtained from the coordinates of the original data, so that identifying which eigenvectors correspond to unique eigendirections is nontrivial.
@@ -364,7 +370,7 @@ In fact, if $L_1 > 2 L_2$, then $\tilde{\mu}_{2, 0} < \tilde{\mu}_{0, 1}$, and s
 second (non-trivial) eigenvector (when the eigenvectors are ordered by their corresponding eigenvalues)
 will be a ``repeated eigendirection" of the first and still parametrize $z_1$ (see Figure~\ref{fig:strip_harmonics}).
 %
-Automatic detection of which eigenvectors are harmonics of each other would be clearly useful.
+Automatic detection of which eigenvectors are harmonics of each other is clearly useful.
 %
 Utilizing only the eigenvectors $\phi_i$ which correspond to unique eigendirections yields
 the most parsimonious representation of the data.
@@ -372,7 +378,7 @@ the most parsimonious representation of the data.
 We will show how we can automatically detect these eigenvectors to obtain a meaningful representation of the data,
 and that using only these eigenvectors yields a reduced embedding which is equivalent to the standard diffusion maps embedding.
 %
-Furthermore, the corresponding eigenvalues provide us with an estimate of the relative lengths of the data set along these unique eigendirections.
+Furthermore, when the data is uniformly sampled from the underlying manifold, the corresponding eigenvalues provide us with an estimate of the relative lengths of the data set along these unique eigendirections.
 
 
 \subsection{Algorithm: local linear regression}
@@ -394,7 +400,7 @@ Furthermore, the corresponding eigenvalues provide us with an estimate of the re
 \begin{subfigure}{0.24\textwidth}
 \includegraphics[width=\textwidth]{strip_discrete4}
 \end{subfigure}
-\caption{ Two-dimensional strip with uniform sampling colored by the first four (non-trivial) eigenvectors from diffusion maps. Note that the first and fourth eigenvectors are one-to-one with $z_1$ and $z_2$, respectively. However, the second and third eigenvectors are higher harmonics of the first eigenvector and do not capture any additional structure within the data set. }
+\caption{ Data, uniformly sampled from a two-dimensional strip, colored by the first four (non-trivial) eigenvectors from diffusion maps. Note that the first and fourth eigenvectors are one-to-one with $z_1$ and $z_2$, respectively. However, the second and third eigenvectors are higher harmonics of the first eigenvector and do not capture any additional structure within the data set. }
 \label{fig:strip_harmonics}
 \end{figure}
 
@@ -406,9 +412,7 @@ This problem was addressed previously in \cite{gerber2007robust} by performing
 successive iterations of diffusion maps, interspersed with advection along the first eigendirection at each iteration.
 %
 However, both the advection
-procedure and the successive eigendecompositions are expensive and soon become intractable for larger data sets, 
-and the approach is somewhat {\em ad hoc}.
-%TODO: elaborate on their method and find other advantages of our proposed method (for example, theirs is ad hoc).
+procedure and the successive eigendecompositions are expensive and soon become intractable for larger data sets.
 %
 Here, we propose an alternative approach to address the problem of repeated eigendirections
 motivated by simple trigonometric arguments (for example, the repeated eigendirection $\cos2x$ 
@@ -419,15 +423,15 @@ resulting fit is accurate, we assume $\phi_{k}$ is a repeated eigendirection of 
 %
 We use a {\em local} linear function
 \begin{equation}
-\phi_k \approx \alpha + \beta^T \Phi_{k-1}
+\phi_k(i) \approx \alpha_k(i) + \beta_k^T(i) \Phi_{k-1}(i)
 \end{equation}
 %
 as our functional approximation, where
 %
-$\Phi_{k-1} = \begin{bmatrix} \phi_1 & \dots & \phi_{k-1} \end{bmatrix}^T$,
-$\alpha \in \mathbb{R}$, and $\beta \in \mathbb{R}^{k-1}$.
+$\Phi_{k-1}(i) = \begin{bmatrix} \phi_1(i) & \dots & \phi_{k-1}(i) \end{bmatrix}^T$,
+$\alpha_k(i) \in \mathbb{R}$, and $\beta_k(i) \in \mathbb{R}^{k-1}$.
 %
-The coefficients $\alpha$ and $\beta$ are functions of $\Phi_{k-1}$ because we use a {\em local} linear fit in the $k-1$-dimensional $\Phi_{k-1}$ space, and so the coefficients change as a function of the domain.
+The coefficients $\alpha_k(i)$ and $\beta_k(i)$ are not constant because we use a {\em local} linear fit in the $k-1$-dimensional $\Phi_{k-1}$ space, and so the coefficients change as a function of the domain.
 
 At each point $\Phi_{k-1}(i)$, we approximate $\phi_k(i)$ by fitting a local linear function using the remaining $m-1$ data points.
 %
@@ -444,7 +448,7 @@ We use a Gaussian kernel,
 K(\Phi_{k-1}(i), \Phi_{k-1}(j))  = \exp \left( - \frac{\|\Phi_{k-1}(i) - \Phi_{k-1} (j) \|^2}{\epsilon_{reg}^2} \right),
 \end{equation}
 %
-where $\epsilon_{reg}$ is the kernel scale.
+where $\epsilon_{reg}$ is the kernel scale for the regression algorithm.
 %
 We typically take $\epsilon_{reg} = M / 3$, where $M$ is the median of the pairwise distances between $\Phi_{k-1}(i)$,
 as we empirically found this choice to yield good results.
@@ -462,7 +466,7 @@ parametrizes a new unique eigendirection in the data.
 %
 We choose to set $r_1 = 1$.
 %
-The error in \eqref{eq:cv_error} can easily be computed (see Section~5.4 of \cite{wasserman2006all}; code is also available at ...).
+The error in \eqref{eq:cv_error} can easily be computed (see Section~5.4 of \cite{wasserman2006all}; code is also available at \url{http://ronen.eew.technion.ac.il/sample-page/journal/}).
 
 %The error in \eqref{eq:cv_error} can easily be computed \cite{wasserman2006all}.
 %%
@@ -504,7 +508,7 @@ The error in \eqref{eq:cv_error} can easily be computed (see Section~5.4 of \cit
 We propose using {\em only} those eigenvectors for which $r_k$ is large to embed the data,
 as this will yield a more parsimonious representation.
 %
-However, it is important to note that such an embedding also preserves some features of the standard diffusion map embedding.
+However, it is important to note that such an embedding also preserves certain features of the standard diffusion map embedding.
 %
 Let $I = \{i_1, i_2, \dots, i_d \}$ denote the indices of the identified unique eigendirections (i.e., $r_{i_1}, \dots, r_{i_d}$ are large).
 %
@@ -523,15 +527,15 @@ We will refer to this distance
 \end{equation}
 %
 as the {\em reduced} diffusion distance,
-and the embedding obtained from the corresponding eigenvectors as the reduced diffusion maps embedding.
+and the embedding obtained from the corresponding eigenvectors as the {\em reduced} diffusion maps embedding.
 %
 
-\subsection{Estimating the relative lengths} \label{sec:relative_lengths}
+\subsection{Estimating the ``relative lengths''} \label{sec:relative_lengths}
 
 For a two-dimensional strip, once the eigenvectors which parametrize unique eigendirections have been determined,
 the corresponding eigenvalues can be used to calculate the relative lengths along these directions.
 %
-For more general manifolds, we postulate that the eigenvalues can still provide a measure of the relative
+For more general manifolds (at least for the case of uniform sampling), we postulate that the eigenvalues can still provide a measure of the relative
 significance of the unique eigendirections.
 %
 Let $\mu_{i_1}, \mu_{i_2}, \dots$ denote the eigenvalues corresponding to
@@ -543,8 +547,8 @@ L_j \propto \frac{1}{\sqrt{-\log \mu_{i_j}}}.
 \end{equation}
 %
 These lengths can then be used to evaluate how many components are required to retain
-most of the information within the data set;
-for example, if $L_j$ is smaller than a predefined threshold, then this component can be disregarded in the reduced diffusion maps embedding.
+most of the information within the data set, similar to the eigenvalues in principal component analysis.
+%for example, if $L_j$ is smaller than a predefined threshold, then this component can be disregarded in the reduced diffusion maps embedding.
 
 
 \subsection{Illustrative examples} \label{sec:illustrative_examples}
@@ -581,7 +585,7 @@ The second and third data sets involve nonlinear manifolds which demonstrate the
 \caption{}
 \end{subfigure}
 %
-\caption{Data sets (top) and eigenvalue spectra from diffusion maps analysis (bottom) for strips with (a) $L_1 = 2$, $L_2 = 1$, (b) $L_1 = 4$, $L_2 = 1$, (c) $L_1 = 8$, $L_2 = 1$. The empirical eigenvalues are plotted in blue, and the analytical eigenvalues are plotted in red. The bars are colored by the cross-validation error $r_k$, as defined in \eqref{eq:cv_error}. From the eigenvalues which are identified as parametrizing unique eigendirections (indicated by the darker blue bars), the estimated length ratio from \eqref{eq:est_lengths} is (a) 2.2, (b) 4.1, (c) 8.7.
+\caption{Data sets (top) and eigenvalue spectra from diffusion maps analysis (bottom) for strips with (a) $L_1 = 2$, $L_2 = 1$, (b) $L_1 = 4$, $L_2 = 1$, (c) $L_1 = 8$, $L_2 = 1$. The empirical eigenvalues are plotted in blue, and the analytical eigenvalues are plotted in red. The bars are colored by $r_k$, as defined in \eqref{eq:cv_error}. From the eigenvalues which are identified as parametrizing unique eigendirections (indicated by the darker blue bars), the estimated length ratio from \eqref{eq:est_lengths} is (a) 2.2, (b) 4.1, (c) 8.7.
 }
 \label{fig:strip_compare_analytic}
 \end{figure}
@@ -592,7 +596,7 @@ Each data set contains $m=2000$ data points uniformly sampled from the strip.
 %
 Figure~\ref{fig:strip_compare_analytic} shows the data sets and the diffusion maps eigenspectra.
 %
-The eigenvalues are colored by the leave-one-out cross-validation error as defined in \eqref{eq:cv_error};
+The eigenvalues are colored by the leave-one-out cross-validation error $r_k$ as defined in \eqref{eq:cv_error};
 a small value of $r_k$ indicates that the corresponding eigenvector is a repeated eigendirection, while a
 large value of $r_k$ indicates that the corresponding eigenvector describes a new direction in the data.
 %
@@ -675,11 +679,7 @@ Our second illustrative example consists of two different Swiss roll data sets.
 %
 The data are sampled according to
 \begin{equation}
-\begin{aligned}
-z_1 =& \theta \cos \theta \\
-z_2 =& \theta \sin \theta \\
-z_3 =& h t
-\end{aligned}
+(z_1, z_2, z_3) = (\theta \cos \theta , \theta \sin \theta, h t)
 \end{equation}
 %
 where $\theta$ is sampled such that $z_1, z_2$ are uniformly sampled along the arclength of the spiral, and $t$ is uniformly sampled from $[0,1]$.
@@ -704,7 +704,7 @@ while $\phi_1$ and $\phi_5$ parametrize the second.
 Figures~\ref{subfig:swissroll1_color1},\ref{subfig:swissroll1_color2},\ref{subfig:swissroll2_color1},~and~\ref{subfig:swissroll2_color2} 
 show the two data sets, colored by the two eigenvectors identified as parametrizing the unique eigendirections.
 %
-As expected, these eigenvectors are one-to-one with the arc length along the spiral, and the height of the Swiss roll.
+As expected, these eigenvectors are one-to-one with the arclength along the spiral, and the height of the Swiss roll.
 
 \subsubsection{Torus}
 
@@ -737,7 +737,7 @@ As expected, these eigenvectors are one-to-one with the arc length along the spi
 %
 \hfill
 %
-\caption{Tori data sets (top, see \eqref{eq:torus}) and corresponding diffusion maps eigenvalues (bottom) for (a) $r_1 = 3$, $r_2 = 1$. (b) $r_1 = 5$, $r_2 = 1$. (c) $r_1 = 10$, $r_2 = 1$. The torii are parameterized by two angles: $\theta_1$, which parameterizes the large outer circle, and $\theta_2$, which parameterizes the smaller inner circle. In all three data sets, the first two eigenvalues/eigenvectors correspond to $\sin \theta_1$ and $\cos \theta_1$. The second pair of unique eigendirections (corresponding to $\sin \theta_2$ and $\cos \theta_2$) are captured by components 7 and 8, 11 and 12, and 15 and 16, respectively.}
+\caption{Tori data sets (top, see \eqref{eq:torus}) and corresponding diffusion maps eigenvalues (bottom) for (a) $r_1 = 3$, $r_2 = 1$. (b) $r_1 = 5$, $r_2 = 1$. (c) $r_1 = 10$, $r_2 = 1$. The tori are parameterized by two angles: $\theta_1$, which parameterizes the large outer circle, and $\theta_2$, which parameterizes the smaller inner circle. In all three data sets, the first two eigenvalues/eigenvectors correspond to $\sin \theta_1$ and $\cos \theta_1$. The second pair of unique eigendirections (corresponding to $\sin \theta_2$ and $\cos \theta_2$) are captured by components 7 and 8, 11 and 12, and 15 and 16, respectively.}
 %
 \label{fig:torus}
 %
@@ -745,13 +745,12 @@ As expected, these eigenvectors are one-to-one with the arc length along the spi
 
 For the third example, we consider a torus defined by
 %
-\begin{equation}
-\begin{aligned}
-z_1 =& (r_1 + r_2 \cos \theta_2 ) \cos \theta_1 \\
-z_2 =& (r_1 + r_2 \cos \theta_2 ) \sin \theta_1 \\
-z_3 =& r_2 \sin \theta_2
-\end{aligned}
-\label{eq:torus}
+\begin{equation} \label{eq:torus}
+\left( z_1, z_2, z_3 \right) = \left(  
+(r_1 + r_2 \cos \theta_2 ) \cos \theta_1, 
+(r_1 + r_2 \cos \theta_2 ) \sin \theta_1, 
+r_2 \sin \theta_2
+\right) 
 \end{equation}
 %
 where $r_1 > r_2$ are the outer and inner radii, respectively, and $\theta_1$ and $\theta_2$ are uniformly and independently sampled from $[0, 2\pi)$.
@@ -764,7 +763,7 @@ Intuitively, increasing $r_1$ can be viewed as analogous to increasing the ratio
 strip example and makes the eigendirections which parametrize the outer circle ($\cos \theta_1$ and $\sin \theta_1$) more 
 dominant compared to the eigendirections with parametrize the inner circle.
 %
-Figure~\ref{fig:torus} shows the eigenspectra from the analysis of three different tori, colored again by the leave-one-out cross-validation error.
+Figure~\ref{fig:torus} shows the eigenspectra from the analysis of three different tori, colored again by the leave-one-out cross-validation error $r_k$.
 %
 We observe that as the torus becomes thinner ($r_1$ increases), the second pair of eigenvalues corresponding to unique eigendirections (corresponding to $\sin \theta_2$ and $\cos \theta_2$) moves farther down in the spectrum.
 
@@ -795,11 +794,11 @@ Several microscopic models have been proposed to describe chemotactic dynamics \
 %
 We will analyze one such model described by a one-dimensional velocity jump process \cite{othmer2000diffusion}.
 %
-This specific example has an analytic macroscopic description in which the macroscopic 
-dynamics of a large ensemble of cells depend on the value of a single macroscopic system parameter.
+This specific example has an analytic macroscopic description in which the 
+dynamics of a large ensemble of cells depend on the value of a single system parameter.
 %
 This description serves as a ``ground truth" and will allow us to validate our results which are obtained in an unsupervised manner.
-%
+
 Thus far, we only considered synthetic data sets for which the Euclidean distance between data points served as an informative metric.
 %
 Here, we will show that our approach, {\em when utilizing the appropriate statistical observers and affinity metric between pairs of observations}, 
@@ -832,9 +831,11 @@ For our specific simulations, we set $s^2/\lambda=1$, which is consistent with t
 We note that we have chosen a very specific one-parameter family of initial conditions which lead to simple dynamics and allow us to illustrate our main points;
 however, our analysis is not restricted to such specific cases and more complex sets of initial conditions could be used.
 %
-Each data set consists of $10$ simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$.
+Each data set consists of $10$ stochastic simulations, with initial conditions uniformly chosen such that $0.1 \le p  \le 0.9$.
 %
-We allow each simulation to evolve for $t_{max}$ time units with a fixed time step $dt$, and use data with $t > 0$ for analysis.
+We allow each simulation to evolve for $t_{max}$ time units, and record the positions of the $N$ cells at $\Delta t$ intervals; we use data with $t > 0$ for analysis.
+%
+We will show that the parameter $t_{obs} \equiv t_{max}/N$, which determines the time scale of observation, is of critical importance when we address the limiting asymptotic behavior.
 
 \begin{figure}[t!]
 \def \figwidth {0.25\textwidth}
@@ -870,7 +871,7 @@ We allow each simulation to evolve for $t_{max}$ time units with a fixed time st
 \caption{}
 \label{subfig:large_lambda_rho}
 \end{subfigure}
-\caption{Embeddings using the first two diffusion maps eigenvectors computed from simulation data of the velocity jump process with $t_{max} = 10$,k $dt=1$, and (a--c) $\lambda=1$, $s=1$, (d--f) $\lambda=400$, $s=20$.  The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of cell positions. The data are colored by (a, d) $p$, the initial probability of a cell moving to the right, (b, e) $t$, time, and (c, f) $E \rho^+ - E \rho^-$, the difference between the average position of the left- and right-moving cells. Representative histograms of the cell positions are shown for selected data points. }
+\caption{Embeddings using the first two diffusion maps eigenvectors computed from simulation data of the velocity jump process with $t_{max} = 10$, $\Delta t=1$, and (a--c) $\lambda=1$, $s=1$, (d--f) $\lambda=400$, $s=20$.  The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of cell positions. The data are colored by (a, d) $p$, the initial probability of a cell moving to the right, (b, e) $t$, time, and (c, f) $E \rho^+ - E \rho^-$, the difference between the average position of the left- and right-moving cells. Representative histograms of the cell positions are shown for selected data points. }
 \label{fig:dmaps_embed_emd}
 \end{figure}
 
@@ -906,6 +907,8 @@ cumulative distribution functions of the data \cite{rubner2000perceptual}, which
 \| z(i) - z(j) \|_{EMD} \approx \sum_{l=1}^{n} \left| \sum_{k=1}^l z_k(i) - \sum_{k=1}^l z_k(j) \right|;
 \end{equation}
 the histograms $z(i), z(j)$ are defined on $n$ equally-spaced bins in $\mathbb{R}$ (for our simulations, we will take $n=32$), and $z_k$ denotes the $k^{th}$ bin.
+%
+Here, we choose to only use the positions of the cells in the distance computation; utilizing both the positions and velocities produces qualitatively similar results (not shown).
 %
 We note that although histograms are not essential to the theory of EMD, they make the computation practical.
 
@@ -944,9 +947,9 @@ We note that although histograms are not essential to the theory of EMD, they ma
 \end{subfigure}
 %
 \caption{Analysis of three different chemotaxis simulation data sets. (a) $\lambda = 100$, $s = 10$. 
-(b) $\lambda = 1600$, $s = 40$. (c) $\lambda = 6400$, $s = 80$. We set $t_{max} = 10$ and $dt=1$, and the 
+(b) $\lambda = 1600$, $s = 40$. (c) $\lambda = 6400$, $s = 80$. We set $t_{max} = 10$ and $\Delta t=1$, and the 
 distances used in the diffusion maps kernel are the earth mover's distances between the histograms of cell positions. 
-For each data set, the eigenvalue spectrum, colored by the cross-validation error, is shown in the top row. 
+For each data set, the eigenvalue spectrum, colored by $r_k$, is shown in the top row. 
 From the spectra, we can see that the first two components are informative for (a), that components 1 and 3 are informative for (b), 
 and that components 1 and 4 are informative for (c). 
 The corresponding reduced diffusion maps embeddings are shown in the middle row. For comparison, 
@@ -963,7 +966,7 @@ while the other set (Figures~\ref{subfig:large_lambda_p}--\ref{subfig:large_lamb
 For both sets of simulations, the macroscopic variables $p$, which controls the initial distribution of cell velocities, and $t$, the time, 
 are well-correlated with the eigenvectors $\phi_1$ and $\phi_2$.
 %
-In particular, $p$ characterizes the fraction of initially right-moving cells (alternatively, the initial flux of the right-moving cells). 
+In particular, $p$ characterizes the fraction of initially right-moving cells (alternatively, the initial {\em flux} of the right-moving cells). 
 %
 %In both cases, $\phi_1$ is significantly more important than $\phi_2$, as indicated by the separation between the first two eigenvalues (for the small $\lambda$ case, $\mu_1 = 0.4828$, and $\mu_2 = 0.4287$, and for the large $\lambda$ case, $\mu_1 = 0.6288$, and $\mu_2 = 0.3236$).
 %
@@ -1000,24 +1003,24 @@ It now becomes clear that looking at the eigenvectors {\em modulo} repeated eige
 
 \subsubsection{Analytic macroscopic description}
 
-This particular example can be usefully modelled through a known analytic macroscopic equation that governs the overall system behavior.
+This particular model system can be usefully described through a known analytic macroscopic equation that governs the overall system behavior.
 %
 For a large collection of cells ($N \rightarrow \infty$), the system can be described using the evolution of the cell density.
 %
 Let $\rho(x, t)$ denote this evolving cell density field, and let $\rho^-(x, t)$ and $\rho^+(x, t)$ denote the 
 densities of the left-moving and of the right-moving cells, respectively.
 %
-It can be shown that, as $N \rightarrow \infty$, the densities satisfy the following set of partial differential equations (PDEs) \cite{othmer2000diffusion}:
+It can be shown that, as $N \rightarrow \infty$, the densities satisfy the following set of coupled partial differential equations (PDEs) \cite{othmer2000diffusion}:
 \begin{equation} \label{eqn:coupled_pdes}
 \begin{aligned}
 \frac{\partial \rho^+}{\partial t} + s \frac{\partial \rho^+}{\partial x} & = -\lambda \rho^+ +\lambda \rho^- \\
-\frac{\partial \rho^-}{\partial t} - s \frac{\partial \rho^-}{\partial x} & = \lambda \rho^+ -\lambda \rho^-
+\frac{\partial \rho^-}{\partial t} - s \frac{\partial \rho^-}{\partial x} & = \lambda \rho^+ -\lambda \rho^- .
 \end{aligned}
 \end{equation}
 %
 Alternatively, \eqref{eqn:coupled_pdes} can be rewritten as a single, second--order PDE (the telegrapher equation):
 \begin{equation} \label{eq:second_order_pde}
-\frac{\partial^2 \rho}{\partial t^2} + 2 \lambda \frac{\partial \rho}{\partial t} = s^2 \frac{\partial ^2 \rho}{\partial x^2}
+\frac{\partial^2 \rho}{\partial t^2} + 2 \lambda \frac{\partial \rho}{\partial t} = s^2 \frac{\partial ^2 \rho}{\partial x^2} .
 \end{equation}
 %
 From \eqref{eq:second_order_pde}, we see that, for fixed values of $\lambda$ and $s$, the macroscopic 
@@ -1053,7 +1056,7 @@ When $\lambda \rightarrow 0$, the dynamics are described by the telegrapher equa
 persists throughout the trajectory.
 %
 When $\lambda \rightarrow \infty$, the dynamics are described by a single heat equation, and the initial conditions 
-for the velocity are insignificant -- the velocity distribution quickly equilibrates and we see purely diffusive behavior.
+for the velocity are not especially important, since the velocity distribution quickly equilibrates and we see purely diffusive behavior.
 
 The relative importance of $p$ and $t$ from the analytic description are consistent with the results 
 in Figure~\ref{fig:dmaps_embed_emd}, where $p$ is correlated with the dominant diffusion map coordinate 
@@ -1093,7 +1096,7 @@ and when $\lambda$ is large, the dynamics can be described by a single density $
 Figures~\ref{subfig:small_lambda_rho}~and~\ref{subfig:large_lambda_rho} show the data, 
 colored by the difference in the average position of the left- and right-moving cells.
 %
-Clearly, for small $\lambda$, where both $\rho^+$ and $\rho^-$ are required to describe the dynamics, 
+Clearly, for small $\lambda$, both $\rho^+$ and $\rho^-$ are required to describe the dynamics, and
 the difference between the two densities is a useful observable in parametrizing the data manifold
 (and thus a good macroscopic descriptor, a good ``candidate macroscopic variable").
 %
@@ -1112,13 +1115,13 @@ coordinates and what we know to be meaningful macroscopic variables, $p$ and $t$
 coordinates and the governing macroscopic variables are all less than 60\%, with the correlations for 
 the small $\lambda$ case being less than 20\%) with this similarity measure.
 %
-%In contrast, the correlations between the embedding coordinates and the macroscopic variables when using EMD in the diffusion maps 
-calculation are all greater than 80\%
+In contrast, the correlations between the embedding coordinates and the macroscopic variables when using EMD in the diffusion maps 
+calculation are all greater than 80\%.
 %
 Clearly, using a metric which meaningfully describes the distances between observations 
 is essential for obtaining an informative parametrization of data.
 %
-We note that the metrics we used in this work only employed observations of cell positions (and not of cell instantaneous
+We note again that the metrics we used in this work only employed observations of cell positions (and not of cell instantaneous
 velocities); if the instantaneous velocities are readily measurable, they could be incorporated in a useful
 and possibly even more informative metric for data analysis.
 
@@ -1129,7 +1132,7 @@ and possibly even more informative metric for data analysis.
 \centering
 \includegraphics[width=0.5\textwidth]{tmax_lambda_transition}
 %
-\caption{Detecting the change in dimensionality. The appropriate ratio the two eigenvalues (see \eqref{eq:chemotaxis_eval_ratio}) which correspond to unique eigendirections is plotted as a function of $t_{max}$ and $\lambda$. Each data point is the average eigenvalue ratio over three replicate data sets, and in each simulation, $dt=t_{max}/10$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of cell positions. The curve $1/\lambda = t_{max}/N$ is shown in white. }
+\caption{Detecting the change in dimensionality. The appropriate ratio the two eigenvalues (see \eqref{eq:chemotaxis_eval_ratio}) which correspond to unique eigendirections is plotted as a function of $t_{max}$ and $\lambda$. Each data point is the average eigenvalue ratio over three replicate data sets, and in each simulation, $\Delta t=t_{max}/10$. The distances used in the diffusion maps kernel are the earth mover's distances between the histograms of cell positions. The curve $1/\lambda = t_{max}/N$ is shown in white. }
 %
 \label{fig:chemotaxis_compare_timescales_evals}
 %
@@ -1144,7 +1147,7 @@ According to \eqref{eq:est_lengths}, we plot
 \begin{equation}\label{eq:chemotaxis_eval_ratio}
  \sqrt{\frac{\log \mu_{i_1}}{\log \mu_{i_2}}} ;
 \end{equation}
-when this ratio becomes small, the data are effectively one-dimensional, as the extent of data along the second direction is very 
+when this ratio becomes small, the data are {\em effectively} one-dimensional, as the extent of data along the second direction is very 
 small compared with the first.
 
 Figure~\ref{fig:chemotaxis_compare_timescales_evals} shows the eigenvalue ratio in \eqref{eq:chemotaxis_eval_ratio} as 
@@ -1152,22 +1155,22 @@ a function of $\lambda$ and the time scale of observation $t_{max}$.
 %
 From this eigenvalue ratio, we can easily detect changes in the estimated dimensionality as we vary the relevant parameters.
 %
-For small $\lambda$ and/or short $t_{max}$, the data are effectively two-dimensional, as both $p$ and $t$ are important to the observed dynamics.
+For small $\lambda$ and/or short $t_{obs} = t_{max} / N$, the data are effectively two-dimensional, as both $p$ and $t$ are important to the observed dynamics.
 %
-However, when $\lambda$ and/or $t_{max}$ is large, the system rapidly equilibrates and the data are effectively one-dimensional, parametrized by $t$.
+However, when $\lambda$ and/or $t_{obs}$ is large, the system rapidly equilibrates and the data are effectively one-dimensional, parametrized by time.
 %
 For this specific example, these changes are consistent with the analytically-predicted  shift in the dynamical behavior from the telegrapher equation to the diffusion equation.
 %
-From \eqref{eq:second_order_pde}, we can see that $t_{max}$, the time scale of observation, should be larger than the time scale $1/\lambda$ for the diffusion equation limit in \eqref{eq:diff_eqn} to hold; we therefore expect a transition in the dynamical behavior at
+From \eqref{eq:second_order_pde}, we can see that $t_{obs}$, the time scale of observation, should be larger than the time scale $1/\lambda$ for the diffusion equation limit in \eqref{eq:diff_eqn} to hold; we therefore expect a transition in the dynamical behavior at
 \begin{equation}
-\frac{t_{max}}{N} \approx \frac{1}{\lambda}.
+t_{obs} \approx \frac{1}{\lambda}.
 \end{equation}
 %
 This curve is also plotted in Figure~\ref{fig:chemotaxis_compare_timescales_evals} and is consistent with the transition predicted by the diffusion maps eigenvalues.
 
 \section{Conclusions}
 
-This paper addresses the issue of repeated eigendirections, a critical issue in applying diffusion maps to the analysis of complex dynamic data.
+This paper addresses repeated eigendirections, a critical issue in applying diffusion maps to the analysis of complex dynamic data.
 %
 We show that, using local linear regression, we can automate the detection of eigenvectors corresponding to unique directions in the
 geometry of the data.
@@ -1175,14 +1178,16 @@ geometry of the data.
 From this detection, we can then obtain a {\em reduced diffusion maps embedding} which is both parsimonious and 
 induces a metric which is equivalent to the standard diffusion distance.
 %
-We showed that this algorithm enables us to better analyze data from a complex dynamical system, 
+We showed that this algorithm enables us to more fruitfully analyze data from a complex dynamical system, 
 enabling the extraction of good reduced coordinates and the detection of changes in the dimensionality of the macroscopic dynamics.
 %
-We are confident that the proposed methodology will be helpful in the analysis of complex data sets for which 
+We are confident that the proposed methodology will be helpful in the analysis of high-dimensional data sets for which 
 the dimensionality of the underlying manifold is unknown.
 
 \section*{Acknowledgments}
- C.J.D. was supported by the Department of Energy Computational Science Graduate Fellowship (CSGF), grant number DE-FG02-97ER25308, and the National Science Foundation Graduate Research Fellowship, grant number DGE 1148900. 
+C.J.D. was supported by the Department of Energy Computational Science Graduate Fellowship (CSGF), grant number DE-FG02-97ER25308, and the National Science Foundation Graduate Research Fellowship, grant number DGE 1148900. 
+%
+R.T. was supported by the European Union’s Seventh Framework Programme (FP7) under Marie Curie Grant 630657 and by the Horev Fellowship.
 %
 I.G.K. was supported by the National Science Foundation (CS\&E program).
 
