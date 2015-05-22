@@ -158,16 +158,28 @@ else
     C = sqrt(log(eval1)./log(eval2));
 end
 
+% make_fig(4,3);
+% imagesc(lambda_all, tmax_all, C')
+% set(gca, 'xdir','normal')
+% set(gca, 'ydir','normal')
+% h = colorbar;
+% set(get(h,'ylabel'),'String', '$\sqrt{\log \mu_{i_1} / \log \mu_{i_2}}$', 'interpreter','latex');
+% hold on
+% plot(1:max(lambda_all), N./(1:max(lambda_all)), '-w', 'linewidth',2)
+% xlabel('\lambda')
+% ylabel('t_{max}')
+% saveas(gcf, 'tmax_lambda_transition', 'epsc')
+
 make_fig(4,3);
-imagesc(lambda_all, tmax_all, C')
+imagesc(lambda_all, tmax_all./N, C')
 set(gca, 'xdir','normal')
 set(gca, 'ydir','normal')
 h = colorbar;
 set(get(h,'ylabel'),'String', '$\sqrt{\log \mu_{i_1} / \log \mu_{i_2}}$', 'interpreter','latex');
 hold on
-plot(1:max(lambda_all), N./(1:max(lambda_all)), '-w', 'linewidth',2)
+plot(1:max(lambda_all), 1./(1:max(lambda_all)), '-w', 'linewidth',2)
 xlabel('\lambda')
-ylabel('t_{max}')
+ylabel('t_{obs}')
 saveas(gcf, 'tmax_lambda_transition', 'epsc')
 
 figure;

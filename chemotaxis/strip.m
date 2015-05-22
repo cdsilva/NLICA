@@ -6,7 +6,6 @@ close all
 Lx = 4;
 Ly = 1;
 
-
 delta = 0.1;
 
 [X, Y] = meshgrid(0:delta:Lx, 0:delta:Ly);
@@ -22,7 +21,6 @@ cbar = colorbar('peer',gca);
 set(get(cbar,'xlabel'),'String','$\tilde{\phi}_{1,0}$', 'interpreter','latex');
 print('strip_cnts1.eps','-depsc')
 
-return
 make_fig(3,2);
 h = pcolor(X, Y, cos(pi*Y/Ly));
 set(h, 'edgecolor','none');
@@ -131,7 +129,7 @@ for Lx = [2 4 8]
     idx = sort(idx(1:2));
     
     sqrt(log(D(idx(2), idx(2)))/log(D(idx(1), idx(1))))
-
+    
     m = 0:10;
     m1 = reshape(repmat(m, length(m), 1), [], 1);
     m2 = reshape(repmat(m', 1, length(m)), [], 1);
@@ -162,5 +160,79 @@ for Lx = [2 4 8]
     print(sprintf('strip_spectrum_L%d.eps', Lx),'-depsc')
     
     
+end
+
+%%
+
+
+figure;
+
+n = 2000;
+rng(321);
+
+Lx = 4;
+Ly = 1;
+
+data = rand(n, 2);
+data(:,1) = data(:,1) * Lx;
+data(:,2) = data(:,2) * Ly;
+
+plot_idx = 1;
+
+subplot(2,4,plot_idx)
+plot_idx = plot_idx + 1;
+scatter(data(:,1),data(:,2),25, 'b','.')
+axis square
+axis equal
+xlabel('z_1')
+ylabel('z_2')
+
+W = squareform(pdist(data)).^2;
+eps = 0.15^2;
+eps_med_scale = 3;
+
+for alpha=[0 0.5 1]
+    [V, D] = dmaps_weight(W, alpha, 2*eps, 10);
+    res = compute_residuals_DMAPS(V, eps_med_scale);
+    [~, idx] = sort(res, 'descend');
+    idx = sort(idx(1:2));
+    
+    subplot(2,4,plot_idx)
+    plot_idx = plot_idx + 1;
+    make_colored_bars(diag(D(2:end,2:end)), res(2:end))
+%     title(sprintf('\\alpha = %0.1f, L = %2.2f', alpha, sqrt(log(D(idx(2), idx(2)))/log(D(idx(1), idx(1))))))
+    title(sprintf('\\alpha=%0.1f, L_x=%2.2f, L_y=%2.2f', alpha, pi/sqrt(log(D(idx(1), idx(1)))*(-2/eps)), pi/sqrt(log(D(idx(2), idx(2)))*(-2/eps))))
+end
+
+
+
+% data_tmp = (randn(10*n, 1)/6 + 0.5) * Lx;
+data_tmp = (randn(10*n, 1)/4 + 0.5) * Lx;
+idx = find(data_tmp > 0 & data_tmp < Lx);
+data(:,1) = data_tmp(idx(1:n));
+
+subplot(2,4,plot_idx)
+plot_idx = plot_idx + 1;scatter(data(:,1),data(:,2),25, 'b','.')
+axis square
+axis equal
+xlabel('z_1')
+ylabel('z_2')
+
+W = squareform(pdist(data)).^2;
+eps = 0.15^2;
+eps_med_scale = 3;
+
+for alpha=[0 0.5 1]
+    [V, D] = dmaps_weight(W, alpha, 2*eps, 10);
+    res = compute_residuals_DMAPS(V, eps_med_scale);
+    [~, idx] = sort(res, 'descend');
+    idx = sort(idx(1:2));
+    
+    subplot(2,4,plot_idx)
+    plot_idx = plot_idx + 1;
+    make_colored_bars(diag(D(2:end,2:end)), res(2:end))
+%     title(sprintf('\\alpha = %0.1f, L = %2.2f', alpha, sqrt(log(D(idx(2), idx(2)))/log(D(idx(1), idx(1))))))
+    title(sprintf('\\alpha=%0.1f, L_x=%2.2f, L_y=%2.2f', alpha, pi/sqrt(log(D(idx(1), idx(1)))*(-2/eps)), pi/sqrt(log(D(idx(2), idx(2)))*(-2/eps))))
+
 end
 
