@@ -8,11 +8,18 @@ rng(123);
 
 ntraj = 2;
 npoints = 1000;
-x = repmat(linspace(0, 1, npoints), ntraj, 1);
+t = repmat(linspace(0, 1, npoints), ntraj, 1);
 
-y = zeros(size(x));
-y(1, :) = exp(-10*x(1,:));
-y(2, :) = -exp(-20*x(2,:));
+x1 = exp(-2*t);
+x2 = exp(-50*t);
+
+
+x1(1,:) = -0.95*x1(1,:);
+x1(2,:) = -0.7*x1(2,:);
+
+x2(1,:) = 0.75*x2(1,:);
+x2(2,:) = -0.65*x2(2,:);
+
 
 % figure;
 % plot(x, y, '.')
@@ -20,7 +27,7 @@ y(2, :) = -exp(-20*x(2,:));
 % set(gca, 'ytick', [])
 
 make_fig(3, 3);
-scatter(x(:), y(:), 50, x(:)/max(x(:)),'.')
+scatter(x1(:), x2(:), 20, t(:),'.')
 set(gca, 'xtick', [])
 set(gca, 'ytick', [])
 set(gca, 'ylim', [-1 1])
